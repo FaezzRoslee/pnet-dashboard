@@ -46,7 +46,6 @@
 
         body { 
             margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; transition: background 0.3s, color 0.3s; 
-            /* BACKGROUND GRID PREMIUM */
             background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
             background-size: 30px 30px;
         }
@@ -57,6 +56,9 @@
         .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         
+        .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 12px; }
+        .logo-area:hover { background: var(--hover-bg); transform: translateX(5px); }
+
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; outline: none; }
         .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--glow-color); }
         .btn-primary:hover { opacity: 0.95; transform: translateY(-3px); box-shadow: 0 8px 25px var(--glow-color); }
@@ -72,41 +74,28 @@
         .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- MUKA DEPAN (EMPTY STATE) PREMIUM --- */
+        /* Muka Depan */
         #empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; position: relative; }
-        
-        /* Kesan Cahaya (Glow) di belakang ikon */
         .hero-icon-wrapper { position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 25px; animation: fadeInUp 0.6s ease-out; }
         .hero-icon-glow { position: absolute; width: 100px; height: 100px; background: var(--accent); filter: blur(40px); opacity: 0.4; border-radius: 50%; animation: pulseGlow 3s infinite alternate ease-in-out; z-index: -1; }
         @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.3; } 100% { transform: scale(1.3); opacity: 0.6; } }
         
-        /* Teks Bercerun */
         .gradient-text { font-size: 38px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 15px; background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeInUp 0.7s ease-out; }
         .hero-subtitle { color: var(--text-muted); max-width: 500px; margin: 0 0 35px; line-height: 1.7; font-size: 16px; animation: fadeInUp 0.8s ease-out; }
 
-        /* Butang Tengah Gergasi */
-        .btn-hero-upload { padding: 16px 32px; font-size: 16px; border-radius: 16px; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
+        .hero-action-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
+        .btn-hero-upload { padding: 16px 32px; font-size: 15px; border-radius: 16px; }
         
-        /* Kad Terapung */
         .steps-container { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; perspective: 1000px; }
-        .step-card { 
-            background: var(--card-bg); padding: 30px 25px; border-radius: 24px; box-shadow: var(--card-shadow); width: 260px; text-align: left; 
-            border: 1px solid var(--border); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s forwards;
-            position: relative; overflow: hidden;
-        }
-        /* Staggered animation */
-        .step-card:nth-child(1) { animation-delay: 0.4s; }
-        .step-card:nth-child(2) { animation-delay: 0.6s; }
-        .step-card:nth-child(3) { animation-delay: 0.8s; }
-
+        .step-card { background: var(--card-bg); padding: 30px 25px; border-radius: 24px; box-shadow: var(--card-shadow); width: 260px; text-align: left; border: 1px solid var(--border); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s forwards; position: relative; overflow: hidden; }
+        .step-card:nth-child(1) { animation-delay: 0.4s; } .step-card:nth-child(2) { animation-delay: 0.6s; } .step-card:nth-child(3) { animation-delay: 0.8s; }
         .step-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px -15px var(--glow-color); border-color: var(--accent); }
         .step-card-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; transition: 0.3s; }
         .step-card:hover .step-card-icon { transform: scale(1.1) rotate(5deg); }
         .step-card h4 { margin: 0 0 8px; font-size: 16px; color: var(--text-main); font-weight: 700; }
         .step-card p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-        /* --- DASHBOARD --- */
+        /* Dashboard Utama */
         .dashboard-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -205,7 +194,7 @@
 
 <div class="container">
     <header class="header-main no-print">
-        <div style="display:flex; align-items:center; gap:15px;">
+        <div class="logo-area" onclick="goHome()" title="Kembali ke Laman Utama">
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
                 <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
@@ -213,6 +202,9 @@
             </div>
         </div>
         <div class="header-actions">
+            <button class="btn-icon" onclick="goHome()" title="Laman Utama">
+                <i data-lucide="home"></i>
+            </button>
             <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn">
                 <i data-lucide="moon"></i>
             </button>
@@ -235,10 +227,15 @@
         <h2 class="gradient-text">Papan Pemuka Sedia Digunakan</h2>
         <p class="hero-subtitle">Platform berpusat untuk menjejak prestasi, mengenal pasti kelewatan, dan menganalisis status projek secara visual tanpa menggunakan pangkalan data luar.</p>
         
-        <label class="btn btn-primary btn-hero-upload">
-            <i data-lucide="upload-cloud" style="width:20px; height:20px;"></i> Mula Muat Naik Data Excel
-            <input type="file" id="fileInputCenter" hidden accept=".xlsx, .xls">
-        </label>
+        <div class="hero-action-container">
+            <label class="btn btn-primary btn-hero-upload">
+                <i data-lucide="upload-cloud" style="width:20px; height:20px;"></i> <span id="heroUploadText">Mula Muat Naik Data Excel</span>
+                <input type="file" id="fileInputCenter" hidden accept=".xlsx, .xls">
+            </label>
+            <button class="btn btn-outline btn-hero-upload" id="heroReturnBtn" style="display:none;" onclick="updateUI()">
+                <i data-lucide="layout-dashboard" style="width:20px; height:20px;"></i> Buka Papan Pemuka
+            </button>
+        </div>
 
         <div class="steps-container">
             <div class="step-card">
@@ -412,7 +409,9 @@
         if(newTheme === 'dark') { themeBtnIcon.setAttribute('data-lucide', 'sun'); } 
         else { themeBtnIcon.setAttribute('data-lucide', 'moon'); }
         lucide.createIcons();
-        if(activeId) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
+        if(activeId && document.getElementById('dashboard-content').style.display !== 'none') {
+            renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
+        }
     }
 
     // 2. TOAST
@@ -440,7 +439,7 @@
                 if (Object.keys(parsed.map).length > 0) {
                     projectsMap = parsed.map;
                     activeId = parsed.active || Object.keys(projectsMap)[0];
-                    updateUI();
+                    goHome(); // Tunjuk Muka Depan dahulu dengan tetapan data sedia ada
                 }
             } catch(e) { console.error(e); }
         }
@@ -451,7 +450,29 @@
         catch(e) { showToast("Storan penuh! Sila padam projek lama."); }
     }
 
-    // 4. MUAT NAIK FAIL (Dihubungkan dengan 3 butang upload)
+    // BARU: FUNGSI KEMBALI KE LAMAN UTAMA (HOME)
+    function goHome() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('printBtn').style.display = 'none';
+        
+        const emptyState = document.getElementById('empty-state');
+        emptyState.style.display = 'flex';
+        // Ulang animasi
+        emptyState.style.animation = 'none';
+        setTimeout(() => emptyState.style.animation = 'fadeInUp 0.5s ease-out forwards', 10);
+
+        if (Object.keys(projectsMap).length > 0) {
+            document.getElementById('headerUploadBtn').style.display = 'none';
+            document.getElementById('heroReturnBtn').style.display = 'inline-flex';
+            document.getElementById('heroUploadText').innerText = "Tambah Excel Baharu";
+        } else {
+            document.getElementById('headerUploadBtn').style.display = 'inline-flex';
+            document.getElementById('heroReturnBtn').style.display = 'none';
+            document.getElementById('heroUploadText').innerText = "Mula Muat Naik Data Excel";
+        }
+    }
+
+    // 4. MUAT NAIK FAIL
     const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputCenter'];
     fileInputs.forEach(id => {
         const el = document.getElementById(id);
@@ -626,8 +647,12 @@
         delete projectsMap[projectIdToDelete];
         const remainingKeys = Object.keys(projectsMap);
         cancelDeleteProject();
-        if(remainingKeys.length === 0) { activeId = null; localStorage.removeItem("pnet_projects"); location.reload(); } 
-        else { activeId = remainingKeys[0]; saveToLocalStorage(); updateUI(); showToast(`Projek dihapus.`); }
+        if(remainingKeys.length === 0) { 
+            activeId = null; localStorage.removeItem("pnet_projects"); 
+            goHome(); 
+        } else { 
+            activeId = remainingKeys[0]; saveToLocalStorage(); updateUI(); showToast(`Projek dihapus.`); 
+        }
     }
 
     function openModal(type) {
