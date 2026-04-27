@@ -14,20 +14,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         * { box-sizing: border-box; }
 
-        /* VARIABLES (Light & Dark Mode High Contrast) */
+        /* VARIABLES */
         :root {
             --primary: #0f172a; --accent: #3b82f6; --success: #10b981;
             --warning: #f59e0b; --danger: #ef4444; 
-            --bg: #f1f5f9; --card-bg: #ffffff; 
+            --bg: #f8fafc; --card-bg: #ffffff; 
             --text-main: #0f172a; --text-muted: #475569; 
-            --border: #e2e8f0; --hover-bg: #f8fafc;
+            --border: #e2e8f0; --hover-bg: #f1f5f9;
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
             --modal-bg: rgba(15, 23, 42, 0.6);
+            --grid-color: rgba(15, 23, 42, 0.04);
+            --glow-color: rgba(59, 130, 246, 0.15);
         }
 
         [data-theme="dark"] {
@@ -35,46 +37,83 @@
             --warning: #fcd34d; --danger: #fca5a5; 
             --bg: #0f172a; --card-bg: #1e293b; 
             --text-main: #ffffff; --text-muted: #cbd5e1; 
-            --border: #475569; --hover-bg: #334155;
+            --border: #334155; --hover-bg: #334155;
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
             --modal-bg: rgba(0, 0, 0, 0.8);
+            --grid-color: rgba(255, 255, 255, 0.03);
+            --glow-color: rgba(96, 165, 250, 0.1);
         }
 
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-        .container { max-width: 1500px; margin: 0 auto; padding: 20px; }
+        body { 
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; transition: background 0.3s, color 0.3s; 
+            /* BACKGROUND GRID PREMIUM */
+            background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+            background-size: 30px 30px;
+        }
+        
+        .container { max-width: 1500px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
         /* Header */
-        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; }
+        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.2s; border: none; }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; outline: none; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--glow-color); }
+        .btn-primary:hover { opacity: 0.95; transform: translateY(-3px); box-shadow: 0 8px 25px var(--glow-color); }
         .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
         .btn-outline:hover { background: var(--hover-bg); }
-        .btn-icon { padding: 10px; border-radius: 12px; background: var(--hover-bg); color: var(--text-main); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-        .btn-icon:hover { background: var(--border); }
+        .btn-icon { padding: 10px; border-radius: 12px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .btn-icon:hover { background: var(--hover-bg); transform: scale(1.05); }
         .btn-danger { background: var(--danger); color: white; border: none; }
         .btn-danger:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2); }
 
         /* Toast Notification */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; animation: slideInRight 0.4s forwards; color: #0f172a; font-weight: 500; font-size: 14px; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* Empty State */
-        #empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 65vh; text-align: center; animation: fadeInUp 0.5s ease-out; }
-        .step-card { background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: var(--card-shadow); width: 230px; text-align: left; border: 1px solid var(--border); }
-        .step-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        /* --- MUKA DEPAN (EMPTY STATE) PREMIUM --- */
+        #empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; position: relative; }
+        
+        /* Kesan Cahaya (Glow) di belakang ikon */
+        .hero-icon-wrapper { position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 25px; animation: fadeInUp 0.6s ease-out; }
+        .hero-icon-glow { position: absolute; width: 100px; height: 100px; background: var(--accent); filter: blur(40px); opacity: 0.4; border-radius: 50%; animation: pulseGlow 3s infinite alternate ease-in-out; z-index: -1; }
+        @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.3; } 100% { transform: scale(1.3); opacity: 0.6; } }
+        
+        /* Teks Bercerun */
+        .gradient-text { font-size: 38px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 15px; background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeInUp 0.7s ease-out; }
+        .hero-subtitle { color: var(--text-muted); max-width: 500px; margin: 0 0 35px; line-height: 1.7; font-size: 16px; animation: fadeInUp 0.8s ease-out; }
 
-        /* Layout Utama */
+        /* Butang Tengah Gergasi */
+        .btn-hero-upload { padding: 16px 32px; font-size: 16px; border-radius: 16px; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
+        
+        /* Kad Terapung */
+        .steps-container { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; perspective: 1000px; }
+        .step-card { 
+            background: var(--card-bg); padding: 30px 25px; border-radius: 24px; box-shadow: var(--card-shadow); width: 260px; text-align: left; 
+            border: 1px solid var(--border); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s forwards;
+            position: relative; overflow: hidden;
+        }
+        /* Staggered animation */
+        .step-card:nth-child(1) { animation-delay: 0.4s; }
+        .step-card:nth-child(2) { animation-delay: 0.6s; }
+        .step-card:nth-child(3) { animation-delay: 0.8s; }
+
+        .step-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px -15px var(--glow-color); border-color: var(--accent); }
+        .step-card-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; transition: 0.3s; }
+        .step-card:hover .step-card-icon { transform: scale(1.1) rotate(5deg); }
+        .step-card h4 { margin: 0 0 8px; font-size: 16px; color: var(--text-main); font-weight: 700; }
+        .step-card p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+        /* --- DASHBOARD --- */
         .dashboard-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
         /* Mini KPI Sidebar */
         .mini-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .mini-kpi-card { background: var(--hover-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 8px; }
-        .mini-kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); border-color: var(--accent); }
+        .mini-kpi-card { background: var(--hover-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; gap: 8px; }
+        .mini-kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); border-color: var(--accent); }
         .mini-kpi-header { display: flex; justify-content: space-between; align-items: center; }
         .mini-kpi-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .mini-kpi-card h3 { margin: 0; font-size: 24px; color: var(--text-main); font-weight: 700; }
@@ -82,8 +121,8 @@
 
         /* Item Sidebar Project */
         .project-item-sidebar { border: 1px solid var(--border); border-radius: 16px; padding: 12px 15px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; background: var(--card-bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .project-item-sidebar:hover { border-color: var(--accent); }
-        .project-item-sidebar.active { border-color: var(--accent); background: var(--hover-bg); box-shadow: inset 3px 0 0 var(--accent); }
+        .project-item-sidebar:hover { border-color: var(--accent); transform: translateX(5px); }
+        .project-item-sidebar.active { border-color: var(--accent); background: var(--hover-bg); box-shadow: inset 4px 0 0 var(--accent); }
         .proj-name { font-size: 13px; color: var(--text-main); line-height: 1.4; font-weight: 600; word-break: break-word; }
         .btn-delete-proj { color: var(--danger); background: transparent; border: none; cursor: pointer; opacity: 0.5; padding: 5px; border-radius: 8px; transition: 0.2s; }
         .btn-delete-proj:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
@@ -96,6 +135,7 @@
         .custom-legend::-webkit-scrollbar { width: 6px; }
         .custom-legend::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
         .legend-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; font-size: 12px; margin-bottom: 4px; background: var(--hover-bg); }
+        .legend-item:hover { background: var(--card-bg); border: 1px solid var(--border); transform: translateX(2px); transition: 0.2s; }
         .legend-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; min-width: 0; }
         .legend-color { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
         .legend-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); font-weight: 500; }
@@ -104,18 +144,17 @@
         /* Table */
         .table-container { background: var(--card-bg); padding: 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); min-width: 0; overflow: hidden; transition: 0.3s; }
         .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 300px; border: 1px solid var(--border); transition: 0.2s; }
-        .search-box:focus-within { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .search-box:focus-within { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px var(--glow-color); }
         .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
 
         .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px; }
         th { text-align: left; padding: 14px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        
         td { padding: 16px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); overflow-wrap: break-word; line-height: 1.5; font-weight: 500; }
         
-        /* Glassmorphism for Actions */
-        .glass-badge { background: rgba(226, 232, 240, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap; }
-        [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05); color: #f8fafc; }
+        /* Glassmorphism Badges */
+        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap; }
+        [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05); }
         
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 80px; letter-spacing: 0.3px; white-space: nowrap; }
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
@@ -123,80 +162,41 @@
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
         .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
 
-        .pulse-dot { display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeInUp 0.4s ease-out forwards; }
 
-        /* MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(4px); }
-        .modal-overlay.show { display: flex; opacity: 1; }
+        /* MODALS */
+        .modal-overlay, .modal-overlay-custom { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.show, .modal-overlay-custom.show { display: flex; opacity: 1; }
+        
         .modal-container { background: var(--card-bg); width: 90%; max-width: 850px; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 85vh; transform: scale(0.95); transition: transform 0.3s ease; border: 1px solid var(--border); }
         .modal-overlay.show .modal-container { transform: scale(1); }
         .modal-header { padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; width: 32px; height: 32px; border-radius: 50%; color: white; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
-        .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+        .modal-close:hover { background: rgba(255,255,255,0.4); transform: rotate(90deg); }
         .modal-body { padding: 30px; overflow-y: auto; background: var(--bg); flex-grow: 1; }
         .modal-task-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 15px 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 20px; transition: 0.2s; }
+        .modal-task-card:hover { border-color: var(--accent); box-shadow: 0 4px 12px var(--glow-color); transform: translateX(4px); }
         .modal-task-badge { width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
         .modal-task-info { flex-grow: 1; min-width: 0; }
         .modal-task-info h4 { margin: 0 0 8px; font-size: 14px; color: var(--text-main); line-height: 1.4; word-break: break-word; }
         .modal-task-meta { display: flex; gap: 15px; font-size: 11px; align-items: center; flex-wrap: wrap; color: var(--text-muted); }
         .modal-footer { padding: 15px 30px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
 
-        /* BARU: GAYA MODAL HAPUS TERSUAI (Tengah + Animasi) */
-        .modal-overlay-custom {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-bg); /* Menggunakan blur modal sedia ada */
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 2000; /* Letak di atas segalanya */
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay-custom.show { display: flex; opacity: 1; }
-
-        .modal-card-custom {
-            background: var(--card-bg); width: 90%; max-width: 400px;
-            border-radius: 20px; padding: 30px; text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid var(--border);
-            transform: scale(0.9); transition: transform 0.3s ease;
-        }
-        .modal-overlay-custom.show .modal-card-custom { transform: scale(1); } /* Animasi scaleIn */
-
-        .modal-card-icon-area { margin-bottom: 20px; }
-        .icon-big { width: 50px; height: 50px; stroke-width: 1.5; }
-        .modal-card-custom h3 { margin: 0 0 10px; font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .modal-card-custom p { margin: 0 0 25px; font-size: 14px; color: var(--text-muted); line-height: 1.5; }
-        
+        /* Delete Modal */
+        .modal-overlay-custom { z-index: 2000; }
+        .modal-card-custom { background: var(--card-bg); width: 90%; max-width: 400px; border-radius: 24px; padding: 35px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-overlay-custom.show .modal-card-custom { transform: scale(1); }
+        .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
+        .modal-card-custom h3 { margin: 0 0 10px; font-size: 20px; font-weight: 700; color: var(--text-main); }
+        .modal-card-custom p { margin: 0 0 25px; font-size: 14px; color: var(--text-muted); line-height: 1.6; }
         .modal-card-footer { display: flex; gap: 15px; justify-content: center; }
 
         /* RESPONSIVE DESIGN */
-        @media (max-width: 1024px) {
-            .dashboard-layout { grid-template-columns: 1fr; }
-            .charts-grid { grid-template-columns: 1fr; }
-            .sidebar .card { padding: 15px; }
-            #empty-state .step-card { width: 100%; max-width: 300px; }
-        }
-        @media (max-width: 768px) {
-            .header-main { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .header-actions { width: 100%; justify-content: space-between; }
-            .table-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .search-box { width: 100%; }
-        }
-
-        /* PRINT STYLES */
-        @media print {
-            body { background: white; color: black; }
-            .no-print, .sidebar, .header-actions, .search-box { display: none !important; }
-            .dashboard-layout { grid-template-columns: 1fr; display: block; }
-            .charts-grid { display: block; }
-            .chart-box { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc; box-shadow: none; margin-bottom: 20px; height: auto !important; }
-            .table-container { box-shadow: none; border: none; padding: 0; }
-            table { border: 1px solid #ccc; }
-            th, td { border-bottom: 1px solid #eee; color: black; }
-            canvas { max-height: 300px !important; }
-        }
+        @media (max-width: 1024px) { .dashboard-layout, .charts-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .header-main { flex-direction: column; align-items: flex-start; } .header-actions, .search-box { width: 100%; justify-content: space-between; } .table-header { flex-direction: column; align-items: flex-start; gap: 15px; } }
+        @media print { body { background: white; color: black; } .no-print, .sidebar, .header-actions, .search-box { display: none !important; } .dashboard-layout, .charts-grid { display: block; grid-template-columns: 1fr; } .chart-box { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; margin-bottom: 20px; height: auto !important; } .table-container { box-shadow: none; border: none; padding: 0; } table { border: 1px solid #ccc; } th, td { border-bottom: 1px solid #eee; color: black; } canvas { max-height: 300px !important; } }
     </style>
 </head>
 <body>
@@ -208,8 +208,8 @@
         <div style="display:flex; align-items:center; gap:15px;">
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
-                <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 700;">Garis Masa Projek PNET</h1>
-                <span style="font-size: 12px; color: var(--text-muted);">Pemantauan Jadual & Prestasi</span>
+                <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Pemantauan Jadual & Prestasi</span>
             </div>
         </div>
         <div class="header-actions">
@@ -217,7 +217,7 @@
                 <i data-lucide="moon"></i>
             </button>
             <button class="btn btn-outline" onclick="window.print()" id="printBtn" style="display: none;">
-                <i data-lucide="printer" style="width:16px;"></i> Cetak Laporan
+                <i data-lucide="printer" style="width:16px;"></i> Cetak
             </button>
             <label class="btn btn-primary" id="headerUploadBtn">
                 <i data-lucide="file-up" style="width:16px;"></i> Muat Naik Excel
@@ -227,25 +227,34 @@
     </header>
 
     <div id="empty-state">
-        <i data-lucide="layout-dashboard" style="width:60px; height:60px; color:var(--accent); margin-bottom:20px; stroke-width:1.5;"></i>
-        <h2 style="font-size: 26px; color: var(--text-main); margin: 0 0 10px;">Papan Pemuka Sedia Digunakan</h2>
-        <p style="color: var(--text-muted); max-width: 450px; margin: 0 0 40px; line-height: 1.6; font-size: 14px;">Sistem ini membantu anda menjejak prestasi, kelewatan, dan status projek secara visual. Data anda tersimpan secara lokal dan selamat.</p>
+        <div class="hero-icon-wrapper">
+            <div class="hero-icon-glow"></div>
+            <i data-lucide="layers" style="width:75px; height:75px; color:var(--accent); stroke-width:1.5;"></i>
+        </div>
         
-        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <h2 class="gradient-text">Papan Pemuka Sedia Digunakan</h2>
+        <p class="hero-subtitle">Platform berpusat untuk menjejak prestasi, mengenal pasti kelewatan, dan menganalisis status projek secara visual tanpa menggunakan pangkalan data luar.</p>
+        
+        <label class="btn btn-primary btn-hero-upload">
+            <i data-lucide="upload-cloud" style="width:20px; height:20px;"></i> Mula Muat Naik Data Excel
+            <input type="file" id="fileInputCenter" hidden accept=".xlsx, .xls">
+        </label>
+
+        <div class="steps-container">
             <div class="step-card">
-                <div class="step-card-icon" style="background: rgba(59,130,246,0.1); color: var(--accent);"><i data-lucide="table-2"></i></div>
-                <h4 style="margin: 0 0 5px; font-size: 14px; color: var(--text-main);">1. Format Data</h4>
-                <p style="margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5;">Fail Excel perlu mengandungi kolum Jangkaan dan Sebenar.</p>
+                <div class="step-card-icon" style="background: rgba(59,130,246,0.1); color: var(--accent);"><i data-lucide="file-spreadsheet"></i></div>
+                <h4>1. Format Data</h4>
+                <p>Pastikan fail Excel anda mengandungi kolum Jangkaan dan Sebenar untuk ketepatan sistem.</p>
             </div>
             <div class="step-card">
-                <div class="step-card-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);"><i data-lucide="upload-cloud"></i></div>
-                <h4 style="margin: 0 0 5px; font-size: 14px; color: var(--text-main);">2. Muat Naik</h4>
-                <p style="margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5;">Klik butang biru di atas. Data akan disimpan dalam browser.</p>
+                <div class="step-card-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);"><i data-lucide="zap"></i></div>
+                <h4>2. Pemprosesan Pantas</h4>
+                <p>Sistem membaca data secara lokal terus dari pelayar (browser) anda tanpa melengahkan masa.</p>
             </div>
             <div class="step-card">
                 <div class="step-card-icon" style="background: rgba(16,185,129,0.1); color: var(--success);"><i data-lucide="pie-chart"></i></div>
-                <h4 style="margin: 0 0 5px; font-size: 14px; color: var(--text-main);">3. Analisis & Cetak</h4>
-                <p style="margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5;">Jana carta automatik dan cetak laporan PDF untuk mesyuarat.</p>
+                <h4>3. Analisis & Eksport</h4>
+                <p>Jana carta interaktif secara automatik dan simpan paparan sebagai laporan PDF untuk mesyuarat.</p>
             </div>
         </div>
     </div>
@@ -254,8 +263,8 @@
         <div class="dashboard-layout">
             <aside class="sidebar">
                 <div class="card" style="text-align:center; padding: 30px 20px;">
-                    <span style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing: 1px;">KEMAJUAN KESELURUHAN</span>
-                    <h1 id="global-percent" style="font-size:56px; margin:10px 0; color:var(--accent); font-weight: 700;">0%</h1>
+                    <span style="font-size:11px; font-weight:800; color:var(--text-muted); letter-spacing: 1px;">KEMAJUAN KESELURUHAN</span>
+                    <h1 id="global-percent" style="font-size:64px; margin:10px 0; color:var(--accent); font-weight: 800; letter-spacing: -2px;">0%</h1>
                 </div>
 
                 <div class="mini-kpi-grid" style="margin-bottom: 20px;">
@@ -280,10 +289,10 @@
                         </div>
                         <h3 id="kpi-track">0</h3>
                     </div>
-                    <div class="mini-kpi-card" onclick="openModal('LEWAT')">
+                    <div class="mini-kpi-card" onclick="openModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);">
                         <div class="mini-kpi-header">
                             <span style="color:var(--danger);">Lewat</span>
-                            <div class="mini-kpi-icon" style="background:rgba(239,68,68,0.1); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div>
+                            <div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div>
                         </div>
                         <h3 id="kpi-delay" style="color:var(--danger);">0</h3>
                     </div>
@@ -291,12 +300,12 @@
 
                 <div class="card" style="padding: 20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Fail Projek</h3>
-                        <span id="proj-count" style="background:var(--hover-bg); color:var(--text-muted); font-size:10px; padding:2px 6px; border-radius:10px; font-weight:700; border: 1px solid var(--border);">0</span>
+                        <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:800; letter-spacing: 0.5px;">Fail Projek</h3>
+                        <span id="proj-count" style="background:var(--hover-bg); color:var(--text-muted); font-size:10px; padding:3px 8px; border-radius:10px; font-weight:800; border: 1px solid var(--border);">0</span>
                     </div>
                     <div id="project-list-sidebar" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
                     
-                    <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 10px; border-style: dashed;">
+                    <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 15px; border-style: dashed; padding: 12px;">
                         <i data-lucide="plus" style="width:16px;"></i> Tambah Projek
                         <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls">
                     </label>
@@ -306,7 +315,7 @@
             <main>
                 <div class="charts-grid">
                     <div class="chart-box">
-                        <h4 style="margin:0 0 15px; font-size: 14px; color: var(--text-main); display:flex; align-items:center; gap:8px;">
+                        <h4 style="margin:0 0 15px; font-size: 15px; color: var(--text-main); display:flex; align-items:center; gap:8px; font-weight: 700;">
                             <i data-lucide="pie-chart" style="width:18px; color:var(--accent);"></i> Tempoh Mengikut Topik
                         </h4>
                         <div style="flex-grow: 1; position: relative; max-height: 200px;">
@@ -316,7 +325,7 @@
                     </div>
                     
                     <div class="chart-box">
-                        <h4 style="margin:0 0 15px; font-size: 14px; color: var(--text-main); display:flex; align-items:center; gap:8px;">
+                        <h4 style="margin:0 0 15px; font-size: 15px; color: var(--text-main); display:flex; align-items:center; gap:8px; font-weight: 700;">
                             <i data-lucide="bar-chart-3" style="width:18px; color:var(--danger);"></i> Kelewatan Mengikut Unit (Hari)
                         </h4>
                         <div style="flex-grow: 1; position: relative;">
@@ -328,8 +337,8 @@
                 <div class="table-container">
                     <div class="table-header">
                         <div>
-                            <h3 id="active-title" style="margin:0 0 5px; font-size: 16px; color: var(--text-main);">Butiran Aktiviti</h3>
-                            <span style="font-size: 12px; color: var(--text-muted);">Semua fasa dan tugasan bagi projek semasa</span>
+                            <h3 id="active-title" style="margin:0 0 5px; font-size: 16px; color: var(--text-main); font-weight: 700;">Butiran Aktiviti</h3>
+                            <span style="font-size: 13px; color: var(--text-muted);">Semua fasa dan tugasan bagi projek semasa</span>
                         </div>
                         <div class="search-box no-print">
                             <i data-lucide="search" style="width:16px; height:16px; color:var(--text-muted);"></i>
@@ -373,14 +382,12 @@
 
 <div class="modal-overlay-custom" id="delete-confirm-modal">
     <div class="modal-card-custom">
-        <div class="modal-card-icon-area">
-            <i data-lucide="trash-2" class="icon-big icon-danger"></i>
-        </div>
+        <i data-lucide="trash-2" class="icon-big"></i>
         <h3>Padam Rekod Projek?</h3>
-        <p id="delete-modal-message">Adakah anda pasti mahu memadam rekod untuk <strong id="delete-project-name"></strong>?</p>
+        <p id="delete-modal-message">Adakah anda pasti mahu memadam rekod untuk <strong id="delete-project-name" style="color:var(--text-main);"></strong>?</p>
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="cancelDeleteProject()">Batal</button>
-            <button class="btn btn-danger" onclick="confirmDeleteProject()">Ya, Hapus</button>
+            <button class="btn btn-danger" onclick="confirmDeleteProject()">Ya, Padam</button>
         </div>
     </div>
 </div>
@@ -392,9 +399,9 @@
     let projectsMap = {};
     let activeId = null;
     let topicChart, unitChart;
-    const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0284c7', '#0ea5e9'];
+    const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // 1. SISTEM TEMA (DARK MODE)
+    // 1. SISTEM TEMA
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute("data-theme");
         const newTheme = currentTheme === "dark" ? "light" : "dark";
@@ -405,10 +412,10 @@
         if(newTheme === 'dark') { themeBtnIcon.setAttribute('data-lucide', 'sun'); } 
         else { themeBtnIcon.setAttribute('data-lucide', 'moon'); }
         lucide.createIcons();
-        if(activeId) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec)); // Re-render colors
+        if(activeId) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
     }
 
-    // 2. SISTEM RALAT (TOAST)
+    // 2. TOAST
     function showToast(message) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -419,7 +426,7 @@
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
     }
 
-    // 3. INISIALISASI AWAL
+    // 3. INISIALISASI
     window.onload = () => {
         const savedTheme = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", savedTheme);
@@ -435,18 +442,21 @@
                     activeId = parsed.active || Object.keys(projectsMap)[0];
                     updateUI();
                 }
-            } catch(e) { console.error("Ralat membaca data lama:", e); }
+            } catch(e) { console.error(e); }
         }
     };
 
     function saveToLocalStorage() {
         try { localStorage.setItem("pnet_projects", JSON.stringify({ map: projectsMap, active: activeId })); } 
-        catch(e) { showToast("Storan penuh! Sila padam projek lama untuk menambah fail baharu."); }
+        catch(e) { showToast("Storan penuh! Sila padam projek lama."); }
     }
 
-    // 4. PENGENDALIAN FAIL EXCEL
-    document.getElementById('fileInputHeader').addEventListener('change', handleFileUpload);
-    document.getElementById('fileInputSidebar').addEventListener('change', handleFileUpload);
+    // 4. MUAT NAIK FAIL (Dihubungkan dengan 3 butang upload)
+    const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputCenter'];
+    fileInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('change', handleFileUpload);
+    });
 
     function handleFileUpload(e) {
         const file = e.target.files[0];
@@ -466,13 +476,12 @@
                 activeId = id;
                 saveToLocalStorage();
                 updateUI();
-            } catch(error) { showToast("Ralat membaca fail. Pastikan format jadual adalah betul."); }
+            } catch(error) { showToast("Ralat membaca fail jadual."); }
         };
         reader.readAsBinaryString(file);
         e.target.value = ''; 
     }
 
-    // PEMBAIKAN: Tapisan Tajuk Sub (Elak Kotak Terkeluar)
     function processData(rows) {
         let result = []; let currentSec = "Umum";
         rows.forEach(row => {
@@ -497,9 +506,7 @@
         if(parts.length < 3) return { label: 'MENUNGGU', days: 0 };
         const due = new Date(parts[2], parts[1]-1, parts[0]);
         const today = new Date(); today.setHours(0,0,0,0);
-        
-        const diffTime = due - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+        const diffDays = Math.ceil((due - today) / (1000 * 3600 * 24));
 
         if (diffDays < 0) return { label: `LEWAT (${Math.abs(diffDays)} HARI)`, days: Math.abs(diffDays) };
         if (diffDays >= 0 && diffDays <= 3) return { label: 'HAMPIR TAMAT', days: 0 };
@@ -531,30 +538,30 @@
 
     function renderCharts(tasks) {
         const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-        const textColor = isDark ? "#f1f5f9" : "#334155";
+        const textColor = isDark ? "#f8fafc" : "#0f172a";
+
         const topics = {}; tasks.forEach(t => topics[t.section] = (topics[t.section] || 0) + 1);
         const topicLabels = Object.keys(topics); const topicData = Object.values(topics);
 
         if (topicChart) topicChart.destroy();
         topicChart = new Chart(document.getElementById('topicChart'), {
             type: 'doughnut', 
-            data: { labels: topicLabels, datasets: [{ data: topicData, backgroundColor: chartColors, borderWidth: 2, borderColor: isDark ? '#1e293b' : '#fff' }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false }, datalabels: { formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let p = ((val * 100) / sum).toFixed(0); return p > 4 ? p + "%" : ""; }, color: '#fff', font: { weight: 'bold', size: 10 } } } }
+            data: { labels: topicLabels, datasets: [{ data: topicData, backgroundColor: chartColors, borderWidth: 3, borderColor: isDark ? '#1e293b' : '#fff', hoverOffset: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let p = ((val * 100) / sum).toFixed(0); return p > 4 ? p + "%" : ""; }, color: '#fff', font: { weight: 'bold', size: 11 } } } }
         });
 
         let legendHTML = '<div class="custom-legend">';
         topicLabels.forEach((label, i) => {
             const color = chartColors[i % chartColors.length];
-            legendHTML += `<div class="legend-item" title="${label}"><div class="legend-left"><span class="legend-color" style="background:${color}"></span><span class="legend-text">${label}</span></div><span class="legend-val">${topicData[i]}</span></div>`;
+            legendHTML += `<div class="legend-item" title="${label}"><div class="legend-left"><span class="legend-color" style="background:${color}; box-shadow: 0 0 5px ${color}80;"></span><span class="legend-text">${label}</span></div><span class="legend-val">${topicData[i]}</span></div>`;
         });
-        legendHTML += '</div>';
-        document.getElementById('customLegendArea').innerHTML = legendHTML;
+        document.getElementById('customLegendArea').innerHTML = legendHTML + '</div>';
 
         const units = {}; tasks.forEach(t => { if(t.days > 0) units[t.unit] = (units[t.unit] || 0) + t.days; });
         if (unitChart) unitChart.destroy();
         unitChart = new Chart(document.getElementById('unitChart'), {
-            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: 'Hari Kelewatan', data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 6, maxBarThickness: 30 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " hari", font: { weight: 'bold', size: 11 }, color: textColor } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: textColor } } } }
+            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: 'Hari Kelewatan', data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " hari", font: { weight: '800', size: 12 }, color: textColor } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 12, weight: '500' }, color: isDark ? '#cbd5e1' : '#475569' } } } }
         });
     }
 
@@ -563,18 +570,18 @@
         tbody.innerHTML = "";
         data.forEach(item => {
             if (item.isSec) { 
-                tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:700; font-size:12px; text-transform:uppercase; border-left: 3px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:14px; height:14px; color:var(--accent);"></i> <span style="white-space:normal; word-break:break-word;">${item.title}</span></div></td></tr>`; 
+                tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:800; font-size:12px; text-transform:uppercase; border-left: 4px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:16px; color:var(--accent);"></i> <span style="white-space:normal; word-break:break-word;">${item.title}</span></div></td></tr>`; 
             } else {
                 const s = item.status.toLowerCase();
                 const cls = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
                 const badgeContent = item.status === 'HAMPIR TAMAT' ? `<span class="pulse-dot"></span> HAMPIR TAMAT` : item.status;
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--text-muted);">${item.bil}</td>
-                    <td style="color:var(--text-main);">${item.aktiviti}</td>
+                    <td style="font-weight:600; color:var(--text-main); word-break: break-word;">${item.aktiviti}</td>
                     <td><span class="glass-badge">${item.unit}</span></td>
                     <td style="color:var(--text-muted);">${item.tempoh}</td>
-                    <td style="color:var(--text-main);">${item.j}</td>
-                    <td style="color:${item.s ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td>
+                    <td style="font-weight:600; color:var(--text-main);">${item.j}</td>
+                    <td style="font-weight:600; color:${item.s ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td>
                     <td style="text-align:center;"><span class="badge status-${cls}">${badgeContent}</span></td>
                 </tr>`;
             }
@@ -590,7 +597,9 @@
             container.innerHTML += `
             <div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();">
                 <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
-                    <i data-lucide="file-spreadsheet" style="width:16px; height:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'}; flex-shrink:0;"></i>
+                    <div style="padding: 6px; border-radius: 8px; background: ${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}">
+                        <i data-lucide="file-spreadsheet" style="width:16px; height:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'}; flex-shrink:0;"></i>
+                    </div>
                     <span class="proj-name">${projectsMap[id].name}</span>
                 </div>
                 <button class="btn-delete-proj" onclick="showDeleteModal('${id}', event)" title="Padam Projek"><i data-lucide="trash-2" style="width:14px; height:14px;"></i></button>
@@ -599,80 +608,70 @@
         lucide.createIcons();
     }
 
-    // 5. SISTEM PENGESAHAN HAPUS TERSUAI (Popup Tengah + Animasi)
     let projectIdToDelete = null;
-
     function showDeleteModal(id, event) {
-        event.stopPropagation(); // Elak klik sidebar tembus
+        event.stopPropagation();
         projectIdToDelete = id;
-        const projectName = projectsMap[id].name;
-
-        // Masukkan nama projek ke dalam mesej modal
-        document.getElementById('delete-project-name').innerText = projectName;
-        
-        // Tunjukkan modal
+        document.getElementById('delete-project-name').innerText = projectsMap[id].name;
         const modal = document.getElementById('delete-confirm-modal');
-        modal.style.display = 'flex';
-        lucide.createIcons(); // Jana ikon semula untuk modal
-        setTimeout(() => modal.classList.add('show'), 10);
+        modal.style.display = 'flex'; lucide.createIcons(); setTimeout(() => modal.classList.add('show'), 10);
     }
-
     function cancelDeleteProject() {
         const modal = document.getElementById('delete-confirm-modal');
-        modal.classList.remove('show');
-        setTimeout(() => modal.style.display = 'none', 300);
-        projectIdToDelete = null; // Reset ID
+        modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300);
+        projectIdToDelete = null;
     }
-
-    // PEMBAIKAN: Fungsi hapus asal yang diubah suai
     function confirmDeleteProject() {
-        if (!projectIdToDelete) return; // Lindungi jika fungsi dipanggil salah
-
+        if (!projectIdToDelete) return;
         delete projectsMap[projectIdToDelete];
         const remainingKeys = Object.keys(projectsMap);
-        
-        // Tutup modal
         cancelDeleteProject();
-
-        if(remainingKeys.length === 0) {
-            activeId = null;
-            localStorage.removeItem("pnet_projects");
-            location.reload(); // Reset paparan ke Empty State
-        } else {
-            activeId = remainingKeys[0];
-            saveToLocalStorage();
-            updateUI();
-            showToast(`Rekod projek telah dihapus.`); // Pop-up pengesahan
-        }
+        if(remainingKeys.length === 0) { activeId = null; localStorage.removeItem("pnet_projects"); location.reload(); } 
+        else { activeId = remainingKeys[0]; saveToLocalStorage(); updateUI(); showToast(`Projek dihapus.`); }
     }
 
-    // Utiliti Modal Lain
     function openModal(type) {
         if(!activeId) return;
         const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
         let filtered = [], headerBg = '', title = '', iconName = '';
+
         if(type === 'TUGASAN') { filtered = tasks; headerBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; iconName = 'clipboard-list'; } 
         else if(type === 'SELESAI') { filtered = tasks.filter(t => t.status === 'SELESAI'); headerBg = 'var(--success)'; title = 'Aktiviti Selesai'; iconName = 'check-circle-2'; } 
         else if(type === 'MENGIKUT JADUAL') { filtered = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); headerBg = 'var(--warning)'; title = 'Mengikut Jadual'; iconName = 'clock'; } 
         else if(type === 'LEWAT') { filtered = tasks.filter(t => t.status.includes('LEWAT')); headerBg = 'var(--danger)'; title = 'Aktiviti Lewat'; iconName = 'alert-triangle'; }
+
         document.getElementById('modal-header').style.background = headerBg;
         document.getElementById('modal-title').innerHTML = `<i data-lucide="${iconName}" style="width:18px;"></i> ${p.name} - ${title}`;
         const body = document.getElementById('modal-body'); body.innerHTML = '';
-        if(filtered.length === 0) { body.innerHTML = '<div style="text-align:center; padding: 50px; color: var(--text-muted);"><i data-lucide="inbox" style="width:40px; height:40px; margin-bottom:10px;"></i><br>Tiada rekod.</div>'; } 
+
+        if(filtered.length === 0) { body.innerHTML = '<div style="text-align:center; padding: 60px 20px; color: var(--text-muted);"><i data-lucide="inbox" style="width:48px; height:48px; margin-bottom:15px; opacity:0.5;"></i><br><h3 style="margin:0; font-size:16px;">Tiada Rekod Ditemui</h3><p style="margin:5px 0 0; font-size:13px;">Tiada aktiviti dalam kategori ini untuk masa sekarang.</p></div>'; } 
         else {
             filtered.forEach(t => {
                 let bText = '-', bBg = 'var(--hover-bg)', bCol = 'var(--text-muted)';
                 if(t.status === 'SELESAI' && t.j && t.s) {
                     const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s);
                     if(dj && ds) { const diff = Math.ceil((ds - dj)/(1000*3600*24)); bText = diff > 0 ? `+${diff}H` : `${diff}H`; bBg = diff > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; bCol = diff > 0 ? 'var(--danger)' : 'var(--success)'; }
-                } else if(t.status.includes('LEWAT')) { bText = `+${t.days}H`; bBg = 'rgba(239,68,68,0.1)'; bCol = 'var(--danger)'; } 
-                else if(t.status === 'HAMPIR TAMAT') { bText = '!!'; bBg = 'rgba(245,158,11,0.1)'; bCol = 'var(--warning)'; } 
-                else if(t.status === 'MENGIKUT JADUAL' || t.status === 'MENUNGGU') { bText = '0'; bBg = 'var(--hover-bg)'; bCol = 'var(--text-muted)'; }
-                body.innerHTML += `<div class="modal-task-card"><div class="modal-task-badge" style="background:${bBg}; color:${bCol}">${bText}</div><div class="modal-task-info"><h4>${t.aktiviti}</h4><div class="modal-task-meta"><span class="glass-badge">${t.unit.toUpperCase()}</span><span>JANGKAAN: <b style="color:var(--text-main);">${t.j || '-'}</b></span><span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span></div></div></div>`;
+                } else if(t.status.includes('LEWAT')) { bText = `+${t.days}H`; bBg = 'rgba(239,68,68,0.1)'; bCol = 'var(--danger)';
+                } else if(t.status === 'HAMPIR TAMAT') { bText = '!!'; bBg = 'rgba(245,158,11,0.1)'; bCol = 'var(--warning)';
+                } else if(t.status === 'MENGIKUT JADUAL' || t.status === 'MENUNGGU') { bText = '0'; bBg = 'var(--hover-bg)'; bCol = 'var(--text-muted)'; }
+
+                body.innerHTML += `
+                    <div class="modal-task-card">
+                        <div class="modal-task-badge" style="background:${bBg}; color:${bCol}">${bText}</div>
+                        <div class="modal-task-info">
+                            <h4>${t.aktiviti}</h4>
+                            <div class="modal-task-meta">
+                                <span class="glass-badge">${t.unit.toUpperCase()}</span>
+                                <span>JANGKAAN: <b style="color:var(--text-main);">${t.j || '-'}</b></span>
+                                <span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span>
+                            </div>
+                        </div>
+                    </div>`;
             });
         }
         const modal = document.getElementById('details-modal'); modal.style.display = 'flex'; lucide.createIcons(); setTimeout(() => modal.classList.add('show'), 10);
     }
+
     function closeModal() { const modal = document.getElementById('details-modal'); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
     function parseDateHelper(dStr) { if(!dStr) return null; const parts = dStr.split('/'); if(parts.length < 3) return null; return new Date(parts[2], parts[1]-1, parts[0]); }
     document.getElementById('searchInput').addEventListener('input', function(e) {
@@ -680,8 +679,8 @@
         document.querySelectorAll("#activityTable tbody tr").forEach(row => { if (row.cells.length === 1) return; row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none"; });
     });
     function animateNum(id, end, suffix = '') {
-        let start = 0; const obj = document.getElementById(id); const duration = 1000; const startTS = performance.now();
-        function step(ts) { const prog = Math.min((ts - startTS) / duration, 1); obj.innerHTML = Math.floor(prog * (end - start) + start) + suffix; if (prog < 1) requestAnimationFrame(step); } requestAnimationFrame(step);
+        let start = 0; const obj = document.getElementById(id); const duration = 1200; const startTS = performance.now();
+        function step(ts) { const prog = Math.min((ts - startTS) / duration, 1); const easeOut = 1 - Math.pow(1 - prog, 3); obj.innerHTML = Math.floor(easeOut * (end - start) + start) + suffix; if (prog < 1) requestAnimationFrame(step); } requestAnimationFrame(step);
     }
     function formatExcelDate(v) {
         if (!v) return "";
