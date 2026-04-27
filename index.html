@@ -19,23 +19,22 @@
     <style>
         * { box-sizing: border-box; }
 
-        /* VARIABLES (Untuk Dark Mode/Light Mode & High Contrast) */
+        /* VARIABLES (Light & Dark Mode High Contrast) */
         :root {
             --primary: #0f172a; --accent: #3b82f6; --success: #10b981;
             --warning: #f59e0b; --danger: #ef4444; 
             --bg: #f1f5f9; --card-bg: #ffffff; 
-            --text-main: #0f172a; --text-muted: #475569; /* Diterangkan sedikit */
+            --text-main: #0f172a; --text-muted: #475569; 
             --border: #e2e8f0; --hover-bg: #f8fafc;
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
             --modal-bg: rgba(15, 23, 42, 0.6);
         }
 
-        /* MOD GELAP - DENGAN KONTRAS LEBIH TINGGI */
         [data-theme="dark"] {
             --primary: #ffffff; --accent: #60a5fa; --success: #34d399;
             --warning: #fcd34d; --danger: #fca5a5; 
             --bg: #0f172a; --card-bg: #1e293b; 
-            --text-main: #ffffff; --text-muted: #cbd5e1; /* Jauh lebih cerah dari sebelum ini */
+            --text-main: #ffffff; --text-muted: #cbd5e1; 
             --border: #475569; --hover-bg: #334155;
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
             --modal-bg: rgba(0, 0, 0, 0.8);
@@ -55,6 +54,8 @@
         .btn-outline:hover { background: var(--hover-bg); }
         .btn-icon { padding: 10px; border-radius: 12px; background: var(--hover-bg); color: var(--text-main); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
         .btn-icon:hover { background: var(--border); }
+        .btn-danger { background: var(--danger); color: white; border: none; }
+        .btn-danger:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2); }
 
         /* Toast Notification */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -110,32 +111,11 @@
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px; }
         th { text-align: left; padding: 14px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
         
-        /* PEMBAIKAN TEKS TERPERAH DI SINI */
         td { padding: 16px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); overflow-wrap: break-word; line-height: 1.5; font-weight: 500; }
         
-        /* LIQUID GLASS APPLE MACBOOK STYLE UNTUK TINDAKAN */
-        .glass-badge {
-            background: rgba(226, 232, 240, 0.5); /* Warna asas kelabu cair */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8);
-            color: var(--text-main);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        /* Glassmorphism untuk Dark Mode */
-        [data-theme="dark"] .glass-badge {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            color: #f8fafc;
-        }
+        /* Glassmorphism for Actions */
+        .glass-badge { background: rgba(226, 232, 240, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap; }
+        [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05); color: #f8fafc; }
         
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 80px; letter-spacing: 0.3px; white-space: nowrap; }
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
@@ -164,6 +144,32 @@
         .modal-task-info h4 { margin: 0 0 8px; font-size: 14px; color: var(--text-main); line-height: 1.4; word-break: break-word; }
         .modal-task-meta { display: flex; gap: 15px; font-size: 11px; align-items: center; flex-wrap: wrap; color: var(--text-muted); }
         .modal-footer { padding: 15px 30px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+
+        /* BARU: GAYA MODAL HAPUS TERSUAI (Tengah + Animasi) */
+        .modal-overlay-custom {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-bg); /* Menggunakan blur modal sedia ada */
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; /* Letak di atas segalanya */
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay-custom.show { display: flex; opacity: 1; }
+
+        .modal-card-custom {
+            background: var(--card-bg); width: 90%; max-width: 400px;
+            border-radius: 20px; padding: 30px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid var(--border);
+            transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .modal-overlay-custom.show .modal-card-custom { transform: scale(1); } /* Animasi scaleIn */
+
+        .modal-card-icon-area { margin-bottom: 20px; }
+        .icon-big { width: 50px; height: 50px; stroke-width: 1.5; }
+        .modal-card-custom h3 { margin: 0 0 10px; font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .modal-card-custom p { margin: 0 0 25px; font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+        
+        .modal-card-footer { display: flex; gap: 15px; justify-content: center; }
 
         /* RESPONSIVE DESIGN */
         @media (max-width: 1024px) {
@@ -365,6 +371,20 @@
     </div>
 </div>
 
+<div class="modal-overlay-custom" id="delete-confirm-modal">
+    <div class="modal-card-custom">
+        <div class="modal-card-icon-area">
+            <i data-lucide="trash-2" class="icon-big icon-danger"></i>
+        </div>
+        <h3>Padam Rekod Projek?</h3>
+        <p id="delete-modal-message">Adakah anda pasti mahu memadam rekod untuk <strong id="delete-project-name"></strong>?</p>
+        <div class="modal-card-footer">
+            <button class="btn btn-outline" onclick="cancelDeleteProject()">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteProject()">Ya, Hapus</button>
+        </div>
+    </div>
+</div>
+
 <script>
     lucide.createIcons();
     Chart.register(ChartDataLabels);
@@ -382,11 +402,8 @@
         localStorage.setItem("pnet_theme", newTheme);
         
         const themeBtnIcon = document.querySelector('#themeBtn i');
-        if(newTheme === 'dark') {
-            themeBtnIcon.setAttribute('data-lucide', 'sun');
-        } else {
-            themeBtnIcon.setAttribute('data-lucide', 'moon');
-        }
+        if(newTheme === 'dark') { themeBtnIcon.setAttribute('data-lucide', 'sun'); } 
+        else { themeBtnIcon.setAttribute('data-lucide', 'moon'); }
         lucide.createIcons();
         if(activeId) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec)); // Re-render colors
     }
@@ -423,11 +440,8 @@
     };
 
     function saveToLocalStorage() {
-        try {
-            localStorage.setItem("pnet_projects", JSON.stringify({ map: projectsMap, active: activeId }));
-        } catch(e) {
-            showToast("Storan penuh! Sila padam projek lama untuk menambah fail baharu.");
-        }
+        try { localStorage.setItem("pnet_projects", JSON.stringify({ map: projectsMap, active: activeId })); } 
+        catch(e) { showToast("Storan penuh! Sila padam projek lama untuk menambah fail baharu."); }
     }
 
     // 4. PENGENDALIAN FAIL EXCEL
@@ -437,7 +451,6 @@
     function handleFileUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
-        
         if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
             showToast("Ralat: Sila muat naik fail berformat Excel (.xlsx atau .xls) sahaja.");
             e.target.value = ''; return;
@@ -453,30 +466,10 @@
                 activeId = id;
                 saveToLocalStorage();
                 updateUI();
-            } catch(error) {
-                showToast("Ralat membaca fail. Pastikan format jadual adalah betul.");
-            }
+            } catch(error) { showToast("Ralat membaca fail. Pastikan format jadual adalah betul."); }
         };
         reader.readAsBinaryString(file);
         e.target.value = ''; 
-    }
-
-    function deleteProject(id, event) {
-        event.stopPropagation();
-        if(confirm("Adakah anda pasti mahu memadam rekod projek ini?")) {
-            delete projectsMap[id];
-            const remainingKeys = Object.keys(projectsMap);
-            
-            if(remainingKeys.length === 0) {
-                activeId = null;
-                localStorage.removeItem("pnet_projects");
-                location.reload(); 
-            } else {
-                activeId = remainingKeys[0];
-                saveToLocalStorage();
-                updateUI();
-            }
-        }
     }
 
     // PEMBAIKAN: Tapisan Tajuk Sub (Elak Kotak Terkeluar)
@@ -488,10 +481,7 @@
             else {
                 const bilStr = String(row[0]).toLowerCase();
                 const actStr = String(row[1]).toLowerCase();
-                
-                // Tapis header berulang atau baris "A K T I V I T I"
                 if (bilStr.includes("bil") || bilStr.includes("aktiviti") || actStr.includes("dependencies") || actStr === "-") return;
-
                 const j = formatExcelDate(row[4]); const s = formatExcelDate(row[5]);
                 const status = getStatus(j, s);
                 result.push({ isSec: false, section: currentSec, bil: row[0] || "-", aktiviti: row[1] || "-", unit: row[2] || "N/A", tempoh: row[3] || "-", j, s, status: status.label, days: status.days });
@@ -542,7 +532,6 @@
     function renderCharts(tasks) {
         const isDark = document.documentElement.getAttribute("data-theme") === "dark";
         const textColor = isDark ? "#f1f5f9" : "#334155";
-
         const topics = {}; tasks.forEach(t => topics[t.section] = (topics[t.section] || 0) + 1);
         const topicLabels = Object.keys(topics); const topicData = Object.values(topics);
 
@@ -579,7 +568,6 @@
                 const s = item.status.toLowerCase();
                 const cls = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
                 const badgeContent = item.status === 'HAMPIR TAMAT' ? `<span class="pulse-dot"></span> HAMPIR TAMAT` : item.status;
-
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--text-muted);">${item.bil}</td>
                     <td style="color:var(--text-main);">${item.aktiviti}</td>
@@ -605,26 +593,71 @@
                     <i data-lucide="file-spreadsheet" style="width:16px; height:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'}; flex-shrink:0;"></i>
                     <span class="proj-name">${projectsMap[id].name}</span>
                 </div>
-                <button class="btn-delete-proj" onclick="deleteProject('${id}', event)" title="Padam Projek"><i data-lucide="trash-2" style="width:14px; height:14px;"></i></button>
+                <button class="btn-delete-proj" onclick="showDeleteModal('${id}', event)" title="Padam Projek"><i data-lucide="trash-2" style="width:14px; height:14px;"></i></button>
             </div>`;
         });
         lucide.createIcons();
     }
 
+    // 5. SISTEM PENGESAHAN HAPUS TERSUAI (Popup Tengah + Animasi)
+    let projectIdToDelete = null;
+
+    function showDeleteModal(id, event) {
+        event.stopPropagation(); // Elak klik sidebar tembus
+        projectIdToDelete = id;
+        const projectName = projectsMap[id].name;
+
+        // Masukkan nama projek ke dalam mesej modal
+        document.getElementById('delete-project-name').innerText = projectName;
+        
+        // Tunjukkan modal
+        const modal = document.getElementById('delete-confirm-modal');
+        modal.style.display = 'flex';
+        lucide.createIcons(); // Jana ikon semula untuk modal
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function cancelDeleteProject() {
+        const modal = document.getElementById('delete-confirm-modal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+        projectIdToDelete = null; // Reset ID
+    }
+
+    // PEMBAIKAN: Fungsi hapus asal yang diubah suai
+    function confirmDeleteProject() {
+        if (!projectIdToDelete) return; // Lindungi jika fungsi dipanggil salah
+
+        delete projectsMap[projectIdToDelete];
+        const remainingKeys = Object.keys(projectsMap);
+        
+        // Tutup modal
+        cancelDeleteProject();
+
+        if(remainingKeys.length === 0) {
+            activeId = null;
+            localStorage.removeItem("pnet_projects");
+            location.reload(); // Reset paparan ke Empty State
+        } else {
+            activeId = remainingKeys[0];
+            saveToLocalStorage();
+            updateUI();
+            showToast(`Rekod projek telah dihapus.`); // Pop-up pengesahan
+        }
+    }
+
+    // Utiliti Modal Lain
     function openModal(type) {
         if(!activeId) return;
         const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
         let filtered = [], headerBg = '', title = '', iconName = '';
-
         if(type === 'TUGASAN') { filtered = tasks; headerBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; iconName = 'clipboard-list'; } 
         else if(type === 'SELESAI') { filtered = tasks.filter(t => t.status === 'SELESAI'); headerBg = 'var(--success)'; title = 'Aktiviti Selesai'; iconName = 'check-circle-2'; } 
         else if(type === 'MENGIKUT JADUAL') { filtered = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); headerBg = 'var(--warning)'; title = 'Mengikut Jadual'; iconName = 'clock'; } 
         else if(type === 'LEWAT') { filtered = tasks.filter(t => t.status.includes('LEWAT')); headerBg = 'var(--danger)'; title = 'Aktiviti Lewat'; iconName = 'alert-triangle'; }
-
         document.getElementById('modal-header').style.background = headerBg;
         document.getElementById('modal-title').innerHTML = `<i data-lucide="${iconName}" style="width:18px;"></i> ${p.name} - ${title}`;
         const body = document.getElementById('modal-body'); body.innerHTML = '';
-
         if(filtered.length === 0) { body.innerHTML = '<div style="text-align:center; padding: 50px; color: var(--text-muted);"><i data-lucide="inbox" style="width:40px; height:40px; margin-bottom:10px;"></i><br>Tiada rekod.</div>'; } 
         else {
             filtered.forEach(t => {
@@ -632,35 +665,19 @@
                 if(t.status === 'SELESAI' && t.j && t.s) {
                     const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s);
                     if(dj && ds) { const diff = Math.ceil((ds - dj)/(1000*3600*24)); bText = diff > 0 ? `+${diff}H` : `${diff}H`; bBg = diff > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; bCol = diff > 0 ? 'var(--danger)' : 'var(--success)'; }
-                } else if(t.status.includes('LEWAT')) { bText = `+${t.days}H`; bBg = 'rgba(239,68,68,0.1)'; bCol = 'var(--danger)';
-                } else if(t.status === 'HAMPIR TAMAT') { bText = '!!'; bBg = 'rgba(245,158,11,0.1)'; bCol = 'var(--warning)';
-                } else if(t.status === 'MENGIKUT JADUAL' || t.status === 'MENUNGGU') { bText = '0'; bBg = 'var(--hover-bg)'; bCol = 'var(--text-muted)'; }
-
-                body.innerHTML += `
-                    <div class="modal-task-card">
-                        <div class="modal-task-badge" style="background:${bBg}; color:${bCol}">${bText}</div>
-                        <div class="modal-task-info">
-                            <h4>${t.aktiviti}</h4>
-                            <div class="modal-task-meta">
-                                <span class="glass-badge">${t.unit.toUpperCase()}</span>
-                                <span>JANGKAAN: <b style="color:var(--text-main);">${t.j || '-'}</b></span>
-                                <span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span>
-                            </div>
-                        </div>
-                    </div>`;
+                } else if(t.status.includes('LEWAT')) { bText = `+${t.days}H`; bBg = 'rgba(239,68,68,0.1)'; bCol = 'var(--danger)'; } 
+                else if(t.status === 'HAMPIR TAMAT') { bText = '!!'; bBg = 'rgba(245,158,11,0.1)'; bCol = 'var(--warning)'; } 
+                else if(t.status === 'MENGIKUT JADUAL' || t.status === 'MENUNGGU') { bText = '0'; bBg = 'var(--hover-bg)'; bCol = 'var(--text-muted)'; }
+                body.innerHTML += `<div class="modal-task-card"><div class="modal-task-badge" style="background:${bBg}; color:${bCol}">${bText}</div><div class="modal-task-info"><h4>${t.aktiviti}</h4><div class="modal-task-meta"><span class="glass-badge">${t.unit.toUpperCase()}</span><span>JANGKAAN: <b style="color:var(--text-main);">${t.j || '-'}</b></span><span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span></div></div></div>`;
             });
         }
         const modal = document.getElementById('details-modal'); modal.style.display = 'flex'; lucide.createIcons(); setTimeout(() => modal.classList.add('show'), 10);
     }
-
     function closeModal() { const modal = document.getElementById('details-modal'); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
     function parseDateHelper(dStr) { if(!dStr) return null; const parts = dStr.split('/'); if(parts.length < 3) return null; return new Date(parts[2], parts[1]-1, parts[0]); }
     document.getElementById('searchInput').addEventListener('input', function(e) {
         const val = e.target.value.toLowerCase();
-        document.querySelectorAll("#activityTable tbody tr").forEach(row => {
-            if (row.cells.length === 1) return; 
-            row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
-        });
+        document.querySelectorAll("#activityTable tbody tr").forEach(row => { if (row.cells.length === 1) return; row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none"; });
     });
     function animateNum(id, end, suffix = '') {
         let start = 0; const obj = document.getElementById(id); const duration = 1000; const startTS = performance.now();
