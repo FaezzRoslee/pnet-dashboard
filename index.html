@@ -69,7 +69,6 @@
         .btn-danger { background: var(--danger); color: white; border: none; }
         .btn-danger:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2); }
         
-        /* Butang Kecil Hapus Semua */
         .btn-clear-all { font-size: 10px; padding: 4px 8px; color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); background: transparent; border-radius: 6px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
         .btn-clear-all:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
@@ -149,6 +148,9 @@
         .modal-card-custom { background: var(--card-bg); width: 90%; max-width: 420px; border-radius: 24px; padding: 35px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay-custom.show .modal-card-custom { transform: scale(1); }
         .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
+        .modal-card-custom h3 { margin: 0 0 10px; font-size: 20px; font-weight: 700; color: var(--text-main); }
+        .modal-card-custom p { margin: 0 0 25px; font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+        .modal-card-footer { display: flex; gap: 15px; justify-content: center; }
     </style>
 </head>
 <body>
@@ -253,10 +255,10 @@
             <i data-lucide="alert-octagon" style="width:40px; height:40px; color:var(--danger);"></i>
         </div>
         <h3>Hapus Semua Fail?</h3>
-        <p>Tindakan ini akan memadam <strong>semua data projek</strong> yang tersimpan dalam pelayar ini secara kekal. Anda tidak boleh mendapatkan data ini semula.</p>
+        <p>Semua senarai projek di papan pemuka ini akan dikosongkan. Jangan risau, fail Excel asal di komputer anda tetap selamat dan tidak akan terjejas.</p>
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="closeClearAllModal()">Batal</button>
-            <button class="btn btn-danger" onclick="confirmDeleteAll()">Hapus Keseluruhan Data</button>
+            <button class="btn btn-danger" onclick="confirmDeleteAll()">Hapus Paparan</button>
         </div>
     </div>
 </div>
@@ -267,7 +269,6 @@
     let projectsMap = {}; let activeId = null; let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // THEME & TOAST
     function toggleTheme() {
         const curr = document.documentElement.getAttribute("data-theme");
         const next = curr === "dark" ? "light" : "dark";
@@ -285,7 +286,6 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
-    // INIT & STORAGE
     window.onload = () => {
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
@@ -323,7 +323,6 @@
         }
     }
 
-    // UPLOAD & PROCESSING
     const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputCenter'];
     fileInputs.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('change', handleFileUpload); });
 
@@ -369,7 +368,6 @@
         return { label: 'MENGIKUT JADUAL', days: 0 };
     }
 
-    // UI UPDATE & CHARTS
     function updateUI() {
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('dashboard-content').style.display = 'block';
@@ -428,13 +426,11 @@
         lucide.createIcons();
     }
 
-    // MODAL FUNCTIONS
     let pToDelete = null;
     function showDeleteModal(id, e) { e.stopPropagation(); pToDelete = id; document.getElementById('delete-project-name').innerText = projectsMap[id].name; const m = document.getElementById('delete-confirm-modal'); m.style.display = 'flex'; setTimeout(() => m.classList.add('show'), 10); }
     function cancelDeleteProject() { const m = document.getElementById('delete-confirm-modal'); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); pToDelete = null; }
     function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); if(Object.keys(projectsMap).length === 0) { localStorage.removeItem("pnet_projects"); location.reload(); } else { activeId = Object.keys(projectsMap)[0]; saveToLocalStorage(); updateUI(); } }
 
-    // BARU: FUNGSI HAPUS SEMUA
     function showClearAllModal() { const m = document.getElementById('clear-all-modal'); m.style.display = 'flex'; lucide.createIcons(); setTimeout(() => m.classList.add('show'), 10); }
     function closeClearAllModal() { const m = document.getElementById('clear-all-modal'); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
     function confirmDeleteAll() { projectsMap = {}; activeId = null; localStorage.removeItem("pnet_projects"); closeClearAllModal(); location.reload(); }
