@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Papan Pemuka PNET - Pemantauan Projek</title>
+    <meta name="description" content="Sistem Papan Pemuka PNET rasmi untuk pemantauan jadual, status, dan kelewatan projek secara interaktif.">
+    <meta property="og:title" content="Papan Pemuka PNET">
+    <meta property="og:description" content="Jejak prestasi projek dan kelewatan dengan mudah.">
+    <meta property="og:image" content="https://pnet.moh.gov.my/images/uprlogo.png">
+    <link rel="icon" href="https://pnet.moh.gov.my/images/uprlogo.png" type="image/png">
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        /* VARIABLES (Untuk Dark Mode/Light Mode) */
+        :root {
+            --primary: #0f172a; --accent: #3b82f6; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; 
+            --bg: #f1f5f9; --card-bg: #ffffff; 
+            --text-main: #0f172a; --text-muted: #64748b;
+            --border: #e2e8f0; --hover-bg: #f8fafc;
+            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+            --modal-bg: rgba(15, 23, 42, 0.6);
+        }
+
+        [data-theme="dark"] {
+            --primary: #f8fafc; --accent: #60a5fa; --success: #34d399;
+            --warning: #fbbf24; --danger: #f87171; 
+            --bg: #0f172a; --card-bg: #1e293b; 
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --border: #334155; --hover-bg: #334155;
+            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+        }
+
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+        .container { max-width: 1500px; margin: 0 auto; padding: 20px; }
+
+        /* Header */
+        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.2s; border: none; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
+        .btn-outline:hover { background: var(--hover-bg); }
+        .btn-icon { padding: 10px; border-radius: 12px; background: var(--hover-bg); color: var(--text-main); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .btn-icon:hover { background: var(--border); }
+
+        /* Toast Notification */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; animation: slideInRight 0.4s forwards; color: #0f172a; font-weight: 500; font-size: 14px; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* Empty State */
+        #empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 65vh; text-align: center; animation: fadeInUp 0.5s ease-out; }
+        .step-card { background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: var(--card-shadow); width: 230px; text-align: left; border: 1px solid var(--border); }
+        .step-card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+
+        /* Layout Utama */
+        .dashboard-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
+
+        /* Mini KPI Sidebar */
+        .mini-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .mini-kpi-card { background: var(--hover-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 8px; }
+        .mini-kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); border-color: var(--accent); }
+        .mini-kpi-header { display: flex; justify-content: space-between; align-items: center; }
+        .mini-kpi-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .mini-kpi-card h3 { margin: 0; font-size: 24px; color: var(--text-main); }
+        .mini-kpi-card span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+        /* Item Sidebar Project */
+        .project-item-sidebar { border: 1px solid var(--border); border-radius: 16px; padding: 12px 15px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; background: var(--card-bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .project-item-sidebar:hover { border-color: var(--accent); }
+        .project-item-sidebar.active { border-color: var(--accent); background: var(--hover-bg); box-shadow: inset 3px 0 0 var(--accent); }
+        .proj-name { font-size: 13px; color: var(--text-main); line-height: 1.4; font-weight: 600; word-break: break-word; }
+        .btn-delete-proj { color: var(--danger); background: transparent; border: none; cursor: pointer; opacity: 0.5; padding: 5px; border-radius: 8px; transition: 0.2s; }
+        .btn-delete-proj:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
+
+        /* Charts */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .chart-box { background: var(--card-bg); padding: 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); display: flex; flex-direction: column; height: 420px; min-width: 0; }
+        
+        .custom-legend { margin-top: 15px; max-height: 140px; overflow-y: auto; padding-right: 10px; }
+        .custom-legend::-webkit-scrollbar { width: 6px; }
+        .custom-legend::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .legend-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; font-size: 12px; margin-bottom: 4px; background: var(--hover-bg); }
+        .legend-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; min-width: 0; }
+        .legend-color { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
+        .legend-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); font-weight: 500; }
+        .legend-val { font-weight: 700; color: var(--text-main); background: var(--card-bg); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; margin-left: 10px; }
+
+        /* Table */
+        .table-container { background: var(--card-bg); padding: 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); min-width: 0; overflow: hidden; transition: 0.3s; }
+        .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 300px; border: 1px solid var(--border); transition: 0.2s; }
+        .search-box:focus-within { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
+
+        .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px; }
+        th { text-align: left; padding: 14px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 16px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); word-wrap: break-word; word-break: break-word; }
+        
+        .badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 80px; letter-spacing: 0.3px; white-space: nowrap; }
+        .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .status-mengikutjadual, .status-menunggu { background: var(--hover-bg); color: var(--text-muted); border: 1px solid var(--border); }
+        .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        .pulse-dot { display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeInUp 0.4s ease-out forwards; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(4px); }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-container { background: var(--card-bg); width: 90%; max-width: 850px; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 85vh; transform: scale(0.95); transition: transform 0.3s ease; border: 1px solid var(--border); }
+        .modal-overlay.show .modal-container { transform: scale(1); }
+        .modal-header { padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .modal-close { background: rgba(255,255,255,0.2); border: none; width: 32px; height: 32px; border-radius: 50%; color: white; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
+        .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+        .modal-body { padding: 30px; overflow-y: auto; background: var(--bg); flex-grow: 1; }
+        .modal-task-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 15px 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 20px; transition: 0.2s; }
+        .modal-task-badge { width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+        .modal-task-info { flex-grow: 1; min-width: 0; }
+        .modal-task-info h4 { margin: 0 0 8px; font-size: 14px; color: var(--text-main); line-height: 1.4; word-break: break-word; }
+        .modal-task-meta { display: flex; gap: 15px; font-size: 11px; align-items: center; flex-wrap: wrap; color: var(--text-muted); }
+        .modal-footer { padding: 15px 30px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+
+        /* RESPONSIVE DESIGN (MOBILE & TABLET) */
+        @media (max-width: 1024px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .sidebar .card { padding: 15px; }
+            #empty-state .step-card { width: 100%; max-width: 300px; }
+        }
+        @media (max-width: 768px) {
+            .header-main { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-actions { width: 100%; justify-content: space-between; }
+            .table-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .search-box { width: 100%; }
+        }
+
+        /* PRINT STYLES (CETAK LAPORAN) */
+        @media print {
+            body { background: white; color: black; }
+            .no-print, .sidebar, .header-actions, .search-box { display: none !important; }
+            .dashboard-layout { grid-template-columns: 1fr; display: block; }
+            .charts-grid { display: block; }
+            .chart-box { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc; box-shadow: none; margin-bottom: 20px; height: auto !important; }
+            .table-container { box-shadow: none; border: none; padding: 0; }
+            table { border: 1px solid #ccc; }
+            th, td { border-bottom: 1px solid #eee; color: black; }
+            canvas { max-height: 300px !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div class="container">
+    <header class="header-main no-print">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
+            <div>
+                <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 700;">Garis Masa Projek PNET</h1>
+                <span style="font-size: 12px; color: var(--text-muted);">Pemantauan Jadual & Prestasi</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="btn btn-outline" onclick="window.print()" id="printBtn" style="display: none;">
+                <i data-lucide="printer" style="width:16px;"></i> Cetak Laporan
+            </button>
+            <label class="btn btn-primary" id="headerUploadBtn">
+                <i data-lucide="file-up" style="width:16px;"></i> Muat Naik Excel
+                <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls">
+            </label>
+        </div>
+    </header>
+
+    <div id="empty-state">
+        <i data-lucide="layout-dashboard" style="width:60px; height:60px; color:var(--accent); margin-bottom:20px; stroke-width:1.5;"></i>
+        <h2 style="font-size: 26px; color: var(--text-main); margin: 0 0 10px;">Papan Pemuka Sedia Digunakan</h2>
+        <p style="color: var(--text-muted); max-width: 450px; margin: 0 0 40px; line-height: 1.6; font-size: 14px;">Sistem ini membantu anda menjejak prestasi, kelewatan, dan status projek secara visual. Data anda tersimpan secara lokal dan selamat.</p>
+        
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <div class="step-card">
+                <div class="step-card-icon" style="background: rgba(59,130,246,0.1); color: var(--accent);"><i data-lucide="table-2"></i></div>
+                <h4 style="margin: 0 0 5px; font-size: 14px; color: var(--text-main);">1. Format Data</h4>
+                <p style="margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5;">Fail Excel perlu mengandungi kolum Jangkaan dan Sebenar.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-card-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);"><i data-lucide="upload-cloud"></i></div>
+                <h4 style="margin: 0 0 5px; font-size: 14px; color: var(--text-main);">2. Muat Naik</h4>
+                <p style="margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5;">Klik butang biru di atas. Data akan disimpan dalam browser.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-card-icon" style="background: rgba(16,185,129,0.1); color: var(--success);"><i data-lucide="pie-chart"></i></div>
+                <h4 style="margin: 0 0 5px; font-size: 14px; color: var(--text-main);">3. Analisis & Cetak</h4>
+                <p style="margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5;">Jana carta automatik dan cetak laporan PDF untuk mesyuarat.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-content" style="display:none;" class="animate">
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <div class="card" style="text-align:center; padding: 30px 20px;">
+                    <span style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing: 1px;">KEMAJUAN KESELURUHAN</span>
+                    <h1 id="global-percent" style="font-size:56px; margin:10px 0; color:var(--accent); font-weight: 700;">0%</h1>
+                </div>
+
+                <div class="mini-kpi-grid" style="margin-bottom: 20px;">
+                    <div class="mini-kpi-card" onclick="openModal('TUGASAN')">
+                        <div class="mini-kpi-header">
+                            <span>Tugasan</span>
+                            <div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div>
+                        </div>
+                        <h3 id="kpi-total">0</h3>
+                    </div>
+                    <div class="mini-kpi-card" onclick="openModal('SELESAI')">
+                        <div class="mini-kpi-header">
+                            <span>Selesai</span>
+                            <div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div>
+                        </div>
+                        <h3 id="kpi-done">0</h3>
+                    </div>
+                    <div class="mini-kpi-card" onclick="openModal('MENGIKUT JADUAL')">
+                        <div class="mini-kpi-header">
+                            <span>Jadual</span>
+                            <div class="mini-kpi-icon" style="background:rgba(245,158,11,0.1); color:var(--warning);"><i data-lucide="clock" style="width:16px;"></i></div>
+                        </div>
+                        <h3 id="kpi-track">0</h3>
+                    </div>
+                    <div class="mini-kpi-card" onclick="openModal('LEWAT')">
+                        <div class="mini-kpi-header">
+                            <span style="color:var(--danger);">Lewat</span>
+                            <div class="mini-kpi-icon" style="background:rgba(239,68,68,0.1); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div>
+                        </div>
+                        <h3 id="kpi-delay" style="color:var(--danger);">0</h3>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Fail Projek</h3>
+                        <span id="proj-count" style="background:var(--hover-bg); color:var(--text-muted); font-size:10px; padding:2px 6px; border-radius:10px; font-weight:700; border: 1px solid var(--border);">0</span>
+                    </div>
+                    <div id="project-list-sidebar" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
+                    
+                    <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 10px; border-style: dashed;">
+                        <i data-lucide="plus" style="width:16px;"></i> Tambah Projek
+                        <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls">
+                    </label>
+                </div>
+            </aside>
+
+            <main>
+                <div class="charts-grid">
+                    <div class="chart-box">
+                        <h4 style="margin:0 0 15px; font-size: 14px; color: var(--text-main); display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="pie-chart" style="width:18px; color:var(--accent);"></i> Tempoh Mengikut Topik
+                        </h4>
+                        <div style="flex-grow: 1; position: relative; max-height: 200px;">
+                            <canvas id="topicChart"></canvas>
+                        </div>
+                        <div id="customLegendArea"></div>
+                    </div>
+                    
+                    <div class="chart-box">
+                        <h4 style="margin:0 0 15px; font-size: 14px; color: var(--text-main); display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="bar-chart-3" style="width:18px; color:var(--danger);"></i> Kelewatan Mengikut Unit (Hari)
+                        </h4>
+                        <div style="flex-grow: 1; position: relative;">
+                            <canvas id="unitChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 id="active-title" style="margin:0 0 5px; font-size: 16px; color: var(--text-main);">Butiran Aktiviti</h3>
+                            <span style="font-size: 12px; color: var(--text-muted);">Semua fasa dan tugasan bagi projek semasa</span>
+                        </div>
+                        <div class="search-box no-print">
+                            <i data-lucide="search" style="width:16px; height:16px; color:var(--text-muted);"></i>
+                            <input type="text" id="searchInput" placeholder="Cari aktiviti atau unit...">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="activityTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">Bil</th>
+                                    <th style="width: 40%;">Aktiviti</th>
+                                    <th>Tindakan</th>
+                                    <th>Tempoh</th>
+                                    <th>Jangkaan</th>
+                                    <th>Sebenar</th>
+                                    <th style="text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="details-modal">
+    <div class="modal-container">
+        <div class="modal-header" id="modal-header">
+            <h3 id="modal-title"><i data-lucide="list" style="width:18px;"></i> Senarai Aktiviti</h3>
+            <button class="modal-close" onclick="closeModal()"><i data-lucide="x" style="width:18px;"></i></button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" style="border:none;" onclick="closeModal()">Tutup Paparan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+    Chart.register(ChartDataLabels);
+    
+    let projectsMap = {};
+    let activeId = null;
+    let topicChart, unitChart;
+    const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0284c7', '#0ea5e9'];
+
+    // 1. SISTEM TEMA (DARK MODE)
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("pnet_theme", newTheme);
+        
+        const themeBtnIcon = document.querySelector('#themeBtn i');
+        if(newTheme === 'dark') {
+            themeBtnIcon.setAttribute('data-lucide', 'sun');
+        } else {
+            themeBtnIcon.setAttribute('data-lucide', 'moon');
+        }
+        lucide.createIcons();
+        if(activeId) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec)); // Re-render colors
+    }
+
+    // 2. SISTEM RALAT (TOAST)
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<i data-lucide="alert-circle" style="color:var(--danger)"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+        lucide.createIcons();
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    // 3. INISIALISASI AWAL (LOAD DARI LOCAL STORAGE)
+    window.onload = () => {
+        const savedTheme = localStorage.getItem("pnet_theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        if(savedTheme === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
+        lucide.createIcons();
+
+        const savedData = localStorage.getItem("pnet_projects");
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (Object.keys(parsed.map).length > 0) {
+                    projectsMap = parsed.map;
+                    activeId = parsed.active || Object.keys(projectsMap)[0];
+                    updateUI();
+                }
+            } catch(e) { console.error("Ralat membaca data lama:", e); }
+        }
+    };
+
+    function saveToLocalStorage() {
+        try {
+            localStorage.setItem("pnet_projects", JSON.stringify({ map: projectsMap, active: activeId }));
+        } catch(e) {
+            showToast("Storan penuh! Sila padam projek lama untuk menambah fail baharu.");
+        }
+    }
+
+    // 4. PENGENDALIAN FAIL EXCEL
+    document.getElementById('fileInputHeader').addEventListener('change', handleFileUpload);
+    document.getElementById('fileInputSidebar').addEventListener('change', handleFileUpload);
+
+    function handleFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Semak jenis fail
+        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+            showToast("Ralat: Sila muat naik fail berformat Excel (.xlsx atau .xls) sahaja.");
+            e.target.value = ''; return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const workbook = XLSX.read(evt.target.result, { type: 'binary' });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                const id = 'p' + Date.now();
+                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), data: processData(rows) };
+                activeId = id;
+                saveToLocalStorage();
+                updateUI();
+            } catch(error) {
+                showToast("Ralat membaca fail. Pastikan format jadual adalah betul.");
+            }
+        };
+        reader.readAsBinaryString(file);
+        e.target.value = ''; 
+    }
+
+    function deleteProject(id, event) {
+        event.stopPropagation(); // Elak klik tembus ke kad
+        if(confirm("Adakah anda pasti mahu memadam rekod projek ini?")) {
+            delete projectsMap[id];
+            const remainingKeys = Object.keys(projectsMap);
+            
+            if(remainingKeys.length === 0) {
+                activeId = null;
+                localStorage.removeItem("pnet_projects");
+                location.reload(); // Reset paparan ke Empty State
+            } else {
+                activeId = remainingKeys[0];
+                saveToLocalStorage();
+                updateUI();
+            }
+        }
+    }
+
+    // Pemprosesan Data Asal...
+    function processData(rows) {
+        let result = []; let currentSec = "Umum";
+        rows.forEach(row => {
+            if (!row[0] && !row[1]) return;
+            if (row[0] && !row[1] && !row[2]) { currentSec = row[0]; result.push({ isSec: true, title: currentSec }); }
+            else {
+                if (String(row[0]).toLowerCase().includes("bil")) return;
+                const j = formatExcelDate(row[4]); const s = formatExcelDate(row[5]);
+                const status = getStatus(j, s);
+                result.push({ isSec: false, section: currentSec, bil: row[0] || "-", aktiviti: row[1] || "-", unit: row[2] || "N/A", tempoh: row[3] || "-", j, s, status: status.label, days: status.days });
+            }
+        });
+        return result;
+    }
+
+    function getStatus(j, s) {
+        if (s) return { label: 'SELESAI', days: 0 };
+        if (!j) return { label: 'MENUNGGU', days: 0 };
+        const parts = j.split('/'); 
+        if(parts.length < 3) return { label: 'MENUNGGU', days: 0 };
+        const due = new Date(parts[2], parts[1]-1, parts[0]);
+        const today = new Date(); today.setHours(0,0,0,0);
+        
+        const diffTime = due - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+
+        if (diffDays < 0) return { label: `LEWAT (${Math.abs(diffDays)} HARI)`, days: Math.abs(diffDays) };
+        if (diffDays >= 0 && diffDays <= 3) return { label: 'HAMPIR TAMAT', days: 0 };
+        return { label: 'MENGIKUT JADUAL', days: 0 };
+    }
+
+    function updateUI() {
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        document.getElementById('headerUploadBtn').style.display = 'none'; 
+        document.getElementById('printBtn').style.display = 'inline-flex'; 
+        
+        const p = projectsMap[activeId];
+        const tasks = p.data.filter(d => !d.isSec);
+        
+        animateNum('kpi-total', tasks.length);
+        animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
+        animateNum('kpi-track', tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
+        animateNum('kpi-delay', tasks.filter(t => t.status.includes('LEWAT')).length);
+        
+        const perc = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'SELESAI').length / tasks.length) * 100) : 0;
+        animateNum('global-percent', perc, '%');
+        document.getElementById('proj-count').innerText = Object.keys(projectsMap).length;
+
+        updateSidebar();
+        renderCharts(tasks);
+        renderTable(p.data);
+    }
+
+    function renderCharts(tasks) {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const textColor = isDark ? "#f1f5f9" : "#334155";
+        const gridColor = isDark ? "#334155" : "#e2e8f0";
+
+        const topics = {}; tasks.forEach(t => topics[t.section] = (topics[t.section] || 0) + 1);
+        const topicLabels = Object.keys(topics); const topicData = Object.values(topics);
+
+        if (topicChart) topicChart.destroy();
+        topicChart = new Chart(document.getElementById('topicChart'), {
+            type: 'doughnut', 
+            data: { labels: topicLabels, datasets: [{ data: topicData, backgroundColor: chartColors, borderWidth: 2, borderColor: isDark ? '#1e293b' : '#fff' }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false }, datalabels: { formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let p = ((val * 100) / sum).toFixed(0); return p > 4 ? p + "%" : ""; }, color: '#fff', font: { weight: 'bold', size: 10 } } } }
+        });
+
+        let legendHTML = '<div class="custom-legend">';
+        topicLabels.forEach((label, i) => {
+            const color = chartColors[i % chartColors.length];
+            legendHTML += `<div class="legend-item" title="${label}"><div class="legend-left"><span class="legend-color" style="background:${color}"></span><span class="legend-text">${label}</span></div><span class="legend-val">${topicData[i]}</span></div>`;
+        });
+        legendHTML += '</div>';
+        document.getElementById('customLegendArea').innerHTML = legendHTML;
+
+        const units = {}; tasks.forEach(t => { if(t.days > 0) units[t.unit] = (units[t.unit] || 0) + t.days; });
+        if (unitChart) unitChart.destroy();
+        unitChart = new Chart(document.getElementById('unitChart'), {
+            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: 'Hari Kelewatan', data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 6, maxBarThickness: 30 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " hari", font: { weight: 'bold', size: 11 }, color: textColor } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: textColor } } } }
+        });
+    }
+
+    function renderTable(data) {
+        const tbody = document.querySelector("#activityTable tbody");
+        tbody.innerHTML = "";
+        data.forEach(item => {
+            if (item.isSec) { 
+                tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:600; font-size:12px; text-transform:uppercase; border-left: 3px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:14px; height:14px; color:var(--accent);"></i> <span style="white-space:normal; word-break:break-word;">${item.title}</span></div></td></tr>`; 
+            } else {
+                const s = item.status.toLowerCase();
+                const cls = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
+                const badgeContent = item.status === 'HAMPIR TAMAT' ? `<span class="pulse-dot"></span> HAMPIR TAMAT` : item.status;
+
+                tbody.innerHTML += `<tr>
+                    <td style="color:var(--text-muted);">${item.bil}</td>
+                    <td style="font-weight:500; color:var(--text-main); word-break: break-word;">${item.aktiviti}</td>
+                    <td><span style="background:var(--hover-bg); padding:4px 8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-weight:600; white-space:nowrap; border:1px solid var(--border);">${item.unit}</span></td>
+                    <td style="color:var(--text-muted);">${item.tempoh}</td>
+                    <td style="font-weight:500;">${item.j}</td>
+                    <td style="font-weight:500; color:${item.s ? 'var(--success)' : 'var(--text-muted)'}">${item.s || '-'}</td>
+                    <td style="text-align:center;"><span class="badge status-${cls}">${badgeContent}</span></td>
+                </tr>`;
+            }
+        });
+        lucide.createIcons();
+    }
+
+    function updateSidebar() {
+        const container = document.getElementById('project-list-sidebar');
+        container.innerHTML = "";
+        Object.keys(projectsMap).forEach(id => {
+            const active = id === activeId ? 'active' : '';
+            container.innerHTML += `
+            <div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();">
+                <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                    <i data-lucide="file-spreadsheet" style="width:16px; height:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'}; flex-shrink:0;"></i>
+                    <span class="proj-name">${projectsMap[id].name}</span>
+                </div>
+                <button class="btn-delete-proj" onclick="deleteProject('${id}', event)" title="Padam Projek"><i data-lucide="trash-2" style="width:14px; height:14px;"></i></button>
+            </div>`;
+        });
+        lucide.createIcons();
+    }
+
+    // Fungsi Modal & Utiliti sama seperti V11...
+    function openModal(type) {
+        if(!activeId) return;
+        const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
+        let filtered = [], headerBg = '', title = '', iconName = '';
+
+        if(type === 'TUGASAN') { filtered = tasks; headerBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; iconName = 'clipboard-list'; } 
+        else if(type === 'SELESAI') { filtered = tasks.filter(t => t.status === 'SELESAI'); headerBg = 'var(--success)'; title = 'Aktiviti Selesai'; iconName = 'check-circle-2'; } 
+        else if(type === 'MENGIKUT JADUAL') { filtered = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); headerBg = 'var(--warning)'; title = 'Mengikut Jadual'; iconName = 'clock'; } 
+        else if(type === 'LEWAT') { filtered = tasks.filter(t => t.status.includes('LEWAT')); headerBg = 'var(--danger)'; title = 'Aktiviti Lewat'; iconName = 'alert-triangle'; }
+
+        document.getElementById('modal-header').style.background = headerBg;
+        document.getElementById('modal-title').innerHTML = `<i data-lucide="${iconName}" style="width:18px;"></i> ${p.name} - ${title}`;
+        const body = document.getElementById('modal-body'); body.innerHTML = '';
+
+        if(filtered.length === 0) { body.innerHTML = '<div style="text-align:center; padding: 50px; color: var(--text-muted);"><i data-lucide="inbox" style="width:40px; height:40px; margin-bottom:10px;"></i><br>Tiada rekod.</div>'; } 
+        else {
+            filtered.forEach(t => {
+                let bText = '-', bBg = 'var(--hover-bg)', bCol = 'var(--text-muted)';
+                if(t.status === 'SELESAI' && t.j && t.s) {
+                    const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s);
+                    if(dj && ds) { const diff = Math.ceil((ds - dj)/(1000*3600*24)); bText = diff > 0 ? `+${diff}H` : `${diff}H`; bBg = diff > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; bCol = diff > 0 ? 'var(--danger)' : 'var(--success)'; }
+                } else if(t.status.includes('LEWAT')) { bText = `+${t.days}H`; bBg = 'rgba(239,68,68,0.1)'; bCol = 'var(--danger)';
+                } else if(t.status === 'HAMPIR TAMAT') { bText = '!!'; bBg = 'rgba(245,158,11,0.1)'; bCol = 'var(--warning)';
+                } else if(t.status === 'MENGIKUT JADUAL' || t.status === 'MENUNGGU') { bText = '0'; bBg = 'var(--hover-bg)'; bCol = 'var(--text-muted)'; }
+
+                body.innerHTML += `
+                    <div class="modal-task-card">
+                        <div class="modal-task-badge" style="background:${bBg}; color:${bCol}">${bText}</div>
+                        <div class="modal-task-info">
+                            <h4>${t.aktiviti}</h4>
+                            <div class="modal-task-meta">
+                                <span style="background:var(--hover-bg); padding:3px 8px; border-radius:6px; font-weight:600; color:var(--text-main); border:1px solid var(--border);">TINDAKAN: ${t.unit.toUpperCase()}</span>
+                                <span>JANGKAAN: <b>${t.j || '-'}</b></span>
+                                <span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+        const modal = document.getElementById('details-modal'); modal.style.display = 'flex'; lucide.createIcons(); setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeModal() { const modal = document.getElementById('details-modal'); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
+    function parseDateHelper(dStr) { if(!dStr) return null; const parts = dStr.split('/'); if(parts.length < 3) return null; return new Date(parts[2], parts[1]-1, parts[0]); }
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const val = e.target.value.toLowerCase();
+        document.querySelectorAll("#activityTable tbody tr").forEach(row => {
+            if (row.cells.length === 1) return; 
+            row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+    });
+    function animateNum(id, end, suffix = '') {
+        let start = 0; const obj = document.getElementById(id); const duration = 1000; const startTS = performance.now();
+        function step(ts) { const prog = Math.min((ts - startTS) / duration, 1); obj.innerHTML = Math.floor(prog * (end - start) + start) + suffix; if (prog < 1) requestAnimationFrame(step); } requestAnimationFrame(step);
+    }
+    function formatExcelDate(v) {
+        if (!v) return "";
+        if (typeof v === 'number') { const d = new Date((v - 25569) * 86400 * 1000); return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); }
+        return v;
+    }
+</script>
+
+</body>
+</html>
