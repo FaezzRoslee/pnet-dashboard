@@ -7,7 +7,6 @@
     <title>Papan Pemuka PNET - Pemantauan Projek</title>
     <meta name="description" content="Sistem Papan Pemuka PNET rasmi untuk pemantauan jadual, status, dan kelewatan projek secara interaktif.">
     <meta property="og:title" content="Papan Pemuka PNET">
-    <meta property="og:description" content="Jejak prestasi projek dan kelewatan dengan mudah.">
     <meta property="og:image" content="https://pnet.moh.gov.my/images/uprlogo.png">
     <link rel="icon" href="https://pnet.moh.gov.my/images/uprlogo.png" type="image/png">
 
@@ -20,23 +19,24 @@
     <style>
         * { box-sizing: border-box; }
 
-        /* VARIABLES (Untuk Dark Mode/Light Mode) */
+        /* VARIABLES (Untuk Dark Mode/Light Mode & High Contrast) */
         :root {
             --primary: #0f172a; --accent: #3b82f6; --success: #10b981;
             --warning: #f59e0b; --danger: #ef4444; 
             --bg: #f1f5f9; --card-bg: #ffffff; 
-            --text-main: #0f172a; --text-muted: #64748b;
+            --text-main: #0f172a; --text-muted: #475569; /* Diterangkan sedikit */
             --border: #e2e8f0; --hover-bg: #f8fafc;
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
             --modal-bg: rgba(15, 23, 42, 0.6);
         }
 
+        /* MOD GELAP - DENGAN KONTRAS LEBIH TINGGI */
         [data-theme="dark"] {
-            --primary: #f8fafc; --accent: #60a5fa; --success: #34d399;
-            --warning: #fbbf24; --danger: #f87171; 
+            --primary: #ffffff; --accent: #60a5fa; --success: #34d399;
+            --warning: #fcd34d; --danger: #fca5a5; 
             --bg: #0f172a; --card-bg: #1e293b; 
-            --text-main: #f8fafc; --text-muted: #94a3b8;
-            --border: #334155; --hover-bg: #334155;
+            --text-main: #ffffff; --text-muted: #cbd5e1; /* Jauh lebih cerah dari sebelum ini */
+            --border: #475569; --hover-bg: #334155;
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
             --modal-bg: rgba(0, 0, 0, 0.8);
         }
@@ -76,7 +76,7 @@
         .mini-kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); border-color: var(--accent); }
         .mini-kpi-header { display: flex; justify-content: space-between; align-items: center; }
         .mini-kpi-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .mini-kpi-card h3 { margin: 0; font-size: 24px; color: var(--text-main); }
+        .mini-kpi-card h3 { margin: 0; font-size: 24px; color: var(--text-main); font-weight: 700; }
         .mini-kpi-card span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
         /* Item Sidebar Project */
@@ -109,7 +109,33 @@
         .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px; }
         th { text-align: left; padding: 14px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 16px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); word-wrap: break-word; word-break: break-word; }
+        
+        /* PEMBAIKAN TEKS TERPERAH DI SINI */
+        td { padding: 16px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); overflow-wrap: break-word; line-height: 1.5; font-weight: 500; }
+        
+        /* LIQUID GLASS APPLE MACBOOK STYLE UNTUK TINDAKAN */
+        .glass-badge {
+            background: rgba(226, 232, 240, 0.5); /* Warna asas kelabu cair */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        /* Glassmorphism untuk Dark Mode */
+        [data-theme="dark"] .glass-badge {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            color: #f8fafc;
+        }
         
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 80px; letter-spacing: 0.3px; white-space: nowrap; }
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
@@ -139,7 +165,7 @@
         .modal-task-meta { display: flex; gap: 15px; font-size: 11px; align-items: center; flex-wrap: wrap; color: var(--text-muted); }
         .modal-footer { padding: 15px 30px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
 
-        /* RESPONSIVE DESIGN (MOBILE & TABLET) */
+        /* RESPONSIVE DESIGN */
         @media (max-width: 1024px) {
             .dashboard-layout { grid-template-columns: 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
@@ -153,7 +179,7 @@
             .search-box { width: 100%; }
         }
 
-        /* PRINT STYLES (CETAK LAPORAN) */
+        /* PRINT STYLES */
         @media print {
             body { background: white; color: black; }
             .no-print, .sidebar, .header-actions, .search-box { display: none !important; }
@@ -376,7 +402,7 @@
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
     }
 
-    // 3. INISIALISASI AWAL (LOAD DARI LOCAL STORAGE)
+    // 3. INISIALISASI AWAL
     window.onload = () => {
         const savedTheme = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", savedTheme);
@@ -412,7 +438,6 @@
         const file = e.target.files[0];
         if (!file) return;
         
-        // Semak jenis fail
         if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
             showToast("Ralat: Sila muat naik fail berformat Excel (.xlsx atau .xls) sahaja.");
             e.target.value = ''; return;
@@ -437,7 +462,7 @@
     }
 
     function deleteProject(id, event) {
-        event.stopPropagation(); // Elak klik tembus ke kad
+        event.stopPropagation();
         if(confirm("Adakah anda pasti mahu memadam rekod projek ini?")) {
             delete projectsMap[id];
             const remainingKeys = Object.keys(projectsMap);
@@ -445,7 +470,7 @@
             if(remainingKeys.length === 0) {
                 activeId = null;
                 localStorage.removeItem("pnet_projects");
-                location.reload(); // Reset paparan ke Empty State
+                location.reload(); 
             } else {
                 activeId = remainingKeys[0];
                 saveToLocalStorage();
@@ -454,14 +479,19 @@
         }
     }
 
-    // Pemprosesan Data Asal...
+    // PEMBAIKAN: Tapisan Tajuk Sub (Elak Kotak Terkeluar)
     function processData(rows) {
         let result = []; let currentSec = "Umum";
         rows.forEach(row => {
             if (!row[0] && !row[1]) return;
             if (row[0] && !row[1] && !row[2]) { currentSec = row[0]; result.push({ isSec: true, title: currentSec }); }
             else {
-                if (String(row[0]).toLowerCase().includes("bil")) return;
+                const bilStr = String(row[0]).toLowerCase();
+                const actStr = String(row[1]).toLowerCase();
+                
+                // Tapis header berulang atau baris "A K T I V I T I"
+                if (bilStr.includes("bil") || bilStr.includes("aktiviti") || actStr.includes("dependencies") || actStr === "-") return;
+
                 const j = formatExcelDate(row[4]); const s = formatExcelDate(row[5]);
                 const status = getStatus(j, s);
                 result.push({ isSec: false, section: currentSec, bil: row[0] || "-", aktiviti: row[1] || "-", unit: row[2] || "N/A", tempoh: row[3] || "-", j, s, status: status.label, days: status.days });
@@ -512,7 +542,6 @@
     function renderCharts(tasks) {
         const isDark = document.documentElement.getAttribute("data-theme") === "dark";
         const textColor = isDark ? "#f1f5f9" : "#334155";
-        const gridColor = isDark ? "#334155" : "#e2e8f0";
 
         const topics = {}; tasks.forEach(t => topics[t.section] = (topics[t.section] || 0) + 1);
         const topicLabels = Object.keys(topics); const topicData = Object.values(topics);
@@ -545,7 +574,7 @@
         tbody.innerHTML = "";
         data.forEach(item => {
             if (item.isSec) { 
-                tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:600; font-size:12px; text-transform:uppercase; border-left: 3px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:14px; height:14px; color:var(--accent);"></i> <span style="white-space:normal; word-break:break-word;">${item.title}</span></div></td></tr>`; 
+                tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:700; font-size:12px; text-transform:uppercase; border-left: 3px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:14px; height:14px; color:var(--accent);"></i> <span style="white-space:normal; word-break:break-word;">${item.title}</span></div></td></tr>`; 
             } else {
                 const s = item.status.toLowerCase();
                 const cls = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
@@ -553,11 +582,11 @@
 
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--text-muted);">${item.bil}</td>
-                    <td style="font-weight:500; color:var(--text-main); word-break: break-word;">${item.aktiviti}</td>
-                    <td><span style="background:var(--hover-bg); padding:4px 8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-weight:600; white-space:nowrap; border:1px solid var(--border);">${item.unit}</span></td>
+                    <td style="color:var(--text-main);">${item.aktiviti}</td>
+                    <td><span class="glass-badge">${item.unit}</span></td>
                     <td style="color:var(--text-muted);">${item.tempoh}</td>
-                    <td style="font-weight:500;">${item.j}</td>
-                    <td style="font-weight:500; color:${item.s ? 'var(--success)' : 'var(--text-muted)'}">${item.s || '-'}</td>
+                    <td style="color:var(--text-main);">${item.j}</td>
+                    <td style="color:${item.s ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td>
                     <td style="text-align:center;"><span class="badge status-${cls}">${badgeContent}</span></td>
                 </tr>`;
             }
@@ -582,7 +611,6 @@
         lucide.createIcons();
     }
 
-    // Fungsi Modal & Utiliti sama seperti V11...
     function openModal(type) {
         if(!activeId) return;
         const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
@@ -614,8 +642,8 @@
                         <div class="modal-task-info">
                             <h4>${t.aktiviti}</h4>
                             <div class="modal-task-meta">
-                                <span style="background:var(--hover-bg); padding:3px 8px; border-radius:6px; font-weight:600; color:var(--text-main); border:1px solid var(--border);">TINDAKAN: ${t.unit.toUpperCase()}</span>
-                                <span>JANGKAAN: <b>${t.j || '-'}</b></span>
+                                <span class="glass-badge">${t.unit.toUpperCase()}</span>
+                                <span>JANGKAAN: <b style="color:var(--text-main);">${t.j || '-'}</b></span>
                                 <span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span>
                             </div>
                         </div>
