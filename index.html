@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Papan Pemuka PNET - Pemantauan Projek</title>
+    <title>Papan Pemuka PNET - Enterprise Cloud V23</title>
     <meta name="description" content="Sistem Papan Pemuka PNET rasmi untuk pemantauan jadual, status, dan kelewatan projek secara interaktif.">
     <meta property="og:title" content="Papan Pemuka PNET">
     <meta property="og:image" content="https://pnet.moh.gov.my/images/uprlogo.png">
@@ -68,6 +68,8 @@
         .btn-icon:hover { background: var(--hover-bg); transform: scale(1.05); }
         .btn-danger { background: var(--danger); color: white; border: none; }
         .btn-danger:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2); }
+        .btn-success { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15); }
+        .btn-success:hover { opacity: 0.95; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25); }
         
         .btn-clear-all { font-size: 10px; padding: 5px 10px; color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); background: transparent; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; font-weight: 600; }
         .btn-clear-all:hover { background: var(--danger); color: white; border-color: var(--danger); }
@@ -89,7 +91,7 @@
         .hero-action-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
         .btn-hero-upload { padding: 16px 32px; font-size: 15px; border-radius: 16px; }
         
-        /* PEMBAIKAN LAYOUT: Sidebar dikecilkan (Sederhana: 260px - 320px) */
+        /* Layout */
         .dashboard-layout { display: grid; grid-template-columns: clamp(260px, 20vw, 320px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -101,6 +103,18 @@
         .mini-kpi-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .mini-kpi-card h3 { margin: 0; font-size: clamp(20px, 2vw, 24px); color: var(--text-main); font-weight: 700; }
         .mini-kpi-card span { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+        /* Resource Sidebar (NEW) */
+        .sidebar-section-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .resource-list { display: flex; flex-direction: column; gap: 8px; }
+        .resource-item-wrapper { position: relative; }
+        .resource-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--hover-bg); border-radius: 12px; text-decoration: none; color: var(--text-main); transition: 0.2s; border: 1px solid transparent; }
+        .resource-item:hover { border-color: var(--accent); transform: translateX(5px); }
+        .resource-info { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; overflow: hidden; }
+        .resource-info i { color: var(--accent); }
+        .resource-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-delete-res { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--danger); cursor: pointer; opacity: 0.3; transition: 0.2s; padding: 5px; border-radius: 5px;}
+        .btn-delete-res:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
 
         /* Item Sidebar Project */
         .project-item-sidebar { border: 1px solid var(--border); border-radius: 16px; padding: 12px 15px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; background: var(--card-bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -122,23 +136,21 @@
         .legend-color { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
         .legend-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); font-weight: 500; }
 
-        /* PEMBAIKAN JADUAL: Elak Terkeluar & Kemaskan Kolum */
+        /* Table */
         .table-container { background: var(--card-bg); padding: 20px 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); min-width: 0; overflow: hidden; }
         .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 100%; max-width: 350px; border: 1px solid var(--border); transition: 0.2s; }
         .search-box:focus-within { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px var(--glow-color); }
         .search-box input { border: none !important; background: transparent !important; outline: none !important; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
 
         .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; padding-bottom: 10px; }
-        
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; } /* Paksa jadual ada ruang bernafas */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; } 
         th { text-align: left; padding: 14px 15px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
         td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); line-height: 1.5; font-weight: 500; }
         
-        /* Kunci Kolum Tertentu Supaya Tak Penyek */
         td:nth-child(1) { white-space: nowrap; width: 50px; }
-        td:nth-child(2) { min-width: 250px; word-wrap: break-word; white-space: normal; } /* Hanya kolum aktiviti boleh wrap */
+        td:nth-child(2) { min-width: 250px; word-wrap: break-word; white-space: normal; } 
         td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6), td:nth-child(7) { white-space: nowrap; }
-        td:nth-child(7) { text-align: center; padding-right: 25px; } /* Ruang lebih di kolum status */
+        td:nth-child(7) { text-align: center; padding-right: 25px; } 
 
         .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap; }
         [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05); }
@@ -166,7 +178,8 @@
         .modal-card-custom { background: var(--card-bg); width: 90%; max-width: 420px; border-radius: 24px; padding: 35px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay-custom.show .modal-card-custom { transform: scale(1); }
         .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
-        
+        .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; }
+
         @media (max-width: 1024px) { 
             .dashboard-layout { grid-template-columns: 1fr; } 
             .sidebar .card { padding: 20px; } 
@@ -195,9 +208,10 @@
             </div>
         </div>
         <div class="header-actions">
+            <button class="btn btn-success" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive"><i data-lucide="folder-plus"></i></button>
+            <button class="btn btn-sync" onclick="openModal('cloud-modal')" title="Sambung Google Sheets CSV"><i data-lucide="cloud-lightning"></i> Cloud Sync</button>
             <button class="btn-icon" onclick="goHome()" title="Laman Utama"><i data-lucide="home"></i></button>
             <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn"><i data-lucide="moon"></i></button>
-            <button class="btn btn-outline" onclick="window.print()" id="printBtn" style="display: none;"><i data-lucide="printer" style="width:16px;"></i> Cetak</button>
             <label class="btn btn-primary" id="headerUploadBtn"><i data-lucide="file-up" style="width:16px;"></i> Muat Naik Excel <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls"></label>
         </div>
     </header>
@@ -205,9 +219,10 @@
     <div id="empty-state">
         <div class="hero-icon-wrapper"><div class="hero-icon-glow"></div><i data-lucide="layers" style="width:75px; height:75px; color:var(--accent); stroke-width:1.5;"></i></div>
         <h2 class="gradient-text">Papan Pemuka Sedia Digunakan</h2>
-        <p class="hero-subtitle">Platform berpusat untuk menjejak prestasi, mengenal pasti kelewatan, dan menganalisis status projek secara visual tanpa menggunakan pangkalan data luar.</p>
+        <p class="hero-subtitle">Platform berpusat untuk menjejak prestasi projek dan menyimpan rujukan penting (Drive/Docs) secara visual tanpa pangkalan data luar.</p>
         <div class="hero-action-container">
-            <label class="btn btn-primary btn-hero-upload"><i data-lucide="upload-cloud" style="width:20px; height:20px;"></i> <span id="heroUploadText">Mula Muat Naik Data Excel</span><input type="file" id="fileInputCenter" hidden accept=".xlsx, .xls"></label>
+            <button class="btn btn-sync btn-hero-upload" onclick="openModal('cloud-modal')"><i data-lucide="link"></i> Sambung Google Sheets</button>
+            <label class="btn btn-primary btn-hero-upload"><i data-lucide="upload-cloud" style="width:20px; height:20px;"></i> <span id="heroUploadText">Muat Naik Excel</span><input type="file" id="fileInputCenter" hidden accept=".xlsx, .xls"></label>
             <button class="btn btn-outline btn-hero-upload" id="heroReturnBtn" style="display:none;" onclick="updateUI()"><i data-lucide="layout-dashboard" style="width:20px; height:20px;"></i> Buka Papan Pemuka</button>
         </div>
     </div>
@@ -228,13 +243,23 @@
                 </div>
 
                 <div class="card" style="padding: 20px;">
+                    <div class="sidebar-section-title">
+                        Rujukan & Folder
+                        <button class="btn-icon" style="padding:4px; border-radius:6px; height:auto;" onclick="openModal('add-resource-modal')" title="Tambah Pautan Baru">
+                            <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                        </button>
+                    </div>
+                    <div id="resource-list-sidebar" class="resource-list"></div>
+                </div>
+
+                <div class="card" style="padding: 20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:800; letter-spacing: 0.5px;">Fail Projek</h3>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <button class="btn-clear-all" onclick="showClearAllModal()" title="Hapus Semua Fail"><i data-lucide="trash-2" style="width:12px;"></i> Padam Semua</button>
+                            <button class="btn-clear-all" onclick="openModal('clear-all-modal')" title="Hapus Semua Fail"><i data-lucide="trash-2" style="width:12px;"></i> Padam Semua</button>
                         </div>
                     </div>
-                    <div id="project-list-sidebar" style="max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+                    <div id="project-list-sidebar" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
                     <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 15px; border-style: dashed; padding: 12px;"><i data-lucide="plus" style="width:16px;"></i> Tambah Projek <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls"></label>
                 </div>
             </aside>
@@ -279,11 +304,34 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="details-modal">
-    <div class="modal-container">
-        <div class="modal-header" id="modal-header"><h3 id="modal-title"><i data-lucide="list" style="width:18px;"></i> Senarai Aktiviti</h3><button class="modal-close" onclick="closeModal()"><i data-lucide="x" style="width:18px;"></i></button></div>
-        <div class="modal-body" id="modal-body"></div>
-        <div class="modal-footer"><button class="btn btn-outline" style="border:none;" onclick="closeModal()">Tutup Paparan</button></div>
+<div class="modal-overlay-custom" id="cloud-modal">
+    <div class="modal-card-custom">
+        <div style="background:rgba(16, 185, 129, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+            <i data-lucide="cloud-upload" style="color:#10b981;"></i>
+        </div>
+        <h3>Sambung Google Sheets</h3>
+        <p style="font-size:13px; color:var(--text-muted);">Masukkan pautan CSV (Publish to Web) bagi tab projek anda.</p>
+        <input type="text" id="cloudUrlInput" class="input-cloud" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv">
+        <div class="modal-card-footer">
+            <button class="btn btn-outline" onclick="closeModal('cloud-modal')">Batal</button>
+            <button class="btn btn-sync" onclick="processCloudLink()">Sambung & Papar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay-custom" id="add-resource-modal">
+    <div class="modal-card-custom">
+        <div style="background:rgba(59, 130, 246, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+            <i data-lucide="folder-plus" style="color:var(--accent);"></i>
+        </div>
+        <h3>Tambah Rujukan Awan</h3>
+        <p style="font-size:13px; color:var(--text-muted);">Simpan pautan Google Drive atau Google Docs untuk rujukan pantas semasa mesyuarat.</p>
+        <input type="text" id="resourceName" class="input-cloud" style="margin-bottom:10px;" placeholder="Nama (cth: Folder Tender Rasmi)">
+        <input type="text" id="resourceUrl" class="input-cloud" placeholder="Pautan (https://drive.google.com/...)">
+        <div class="modal-card-footer">
+            <button class="btn btn-outline" onclick="closeModal('add-resource-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="addResource()">Simpan</button>
+        </div>
     </div>
 </div>
 
@@ -296,12 +344,20 @@
         <div style="background:rgba(239, 68, 68, 0.1); width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
             <i data-lucide="alert-octagon" style="width:40px; height:40px; color:var(--danger);"></i>
         </div>
-        <h3>Hapus Semua Fail?</h3>
-        <p>Semua senarai projek di papan pemuka ini akan dikosongkan. Jangan risau, fail Excel asal di komputer anda tetap selamat dan tidak akan terjejas.</p>
+        <h3>Hapus Semua Data?</h3>
+        <p>Tindakan ini akan mengosongkan semua senarai projek dan pautan rujukan. Anda perlu memuat naik atau menyambung pautan semula.</p>
         <div class="modal-card-footer">
-            <button class="btn btn-outline" onclick="closeClearAllModal()">Batal</button>
+            <button class="btn btn-outline" onclick="closeModal('clear-all-modal')">Batal</button>
             <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan Paparan</button>
         </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="details-modal">
+    <div class="modal-container">
+        <div class="modal-header" id="modal-header"><h3 id="modal-title"><i data-lucide="list" style="width:18px;"></i> Senarai Aktiviti</h3><button class="modal-close" onclick="closeModal('details-modal')"><i data-lucide="x" style="width:18px;"></i></button></div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-footer"><button class="btn btn-outline" style="border:none;" onclick="closeModal('details-modal')">Tutup Paparan</button></div>
     </div>
 </div>
 
@@ -309,7 +365,10 @@
     lucide.createIcons();
     Chart.register(ChartDataLabels);
     let projectsMap = {}; let activeId = null; let topicChart, unitChart;
-    const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
+    let savedResources = []; // Array untuk simpan link Docs/Drive
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
 
     function toggleTheme() {
         const curr = document.documentElement.getAttribute("data-theme");
@@ -328,17 +387,36 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
-    window.onload = () => {
+    window.onload = async () => {
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
         if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
 
+        // Load Resources
+        const res = localStorage.getItem("pnet_resources");
+        if(res) { savedResources = JSON.parse(res); renderResources(); } else { renderResources(); }
+
         const sd = localStorage.getItem("pnet_projects");
         if (sd) {
             try {
                 const p = JSON.parse(sd);
-                if (Object.keys(p.map).length > 0) { projectsMap = p.map; activeId = p.active || Object.keys(projectsMap)[0]; goHome(); }
+                if (Object.keys(p.map).length > 0) { 
+                    projectsMap = p.map; activeId = p.active || Object.keys(projectsMap)[0]; goHome();
+                    // Lakukan auto-refresh untuk Cloud Links
+                    for(let id in projectsMap){
+                        if(projectsMap[id].isCloud && projectsMap[id].url) {
+                            try {
+                                const response = await fetch(projectsMap[id].url);
+                                const csvText = await response.text();
+                                const workbook = XLSX.read(csvText, { type: 'string' });
+                                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                                projectsMap[id].data = processData(rows);
+                            } catch(e) { console.warn("Gagal auto-refresh", id); }
+                        }
+                    }
+                    if(document.getElementById('dashboard-content').style.display !== 'none') updateUI();
+                }
             } catch(e) { console.error(e); }
         }
     };
@@ -346,6 +424,62 @@
     function saveToLocalStorage() {
         try { localStorage.setItem("pnet_projects", JSON.stringify({ map: projectsMap, active: activeId })); } 
         catch(e) { showToast("Storan penuh!"); }
+    }
+
+    // --- FUNGSI RESOURCE DRIVE/DOCS ---
+    function addResource() {
+        const name = document.getElementById('resourceName').value.trim();
+        let url = document.getElementById('resourceUrl').value.trim();
+        if(!name || !url) { showToast("Sila masukkan nama dan pautan."); return; }
+        if (!url.match(/^https?:\/\//i)) url = 'http://' + url;
+        savedResources.push({ name, url });
+        localStorage.setItem("pnet_resources", JSON.stringify(savedResources));
+        document.getElementById('resourceName').value = ''; document.getElementById('resourceUrl').value = '';
+        closeModal('add-resource-modal'); renderResources(); showToast("Rujukan disimpan!");
+    }
+
+    function renderResources() {
+        const c = document.getElementById('resource-list-sidebar'); c.innerHTML = "";
+        if(savedResources.length === 0) {
+            c.innerHTML = '<div style="text-align:center; padding:10px; font-size:11px; color:var(--text-muted);">Tiada pautan disimpan.</div>'; return;
+        }
+        savedResources.forEach((item, index) => {
+            const iconName = item.url.includes('docs.google') ? 'file-text' : (item.url.includes('drive.google') ? 'folder' : 'external-link');
+            c.innerHTML += `
+            <div class="resource-item-wrapper">
+                <a href="${item.url}" target="_blank" class="resource-item">
+                    <div class="resource-info"><i data-lucide="${iconName}"></i> <span class="resource-name">${item.name}</span></div>
+                </a>
+                <button class="btn-delete-res" onclick="deleteResource(${index})" title="Padam Rujukan"><i data-lucide="x" style="width:12px; height:12px;"></i></button>
+            </div>`;
+        });
+        lucide.createIcons();
+    }
+
+    function deleteResource(index) {
+        if(confirm("Padam pautan rujukan ini?")) {
+            savedResources.splice(index, 1);
+            localStorage.setItem("pnet_resources", JSON.stringify(savedResources));
+            renderResources();
+        }
+    }
+    // ---------------------------------
+
+    async function processCloudLink() {
+        const url = document.getElementById('cloudUrlInput').value.trim();
+        if(!url.includes('pub?output=csv') && !url.includes('/export?format=csv')) { showToast("Sila guna pautan CSV yang sah."); return; }
+        
+        showToast("Menarik data awan...");
+        try {
+            const res = await fetch(url);
+            const csvText = await res.text();
+            const workbook = XLSX.read(csvText, { type: 'string' });
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+            const id = 'cloud_' + Date.now();
+            projectsMap[id] = { name: "Google Sheets Sync", data: processData(rows), isCloud: true, url: url };
+            activeId = id; saveToLocalStorage(); updateUI(); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
+            showToast("Berjaya disambung!");
+        } catch(e) { showToast("Gagal menarik data."); }
     }
 
     function goHome() {
@@ -357,11 +491,9 @@
         if (Object.keys(projectsMap).length > 0) {
             document.getElementById('headerUploadBtn').style.display = 'none';
             document.getElementById('heroReturnBtn').style.display = 'inline-flex';
-            document.getElementById('heroUploadText').innerText = "Tambah Excel Baharu";
         } else {
             document.getElementById('headerUploadBtn').style.display = 'inline-flex';
             document.getElementById('heroReturnBtn').style.display = 'none';
-            document.getElementById('heroUploadText').innerText = "Mula Muat Naik Data Excel";
         }
     }
 
@@ -377,7 +509,7 @@
                 const wb = XLSX.read(evt.target.result, { type: 'binary' });
                 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                 const id = 'p' + Date.now();
-                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), data: processData(rows) };
+                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), data: processData(rows), isCloud: false };
                 activeId = id; saveToLocalStorage(); updateUI();
             } catch(error) { showToast("Ralat membaca fail."); }
         };
@@ -452,7 +584,7 @@
             if (item.isSec) { tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:800; font-size:12px; text-transform:uppercase; border-left: 4px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:16px;"></i> ${item.title}</div></td></tr>`; } 
             else {
                 const s = item.status.toLowerCase(); const cls = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
-                tbody.innerHTML += `<tr><td style="color:var(--text-muted);">${item.bil}</td><td style="font-weight:600; color:var(--text-main);">${item.aktiviti}</td><td><span class="glass-badge">${item.unit}</span></td><td style="color:var(--text-muted);">${item.tempoh}</td><td style="font-weight:600;">${item.j}</td><td style="font-weight:600; color:${item.s ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td><td style="text-align:right;"><span class="badge status-${cls}">${item.status === 'HAMPIR TAMAT' ? '<span class="pulse-dot"></span> HAMPIR TAMAT' : item.status}</span></td></tr>`;
+                tbody.innerHTML += `<tr><td style="color:var(--text-muted);">${item.bil}</td><td style="font-weight:600; color:var(--text-main);">${item.aktiviti}</td><td><span class="glass-badge">${item.unit}</span></td><td style="color:var(--text-muted);">${item.tempoh}</td><td style="font-weight:600;">${item.j}</td><td style="font-weight:600; color:${item.s ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td><td style="text-align:center;"><span class="badge status-${cls}">${item.status === 'HAMPIR TAMAT' ? '<span class="pulse-dot"></span> HAMPIR TAMAT' : item.status}</span></td></tr>`;
             }
         });
         lucide.createIcons();
@@ -462,21 +594,19 @@
         const c = document.getElementById('project-list-sidebar'); c.innerHTML = "";
         Object.keys(projectsMap).forEach(id => {
             const active = id === activeId ? 'active' : '';
-            c.innerHTML += `<div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();"><div style="display:flex; align-items:center; gap:10px; overflow:hidden;"><div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="file-spreadsheet" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div><span class="proj-name">${projectsMap[id].name}</span></div><button class="btn-delete-proj" onclick="showDeleteModal('${id}', event)"><i data-lucide="trash-2" style="width:14px;"></i></button></div>`;
+            c.innerHTML += `<div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();"><div style="display:flex; align-items:center; gap:10px; overflow:hidden;"><div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${projectsMap[id].isCloud ? 'cloud' : 'file-spreadsheet'}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div><span class="proj-name">${projectsMap[id].name}</span></div><button class="btn-delete-proj" onclick="showDeleteModal('${id}', event)"><i data-lucide="trash-2" style="width:14px;"></i></button></div>`;
         });
         lucide.createIcons();
     }
 
     let pToDelete = null;
-    function showDeleteModal(id, e) { e.stopPropagation(); pToDelete = id; document.getElementById('delete-project-name').innerText = projectsMap[id].name; const m = document.getElementById('delete-confirm-modal'); m.style.display = 'flex'; setTimeout(() => m.classList.add('show'), 10); }
-    function cancelDeleteProject() { const m = document.getElementById('delete-confirm-modal'); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); pToDelete = null; }
+    function showDeleteModal(id, e) { e.stopPropagation(); pToDelete = id; document.getElementById('delete-project-name').innerText = projectsMap[id].name; openModal('delete-confirm-modal'); }
+    function cancelDeleteProject() { closeModal('delete-confirm-modal'); pToDelete = null; }
     function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); if(Object.keys(projectsMap).length === 0) { localStorage.removeItem("pnet_projects"); location.reload(); } else { activeId = Object.keys(projectsMap)[0]; saveToLocalStorage(); updateUI(); } }
 
-    function showClearAllModal() { const m = document.getElementById('clear-all-modal'); m.style.display = 'flex'; lucide.createIcons(); setTimeout(() => m.classList.add('show'), 10); }
-    function closeClearAllModal() { const m = document.getElementById('clear-all-modal'); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
-    function confirmDeleteAll() { projectsMap = {}; activeId = null; localStorage.removeItem("pnet_projects"); closeClearAllModal(); location.reload(); }
+    function confirmDeleteAll() { projectsMap = {}; activeId = null; localStorage.removeItem("pnet_projects"); localStorage.removeItem("pnet_resources"); closeModal('clear-all-modal'); location.reload(); }
 
-    function openModal(type) {
+    function openModalType(type) {
         if(!activeId) return; const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
         let filt = [], hBg = '', title = '', icon = '';
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; icon = 'clipboard-list'; } 
@@ -492,12 +622,18 @@
                 let bt = '0', bb = 'var(--hover-bg)', bc = 'var(--text-muted)';
                 if(t.status === 'SELESAI' && t.j && t.s) { const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s); if(dj && ds) { const d = Math.ceil((ds - dj)/(1000*3600*24)); bt = d > 0 ? `+${d}H` : `${d}H`; bb = d > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; bc = d > 0 ? 'var(--danger)' : 'var(--success)'; } }
                 else if(t.status.includes('LEWAT')) { bt = `+${t.days}H`; bb = 'rgba(239,68,68,0.1)'; bc = 'var(--danger)'; }
-                b.innerHTML += `<div class="modal-task-card"><div class="modal-task-badge" style="background:${bb}; color:${bc}">${bt}</div><div class="modal-task-info"><h4>${t.aktiviti}</h4><div class="modal-task-meta"><span class="glass-badge">${t.unit.toUpperCase()}</span><span>JANGKAAN: <b>${t.j || '-'}</b></span><span>SEBENAR: <b style="color:${t.s ? 'var(--success)' : 'inherit'}">${t.s || '-'}</b></span></div></div></div>`;
+                b.innerHTML += `<div class="modal-task-card" style="background:var(--card-bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:${bb}; color:${bc}; padding:10px; border-radius:8px; font-weight:bold; min-width:50px; text-align:center;">${bt}</div><div><h4 style="margin:0 0 5px;">${t.aktiviti}</h4><span style="font-size:11px; color:var(--text-muted);">Jangkaan: ${t.j} | Sebenar: ${t.s || '-'}</span></div></div>`;
             });
         }
-        const modal = document.getElementById('details-modal'); modal.style.display = 'flex'; lucide.createIcons(); setTimeout(() => modal.classList.add('show'), 10);
+        openModal('details-modal');
     }
-    function closeModal() { const m = document.getElementById('details-modal'); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
+    
+    // Override onclick untuk kotak mini KPI
+    document.querySelectorAll('.mini-kpi-card').forEach((el, index) => {
+        const types = ['TUGASAN', 'SELESAI', 'MENGIKUT JADUAL', 'LEWAT'];
+        el.onclick = () => openModalType(types[index]);
+    });
+
     function parseDateHelper(d) { if(!d) return null; const p = d.split('/'); if(p.length < 3) return null; return new Date(p[2], p[1]-1, p[0]); }
     document.getElementById('searchInput').addEventListener('input', function(e) {
         const v = e.target.value.toLowerCase();
