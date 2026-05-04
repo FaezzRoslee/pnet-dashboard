@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Papan Pemuka PNET - Enterprise Cloud V23</title>
+    <title>Papan Pemuka PNET - Enterprise Cloud V24</title>
     <meta name="description" content="Sistem Papan Pemuka PNET rasmi untuk pemantauan jadual, status, dan kelewatan projek secara interaktif.">
     <meta property="og:title" content="Papan Pemuka PNET">
     <meta property="og:image" content="https://pnet.moh.gov.my/images/uprlogo.png">
@@ -165,7 +165,7 @@
         .animate { animation: fadeInUp 0.4s ease-out forwards; }
 
         /* MODALS */
-        .modal-overlay, .modal-overlay-custom { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay, .modal-overlay-custom { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.show, .modal-overlay-custom.show { display: flex; opacity: 1; }
         
         .modal-container { background: var(--card-bg); width: 90%; max-width: 850px; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 85vh; transform: scale(0.95); transition: transform 0.3s ease; border: 1px solid var(--border); }
@@ -212,6 +212,7 @@
             <button class="btn btn-sync" onclick="openModal('cloud-modal')" title="Sambung Google Sheets CSV"><i data-lucide="cloud-lightning"></i> Cloud Sync</button>
             <button class="btn-icon" onclick="goHome()" title="Laman Utama"><i data-lucide="home"></i></button>
             <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn"><i data-lucide="moon"></i></button>
+            <button class="btn btn-outline" onclick="window.print()" id="printBtn" style="display: none;"><i data-lucide="printer" style="width:16px;"></i> Cetak</button>
             <label class="btn btn-primary" id="headerUploadBtn"><i data-lucide="file-up" style="width:16px;"></i> Muat Naik Excel <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls"></label>
         </div>
     </header>
@@ -236,10 +237,10 @@
                 </div>
 
                 <div class="mini-kpi-grid" style="margin-bottom: 20px;">
-                    <div class="mini-kpi-card" onclick="openModal('TUGASAN')"><div class="mini-kpi-header"><span>Tugasan</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div></div><h3 id="kpi-total">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openModal('SELESAI')"><div class="mini-kpi-header"><span>Selesai</span><div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div></div><h3 id="kpi-done">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openModal('MENGIKUT JADUAL')"><div class="mini-kpi-header"><span>Jadual</span><div class="mini-kpi-icon" style="background:rgba(245,158,11,0.1); color:var(--warning);"><i data-lucide="clock" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);">Lewat</span><div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openModalType('TUGASAN')"><div class="mini-kpi-header"><span>Tugasan</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div></div><h3 id="kpi-total">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openModalType('SELESAI')"><div class="mini-kpi-header"><span>Selesai</span><div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div></div><h3 id="kpi-done">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openModalType('MENGIKUT JADUAL')"><div class="mini-kpi-header"><span>Jadual</span><div class="mini-kpi-icon" style="background:rgba(245,158,11,0.1); color:var(--warning);"><i data-lucide="clock" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openModalType('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);">Lewat</span><div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
                 </div>
 
                 <div class="card" style="padding: 20px;">
@@ -348,7 +349,7 @@
         <p>Tindakan ini akan mengosongkan semua senarai projek dan pautan rujukan. Anda perlu memuat naik atau menyambung pautan semula.</p>
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="closeModal('clear-all-modal')">Batal</button>
-            <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan Paparan</button>
+            <button class="btn btn-danger" onclick="confirmClearAll()">Kosongkan Paparan</button>
         </div>
     </div>
 </div>
@@ -364,8 +365,7 @@
 <script>
     lucide.createIcons();
     Chart.register(ChartDataLabels);
-    let projectsMap = {}; let activeId = null; let topicChart, unitChart;
-    let savedResources = []; // Array untuk simpan link Docs/Drive
+    let projectsMap = {}; let resources = []; let activeId = null; let topicChart, unitChart;
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
@@ -395,7 +395,7 @@
 
         // Load Resources
         const res = localStorage.getItem("pnet_resources");
-        if(res) { savedResources = JSON.parse(res); renderResources(); } else { renderResources(); }
+        if(res) { resources = JSON.parse(res); renderResources(); } else { renderResources(); }
 
         const sd = localStorage.getItem("pnet_projects");
         if (sd) {
@@ -432,18 +432,18 @@
         let url = document.getElementById('resourceUrl').value.trim();
         if(!name || !url) { showToast("Sila masukkan nama dan pautan."); return; }
         if (!url.match(/^https?:\/\//i)) url = 'http://' + url;
-        savedResources.push({ name, url });
-        localStorage.setItem("pnet_resources", JSON.stringify(savedResources));
+        resources.push({ name, url });
+        localStorage.setItem("pnet_resources", JSON.stringify(resources));
         document.getElementById('resourceName').value = ''; document.getElementById('resourceUrl').value = '';
         closeModal('add-resource-modal'); renderResources(); showToast("Rujukan disimpan!");
     }
 
     function renderResources() {
         const c = document.getElementById('resource-list-sidebar'); c.innerHTML = "";
-        if(savedResources.length === 0) {
+        if(resources.length === 0) {
             c.innerHTML = '<div style="text-align:center; padding:10px; font-size:11px; color:var(--text-muted);">Tiada pautan disimpan.</div>'; return;
         }
-        savedResources.forEach((item, index) => {
+        resources.forEach((item, index) => {
             const iconName = item.url.includes('docs.google') ? 'file-text' : (item.url.includes('drive.google') ? 'folder' : 'external-link');
             c.innerHTML += `
             <div class="resource-item-wrapper">
@@ -458,16 +458,22 @@
 
     function deleteResource(index) {
         if(confirm("Padam pautan rujukan ini?")) {
-            savedResources.splice(index, 1);
-            localStorage.setItem("pnet_resources", JSON.stringify(savedResources));
+            resources.splice(index, 1);
+            localStorage.setItem("pnet_resources", JSON.stringify(resources));
             renderResources();
         }
     }
     // ---------------------------------
 
+    // --- FUNGSI CLOUD SYNC YANG DIBETULKAN (V24) ---
     async function processCloudLink() {
         const url = document.getElementById('cloudUrlInput').value.trim();
-        if(!url.includes('pub?output=csv') && !url.includes('/export?format=csv')) { showToast("Sila guna pautan CSV yang sah."); return; }
+        
+        // TAPISAN DILONGGARKAN: Hanya semak jika ada perkataan 'csv' dalam url
+        if(!url.toLowerCase().includes('csv')) { 
+            showToast("Sila guna pautan CSV yang sah."); 
+            return; 
+        }
         
         showToast("Menarik data awan...");
         try {
@@ -477,10 +483,17 @@
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
             const id = 'cloud_' + Date.now();
             projectsMap[id] = { name: "Google Sheets Sync", data: processData(rows), isCloud: true, url: url };
-            activeId = id; saveToLocalStorage(); updateUI(); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
+            activeId = id; 
+            saveToLocalStorage(); 
+            updateUI(); 
+            closeModal('cloud-modal'); 
+            document.getElementById('cloudUrlInput').value = '';
             showToast("Berjaya disambung!");
-        } catch(e) { showToast("Gagal menarik data."); }
+        } catch(e) { 
+            showToast("Gagal menarik data. Pastikan format CSV."); 
+        }
     }
+    // -----------------------------------------------
 
     function goHome() {
         document.getElementById('dashboard-content').style.display = 'none';
@@ -548,12 +561,14 @@
         document.getElementById('headerUploadBtn').style.display = 'none'; 
         document.getElementById('printBtn').style.display = 'inline-flex'; 
         const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
+        
         animateNum('kpi-total', tasks.length);
         animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
         animateNum('kpi-track', tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
         animateNum('kpi-delay', tasks.filter(t => t.status.includes('LEWAT')).length);
         const perc = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'SELESAI').length / tasks.length) * 100) : 0;
         animateNum('global-percent', perc, '%');
+        
         updateSidebar(); renderCharts(tasks); renderTable(p.data);
     }
 
@@ -562,6 +577,9 @@
         const txt = isDark ? "#f8fafc" : "#0f172a";
         const topics = {}; tasks.forEach(t => topics[t.section] = (topics[t.section] || 0) + 1);
         const labels = Object.keys(topics); const data = Object.values(topics);
+        
+        const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
+
         if (topicChart) topicChart.destroy();
         topicChart = new Chart(document.getElementById('topicChart'), {
             type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: chartColors, borderWidth: 3, borderColor: isDark ? '#1e293b' : '#fff' }] },
@@ -570,6 +588,7 @@
         let leg = '<div class="custom-legend">';
         labels.forEach((l, i) => { const c = chartColors[i % chartColors.length]; leg += `<div class="legend-item" title="${l}"><div class="legend-left"><span class="legend-color" style="background:${c}"></span><span class="legend-text">${l}</span></div><span class="legend-val">${data[i]}</span></div>`; });
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
+        
         const units = {}; tasks.forEach(t => { if(t.days > 0) units[t.unit] = (units[t.unit] || 0) + t.days; });
         if (unitChart) unitChart.destroy();
         unitChart = new Chart(document.getElementById('unitChart'), {
@@ -604,7 +623,7 @@
     function cancelDeleteProject() { closeModal('delete-confirm-modal'); pToDelete = null; }
     function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); if(Object.keys(projectsMap).length === 0) { localStorage.removeItem("pnet_projects"); location.reload(); } else { activeId = Object.keys(projectsMap)[0]; saveToLocalStorage(); updateUI(); } }
 
-    function confirmDeleteAll() { projectsMap = {}; activeId = null; localStorage.removeItem("pnet_projects"); localStorage.removeItem("pnet_resources"); closeModal('clear-all-modal'); location.reload(); }
+    function confirmClearAll() { localStorage.removeItem("pnet_projects"); localStorage.removeItem("pnet_resources"); closeModal('clear-all-modal'); location.reload(); }
 
     function openModalType(type) {
         if(!activeId) return; const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
@@ -613,9 +632,11 @@
         else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI'); hBg = 'var(--success)'; title = 'Aktiviti Selesai'; icon = 'check-circle-2'; } 
         else if(type === 'MENGIKUT JADUAL') { filt = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); hBg = 'var(--warning)'; title = 'Mengikut Jadual'; icon = 'clock'; } 
         else if(type === 'LEWAT') { filt = tasks.filter(t => t.status.includes('LEWAT')); hBg = 'var(--danger)'; title = 'Aktiviti Lewat'; icon = 'alert-triangle'; }
+        
         document.getElementById('modal-header').style.background = hBg;
         document.getElementById('modal-title').innerHTML = `<i data-lucide="${icon}"></i> ${p.name} - ${title}`;
         const b = document.getElementById('modal-body'); b.innerHTML = '';
+        
         if(filt.length === 0) { b.innerHTML = '<div style="text-align:center; padding: 50px;"><i data-lucide="inbox" style="width:48px; opacity:0.5;"></i><p>Tiada rekod.</p></div>'; } 
         else {
             filt.forEach(t => {
@@ -627,12 +648,6 @@
         }
         openModal('details-modal');
     }
-    
-    // Override onclick untuk kotak mini KPI
-    document.querySelectorAll('.mini-kpi-card').forEach((el, index) => {
-        const types = ['TUGASAN', 'SELESAI', 'MENGIKUT JADUAL', 'LEWAT'];
-        el.onclick = () => openModalType(types[index]);
-    });
 
     function parseDateHelper(d) { if(!d) return null; const p = d.split('/'); if(p.length < 3) return null; return new Date(p[2], p[1]-1, p[0]); }
     document.getElementById('searchInput').addEventListener('input', function(e) {
