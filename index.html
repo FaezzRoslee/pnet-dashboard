@@ -99,7 +99,7 @@
         .dashboard-layout { display: grid; grid-template-columns: clamp(260px, 20vw, 320px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
-        /* Mini KPI */
+        /* Mini KPI Sidebar */
         .mini-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .mini-kpi-card { background: var(--hover-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; gap: 8px; }
         .mini-kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); border-color: var(--accent); }
@@ -139,7 +139,7 @@
         .legend-color { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 
         /* ============================================================== */
-        /* PEMBAIKAN JADUAL V30: Muat 1 Skrin (Tiada Horizontal Scroll)   */
+        /* PEMBAIKAN JADUAL V31: Alignment Sempurna untuk Semua Jadual    */
         /* ============================================================== */
         .table-container { background: var(--card-bg); padding: 20px 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); min-width: 0; overflow: hidden; }
         .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 100%; max-width: 350px; border: 1px solid var(--border); transition: 0.2s; }
@@ -147,23 +147,24 @@
         .search-box input { border: none !important; background: transparent !important; outline: none !important; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
 
         .table-wrapper { overflow-x: auto; width: 100%; border-radius: 8px; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
         
-        table { width: 100%; border-collapse: separate; border-spacing: 0; } /* Buang min-width 850px */
+        th { text-align: left; padding: 14px 15px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); line-height: 1.5; font-weight: 500; }
         
-        /* Kecilkan padding dan size font supaya muat cantik */
-        th { text-align: left; padding: 12px 10px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-main); line-height: 1.4; font-weight: 500; }
+        /* Baris Data Biasa */
+        tr:not(.sec-row) td:nth-child(1) { width: 3%; white-space: nowrap; } /* Bil */
+        tr:not(.sec-row) td:nth-child(2) { min-width: 250px; width: 35%; word-wrap: break-word; white-space: normal; } /* Aktiviti */
+        tr:not(.sec-row) td:nth-child(3), tr:not(.sec-row) td:nth-child(4), tr:not(.sec-row) td:nth-child(5), tr:not(.sec-row) td:nth-child(6) { white-space: nowrap; width: 12%; }
+        tr:not(.sec-row) td:nth-child(7) { text-align: center; width: 14%; padding-right: 20px; white-space: nowrap; }
         
-        /* Auto-adjust lebar kolum */
-        td:nth-child(1) { width: 3%; white-space: nowrap; } /* Bil */
-        td:nth-child(2) { width: 40%; word-wrap: break-word; white-space: normal; } /* Aktiviti - Benarkan patah baris */
-        td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { white-space: nowrap; width: 10%; } /* Tindakan, Tempoh, Jangkaan, Sebenar */
-        td:nth-child(7) { text-align: center; white-space: nowrap; width: 12%; } /* Status */
+        /* Baris Tajuk Seksyen (Penyelesaian Isu Table Memanjang) */
+        .sec-row td { white-space: normal !important; word-wrap: break-word; }
 
-        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; display: inline-block; white-space: nowrap; }
+        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap; }
         [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; min-width: 85px; letter-spacing: 0.3px; white-space: nowrap; }
+        .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 90px; letter-spacing: 0.3px; white-space: nowrap; }
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .status-mengikutjadual, .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
@@ -292,7 +293,7 @@
                                     <th>Tempoh</th>
                                     <th>Jangkaan</th>
                                     <th>Sebenar</th>
-                                    <th>Status</th>
+                                    <th style="text-align: center;">Status</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -423,21 +424,17 @@
     // 3. INIT (MULA SISTEM)
     // ==========================================
     window.onload = async () => {
-        // Tunjuk Alert Loading Tengah Skrin
         document.getElementById('main-loader').style.display = 'flex';
 
-        // Tema
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
         if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
 
-        // Load Rujukan Folder
         const savedRes = localStorage.getItem("pnet_resources");
         if (savedRes) resourcesList = JSON.parse(savedRes);
         renderResources();
 
-        // Load Uploads dari LocalStorage
         const sd = localStorage.getItem("pnet_projects");
         if (sd) {
             try {
@@ -453,12 +450,9 @@
             } catch(e) { console.error("Ralat baca local storage"); }
         }
 
-        // Tunjuk UI Sidebar Dahulu (Supaya Tak Kosong)
         forceRenderSidebarOnly();
 
-        // Fetch Data Cloud dari latar belakang
         let fetchPromises = [];
-
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
@@ -474,15 +468,12 @@
             }
         }
         
-        // Tunggu semua fetch selesai
         await Promise.all(fetchPromises);
 
-        // Tutup Alert Loading Tengah Skrin
         const loader = document.getElementById('main-loader');
         loader.style.opacity = '0';
         setTimeout(() => loader.style.display = 'none', 400);
         
-        // Render keseluruhan UI
         document.getElementById('dashboard-content').style.display = 'block';
         document.getElementById('empty-state').style.display = 'none';
         updateUI(); 
@@ -506,10 +497,7 @@
     // ==========================================
     function formatExcelDate(v) { 
         if (!v) return ""; 
-        // Jika ia string nombor panjang dari Google Sheets export (cth: "46083.000...")
-        if (typeof v === 'string' && !isNaN(v) && v.trim() !== '') {
-            v = parseFloat(v);
-        }
+        if (typeof v === 'string' && !isNaN(v) && v.trim() !== '') { v = parseFloat(v); }
         if (typeof v === 'number') { 
             const d = new Date((v - 25569) * 86400 * 1000); 
             return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); 
@@ -538,7 +526,6 @@
             if (colA === "" && colB === "" && colC === "" && colD === "" && colE === "") return;
             if (colB === "") colB = "(Tiada Nama Aktiviti / Merged Cell)";
 
-            // Guna formatExcelDate baru yang kalis nombor float
             const j = formatExcelDate(colE); const s = formatExcelDate(colF);
             const st = getStatus(j, s);
 
@@ -629,7 +616,9 @@
     function renderTable(data) {
         const tbody = document.querySelector("#activityTable tbody"); tbody.innerHTML = "";
         data.forEach(item => {
-            if (item.isSec) { tbody.innerHTML += `<tr style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:800; font-size:12px; text-transform:uppercase; border-left: 4px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:16px;"></i> ${item.title}</div></td></tr>`; } 
+            if (item.isSec) { 
+                tbody.innerHTML += `<tr class="sec-row" style="background:var(--hover-bg);"><td colspan="7" style="color:var(--text-main); font-weight:800; font-size:12px; text-transform:uppercase; border-left: 4px solid var(--accent);"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:16px;"></i> ${item.title}</div></td></tr>`; 
+            } 
             else {
                 const s = item.status.toLowerCase().replace(/\s/g, '');
                 let badgeClass = s.includes('lewat') ? 'lewat' : s;
