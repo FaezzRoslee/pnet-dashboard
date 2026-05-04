@@ -79,6 +79,11 @@
         .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+        /* Full Screen Loader */
+        #main-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; color: white; transition: opacity 0.4s; }
+        .loader-spinner { animation: spin 1.5s linear infinite; margin-bottom: 20px; width: 60px; height: 60px; color: var(--accent); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* Muka Depan */
         #empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; position: relative; }
         .hero-icon-wrapper { position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 25px; animation: fadeInUp 0.6s ease-out; }
@@ -90,7 +95,7 @@
 
         .hero-action-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
         
-        /* PEMBAIKAN LAYOUT */
+        /* PEMBAIKAN LAYOUT: Sidebar dikecilkan (Sederhana: 260px - 320px) */
         .dashboard-layout { display: grid; grid-template-columns: clamp(260px, 20vw, 320px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -187,13 +192,19 @@
 
 <div id="toast-container"></div>
 
+<div id="main-loader">
+    <i data-lucide="cloud-download" class="loader-spinner"></i>
+    <h2 style="margin:0 0 10px;">Menyegerak Data Google Sheets...</h2>
+    <p style="font-size: 14px; opacity: 0.8; margin:0;">Sistem sedang memuat turun 5 fail projek awan utama.</p>
+</div>
+
 <div class="container">
     <header class="header-main no-print">
         <div class="logo-area" onclick="location.reload()" title="Refresh Paparan">
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
                 <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
-                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Sistem Stabil V29 (Kalis Ralat)</span>
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Sistem Pemantauan Awan</span>
             </div>
         </div>
         <div class="header-actions">
@@ -204,10 +215,10 @@
         </div>
     </header>
 
-    <div id="empty-state">
-        <div class="hero-icon-wrapper"><div class="hero-icon-glow"></div><i data-lucide="cloud-download" style="width:75px; height:75px; color:var(--accent); stroke-width:1.5;" class="animate-pulse"></i></div>
-        <h2 class="gradient-text">Mengemaskini Data Papan Pemuka...</h2>
-        <p class="hero-subtitle">Sila tunggu sebentar. Sistem sedang menarik 5 pautan awan yang telah disediakan secara automatik.</p>
+    <div id="empty-state" style="display:none;">
+        <div class="hero-icon-wrapper"><div class="hero-icon-glow"></div><i data-lucide="layers" style="width:75px; height:75px; color:var(--accent); stroke-width:1.5;"></i></div>
+        <h2 class="gradient-text">Papan Pemuka Sedia Digunakan</h2>
+        <p class="hero-subtitle">Sila pilih projek di bar sisi atau muat naik data untuk mula memantau prestasi projek.</p>
     </div>
 
     <div id="dashboard-content" style="display:none;" class="animate">
@@ -370,7 +381,6 @@
         "master_5": { name: "NPA Infra", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=402474792&single=true&output=csv", isCloud: true, data: [] }
     };
 
-    // Ini kunci utama. Kita paksa projek master wujud setiap kali reload.
     let projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate)); 
     let activeId = "master_1"; 
     let resourcesList = [];
@@ -397,10 +407,19 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
+    function goHome() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('printBtn').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'flex';
+    }
+
     // ==========================================
     // 3. INIT (MULA SISTEM)
     // ==========================================
     window.onload = async () => {
+        // Tunjuk Alert Loading Tengah Skrin
+        document.getElementById('main-loader').style.display = 'flex';
+
         // Tema
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
@@ -422,36 +441,45 @@
                         if (!key.startsWith("master_")) projectsMap[key] = p.map[key];
                     }
                 }
-                // Jika activeId lama masih wujud, guna yang itu. Kalau tak, kembali ke master_1.
                 if (p.active && projectsMap[p.active]) {
                     activeId = p.active;
                 }
-            } catch(e) { console.error("Ralat memori lama, direset semula."); }
+            } catch(e) { console.error("Ralat baca local storage"); }
         }
 
-        // Tunjuk UI Sidebar Dahulu (Supaya Tak Kosong)
-        forceRenderSidebarOnly();
-
-        // Fetch Data Cloud dari latar belakang
+        // Fetch Data Cloud 
         let hasUpdates = false;
+        let fetchPromises = [];
+
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
-                try {
-                    const r = await fetch(projectsMap[id].url);
-                    const csv = await r.text();
-                    const wb = XLSX.read(csv, { type: 'string' });
-                    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-                    projectsMap[id].data = processData(rows);
-                    hasUpdates = true;
-                } catch(e) { console.warn("Google Sheets terhalang untuk:", projectsMap[id].name); }
+                // Tambah dalam promise array supaya laju
+                fetchPromises.push(
+                    fetch(projectsMap[id].url)
+                        .then(res => res.text())
+                        .then(csv => {
+                            const wb = XLSX.read(csv, { type: 'string' });
+                            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+                            projectsMap[id].data = processData(rows);
+                            hasUpdates = true;
+                        })
+                        .catch(e => console.warn("Google Sheets terhalang untuk:", projectsMap[id].name))
+                );
             }
         }
         
-        // Render keseluruhan UI jika tarikan berjaya
-        if(hasUpdates) {
-            updateUI(); 
-            showToast("Kemaskini data Google Sheets selesai.");
-        }
+        // Tunggu semua fetch selesai
+        await Promise.all(fetchPromises);
+
+        // Tutup Alert Loading Tengah Skrin
+        const loader = document.getElementById('main-loader');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 400);
+        
+        // Render keseluruhan UI
+        document.getElementById('dashboard-content').style.display = 'block';
+        document.getElementById('empty-state').style.display = 'none';
+        updateUI(); 
     };
 
     function saveToLocalStorage() {
@@ -460,13 +488,6 @@
         for (let k in projectsMap) { if (!k.startsWith("master_")) localProjectsToSave[k] = projectsMap[k]; }
         try { localStorage.setItem("pnet_projects", JSON.stringify({ map: localProjectsToSave, active: activeId })); } 
         catch(e) { showToast("Storan penuh!"); }
-    }
-
-    // Fungsi Render Sidebar sahaja masa tengah loading
-    function forceRenderSidebarOnly() {
-        document.getElementById('empty-state').style.display = 'none';
-        document.getElementById('dashboard-content').style.display = 'block';
-        updateSidebar();
     }
 
     // ==========================================
@@ -519,16 +540,13 @@
     // 5. UPDATE UI (PAPARAN)
     // ==========================================
     function updateUI() {
-        document.getElementById('empty-state').style.display = 'none';
-        document.getElementById('dashboard-content').style.display = 'block';
-        
         // Pastikan activeId tidak rosak
         if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
         
         updateSidebar();
         
         const p = projectsMap[activeId]; 
-        if(!p || !p.data) return; // Jika data belum siap ditarik, biar table kosong.
+        if(!p || !p.data) return; 
         
         const tasks = p.data.filter(d => !d.isSec);
         
