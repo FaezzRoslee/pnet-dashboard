@@ -90,7 +90,7 @@
 
         .hero-action-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
         
-        /* PEMBAIKAN LAYOUT: Sidebar dikecilkan (Sederhana: 260px - 320px) */
+        /* PEMBAIKAN LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: clamp(260px, 20vw, 320px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -157,7 +157,7 @@
         .status-mengikutjadual, .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        .status-info { background: rgba(59, 130, 246, 0.1); color: var(--accent); }
+        .status-info { background: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeInUp 0.4s ease-out forwards; }
@@ -193,7 +193,7 @@
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
                 <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
-                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Pemantauan Jadual & Prestasi</span>
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Sistem Stabil V29 (Kalis Ralat)</span>
             </div>
         </div>
         <div class="header-actions">
@@ -208,10 +208,6 @@
         <div class="hero-icon-wrapper"><div class="hero-icon-glow"></div><i data-lucide="cloud-download" style="width:75px; height:75px; color:var(--accent); stroke-width:1.5;" class="animate-pulse"></i></div>
         <h2 class="gradient-text">Mengemaskini Data Papan Pemuka...</h2>
         <p class="hero-subtitle">Sila tunggu sebentar. Sistem sedang menarik 5 pautan awan yang telah disediakan secara automatik.</p>
-        <div class="hero-action-container">
-            <button class="btn btn-outline btn-hero-upload" onclick="openModal('cloud-modal')"><i data-lucide="cloud"></i> Tambah Sheet Manual</button>
-            <label class="btn btn-primary btn-hero-upload"><i data-lucide="upload-cloud"></i> <span id="heroUploadText">Muat Naik Data Excel</span><input type="file" id="fileInputCenter" hidden accept=".xlsx, .xls"></label>
-        </div>
     </div>
 
     <div id="dashboard-content" style="display:none;" class="animate">
@@ -243,7 +239,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:800; letter-spacing: 0.5px;">Fail Projek</h3>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <button class="btn-clear-all" onclick="openModal('clear-all-modal')" title="Hapus Data (Kecuali Master)"><i data-lucide="trash-2" style="width:12px;"></i> Padam Semua</button>
+                            <button class="btn-clear-all" onclick="openModal('clear-all-modal')" title="Hapus Data Upload"><i data-lucide="trash-2" style="width:12px;"></i> Padam Lokal</button>
                         </div>
                     </div>
                     <div id="project-list-sidebar" style="max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
@@ -266,7 +262,7 @@
 
                 <div class="table-container">
                     <div class="table-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
-                        <div><h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main);">Butiran Aktiviti</h3><span style="font-size: 13px; color: var(--text-muted);">Semua tugasan bagi projek semasa</span></div>
+                        <div><h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main);">Memuatkan...</h3><span style="font-size: 13px; color: var(--text-muted);">Semua tugasan bagi projek semasa</span></div>
                         <div class="search-box no-print"><i data-lucide="search" style="width:16px; color:var(--text-muted);"></i><input type="text" id="searchInput" placeholder="Cari aktiviti atau unit..."></div>
                     </div>
                     <div class="table-wrapper">
@@ -340,10 +336,10 @@
             <i data-lucide="alert-octagon" style="width:40px; height:40px; color:var(--danger);"></i>
         </div>
         <h3>Hapus Fail Muat Naik?</h3>
-        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <b>Tetapi 5 Fail Master Cloud tidak akan terjejas.</b></p>
+        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi 5 Fail Master Cloud tidak akan terjejas.</b></p>
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="closeModal('clear-all-modal')">Batal</button>
-            <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan</button>
+            <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan Lokal</button>
         </div>
     </div>
 </div>
@@ -364,10 +360,9 @@
     Chart.register(ChartDataLabels);
 
     // ==========================================
-    // 1. DATA MASTER GOOGLE SHEETS & RESOURCES
+    // 1. DATA MASTER GOOGLE SHEETS
     // ==========================================
-    
-    const masterProjects = {
+    const masterProjectsTemplate = {
         "master_1": { name: "Penyelenggaraan Switch", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=1633514067&single=true&output=csv", isCloud: true, data: [] },
         "master_2": { name: "Sewa Milik Wireless AP", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=563051949&single=true&output=csv", isCloud: true, data: [] },
         "master_3": { name: "Wifi Awam KKM", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=168099060&single=true&output=csv", isCloud: true, data: [] },
@@ -375,15 +370,13 @@
         "master_5": { name: "NPA Infrastruktur", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=402474792&single=true&output=csv", isCloud: true, data: [] }
     };
 
-    let projectsMap = { ...masterProjects }; // Pastikan map ini sentiasa ada master
+    // Ini kunci utama. Kita paksa projek master wujud setiap kali reload.
+    let projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate)); 
     let activeId = "master_1"; 
     let resourcesList = [];
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // ==========================================
-    // 2. FUNGSI UI & MODAL
-    // ==========================================
     function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
 
@@ -394,7 +387,7 @@
         localStorage.setItem("pnet_theme", next);
         document.querySelector('#themeBtn i').setAttribute('data-lucide', next === 'dark' ? 'sun' : 'moon');
         lucide.createIcons();
-        if(activeId && document.getElementById('dashboard-content').style.display !== 'none') renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
+        if(projectsMap[activeId] && projectsMap[activeId].data.length > 0) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
     }
 
     function showToast(msg) {
@@ -404,29 +397,22 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
-    function goHome() {
-        document.getElementById('dashboard-content').style.display = 'none';
-        document.getElementById('printBtn').style.display = 'none';
-        const es = document.getElementById('empty-state'); es.style.display = 'flex';
-        es.style.animation = 'none'; setTimeout(() => es.style.animation = 'fadeInUp 0.5s ease-out forwards', 10);
-    }
-
     // ==========================================
     // 3. INIT (MULA SISTEM)
     // ==========================================
     window.onload = async () => {
-        // Set Theme
+        // Tema
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
         if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
 
-        // 1. Load Rujukan Folder
+        // Load Rujukan Folder
         const savedRes = localStorage.getItem("pnet_resources");
         if (savedRes) resourcesList = JSON.parse(savedRes);
         renderResources();
 
-        // 2. Load Local Uploads (Tanpa menggangu Master)
+        // Load Uploads dari LocalStorage
         const sd = localStorage.getItem("pnet_projects");
         if (sd) {
             try {
@@ -436,14 +422,18 @@
                         if (!key.startsWith("master_")) projectsMap[key] = p.map[key];
                     }
                 }
-                if (projectsMap[p.active]) activeId = p.active;
-            } catch(e) { console.error("Ralat baca local storage"); }
+                // Jika activeId lama masih wujud, guna yang itu. Kalau tak, kembali ke master_1.
+                if (p.active && projectsMap[p.active]) {
+                    activeId = p.active;
+                }
+            } catch(e) { console.error("Ralat memori lama, direset semula."); }
         }
 
-        // Tunjuk Dashboard Terus Walaupun Kosong
-        updateUI(); 
+        // Tunjuk UI Sidebar Dahulu (Supaya Tak Kosong)
+        forceRenderSidebarOnly();
 
-        // 3. Fetch Data Google Sheets (Secara Latar Belakang)
+        // Fetch Data Cloud dari latar belakang
+        let hasUpdates = false;
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 try {
@@ -452,13 +442,16 @@
                     const wb = XLSX.read(csv, { type: 'string' });
                     const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                     projectsMap[id].data = processData(rows);
-                } catch(e) { console.warn("Sync Google Sheets gagal untuk:", projectsMap[id].name); }
+                    hasUpdates = true;
+                } catch(e) { console.warn("Google Sheets terhalang untuk:", projectsMap[id].name); }
             }
         }
         
-        // Refresh UI Selepas Tarik Data
-        updateUI(); 
-        showToast("Senarai projek telah dikemaskini dari awan.");
+        // Render keseluruhan UI jika tarikan berjaya
+        if(hasUpdates) {
+            updateUI(); 
+            showToast("Kemaskini data Google Sheets selesai.");
+        }
     };
 
     function saveToLocalStorage() {
@@ -469,8 +462,15 @@
         catch(e) { showToast("Storan penuh!"); }
     }
 
+    // Fungsi Render Sidebar sahaja masa tengah loading
+    function forceRenderSidebarOnly() {
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        updateSidebar();
+    }
+
     // ==========================================
-    // 4. PENDERIA PINTAR (SMART PARSER - V27/V28)
+    // 4. PENDERIA PINTAR (SMART PARSER)
     // ==========================================
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
@@ -521,11 +521,14 @@
     function updateUI() {
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('dashboard-content').style.display = 'block';
-        document.getElementById('headerUploadBtn').style.display = 'none'; 
-        document.getElementById('printBtn').style.display = 'inline-flex'; 
+        
+        // Pastikan activeId tidak rosak
+        if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
+        
+        updateSidebar();
         
         const p = projectsMap[activeId]; 
-        if(!p || !p.data) return;
+        if(!p || !p.data) return; // Jika data belum siap ditarik, biar table kosong.
         
         const tasks = p.data.filter(d => !d.isSec);
         
@@ -538,7 +541,7 @@
         animateNum('global-percent', perc, '%');
         
         document.getElementById('active-title').innerText = p.name;
-        updateSidebar(); renderCharts(tasks); renderTable(p.data);
+        renderCharts(tasks); renderTable(p.data);
     }
 
     function updateSidebar() {
@@ -675,15 +678,14 @@
     function cancelDeleteProject() { closeModal('delete-confirm-modal'); pToDelete = null; }
     function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); saveToLocalStorage(); updateUI(); }
 
-    function showClearAllModal() { openModal('clear-all-modal'); }
     function confirmDeleteAll() { 
-        let masterOnly = { ...masterProjects };
-        projectsMap = masterOnly;
+        // Reset projek kepada template master
+        projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate));
         activeId = "master_1";
         localStorage.removeItem("pnet_projects"); 
         closeModal('clear-all-modal'); 
         updateUI(); 
-        showToast("Projek muat naik dipadam (Master dikekalkan).");
+        showToast("Projek muat naik dipadam. Fail Utama dikekalkan.");
     }
 
     // ==========================================
