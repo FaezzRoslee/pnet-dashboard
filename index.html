@@ -95,11 +95,11 @@
 
         .hero-action-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; animation: fadeInUp 0.9s ease-out; }
         
-        /* PEMBAIKAN LAYOUT: Sidebar dikecilkan (Sederhana: 260px - 320px) */
+        /* Layout Sidebar */
         .dashboard-layout { display: grid; grid-template-columns: clamp(260px, 20vw, 320px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
-        /* Mini KPI Sidebar */
+        /* Mini KPI */
         .mini-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .mini-kpi-card { background: var(--hover-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; gap: 8px; }
         .mini-kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); border-color: var(--accent); }
@@ -138,26 +138,32 @@
         .legend-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; min-width: 0; }
         .legend-color { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
 
-        /* Table */
+        /* ============================================================== */
+        /* PEMBAIKAN JADUAL V30: Muat 1 Skrin (Tiada Horizontal Scroll)   */
+        /* ============================================================== */
         .table-container { background: var(--card-bg); padding: 20px 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); min-width: 0; overflow: hidden; }
         .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 100%; max-width: 350px; border: 1px solid var(--border); transition: 0.2s; }
         .search-box:focus-within { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px var(--glow-color); }
         .search-box input { border: none !important; background: transparent !important; outline: none !important; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
 
-        .table-wrapper { overflow-x: auto; max-width: 100%; border-radius: 8px; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
-        th { text-align: left; padding: 14px 15px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-main); line-height: 1.5; font-weight: 500; }
+        .table-wrapper { overflow-x: auto; width: 100%; border-radius: 8px; padding-bottom: 10px; }
         
-        td:nth-child(1) { white-space: nowrap; width: 50px; }
-        td:nth-child(2) { min-width: 250px; word-wrap: break-word; white-space: normal; }
-        td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6), td:nth-child(7) { white-space: nowrap; }
-        td:nth-child(7) { text-align: center; padding-right: 25px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; } /* Buang min-width 850px */
+        
+        /* Kecilkan padding dan size font supaya muat cantik */
+        th { text-align: left; padding: 12px 10px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-main); line-height: 1.4; font-weight: 500; }
+        
+        /* Auto-adjust lebar kolum */
+        td:nth-child(1) { width: 3%; white-space: nowrap; } /* Bil */
+        td:nth-child(2) { width: 40%; word-wrap: break-word; white-space: normal; } /* Aktiviti - Benarkan patah baris */
+        td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { white-space: nowrap; width: 10%; } /* Tindakan, Tempoh, Jangkaan, Sebenar */
+        td:nth-child(7) { text-align: center; white-space: nowrap; width: 12%; } /* Status */
 
-        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; white-space: nowrap; }
+        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; display: inline-block; white-space: nowrap; }
         [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 90px; letter-spacing: 0.3px; white-space: nowrap; }
+        .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; min-width: 85px; letter-spacing: 0.3px; white-space: nowrap; }
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .status-mengikutjadual, .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
@@ -195,7 +201,7 @@
 <div id="main-loader">
     <i data-lucide="cloud-download" class="loader-spinner"></i>
     <h2 style="margin:0 0 10px;">Menyegerak Data Google Sheets...</h2>
-    <p style="font-size: 14px; opacity: 0.8; margin:0;">Sistem sedang memuat turun 5 fail projek awan utama.</p>
+    <p style="font-size: 14px; opacity: 0.8; margin:0;">Sistem sedang memuat turun fail projek awan utama.</p>
 </div>
 
 <div class="container">
@@ -286,7 +292,7 @@
                                     <th>Tempoh</th>
                                     <th>Jangkaan</th>
                                     <th>Sebenar</th>
-                                    <th style="text-align: center;">Status</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -347,7 +353,7 @@
             <i data-lucide="alert-octagon" style="width:40px; height:40px; color:var(--danger);"></i>
         </div>
         <h3>Hapus Fail Muat Naik?</h3>
-        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi 5 Fail Master Cloud tidak akan terjejas.</b></p>
+        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b></p>
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="closeModal('clear-all-modal')">Batal</button>
             <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan Lokal</button>
@@ -447,13 +453,14 @@
             } catch(e) { console.error("Ralat baca local storage"); }
         }
 
-        // Fetch Data Cloud 
-        let hasUpdates = false;
+        // Tunjuk UI Sidebar Dahulu (Supaya Tak Kosong)
+        forceRenderSidebarOnly();
+
+        // Fetch Data Cloud dari latar belakang
         let fetchPromises = [];
 
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
-                // Tambah dalam promise array supaya laju
                 fetchPromises.push(
                     fetch(projectsMap[id].url)
                         .then(res => res.text())
@@ -461,7 +468,6 @@
                             const wb = XLSX.read(csv, { type: 'string' });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                             projectsMap[id].data = processData(rows);
-                            hasUpdates = true;
                         })
                         .catch(e => console.warn("Google Sheets terhalang untuk:", projectsMap[id].name))
                 );
@@ -483,16 +489,34 @@
     };
 
     function saveToLocalStorage() {
-        // Simpan fail manual sahaja
         let localProjectsToSave = {};
         for (let k in projectsMap) { if (!k.startsWith("master_")) localProjectsToSave[k] = projectsMap[k]; }
         try { localStorage.setItem("pnet_projects", JSON.stringify({ map: localProjectsToSave, active: activeId })); } 
         catch(e) { showToast("Storan penuh!"); }
     }
 
+    function forceRenderSidebarOnly() {
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        updateSidebar();
+    }
+
     // ==========================================
-    // 4. PENDERIA PINTAR (SMART PARSER)
+    // 4. PENDERIA PINTAR + KALIS TARIKH ROSAK
     // ==========================================
+    function formatExcelDate(v) { 
+        if (!v) return ""; 
+        // Jika ia string nombor panjang dari Google Sheets export (cth: "46083.000...")
+        if (typeof v === 'string' && !isNaN(v) && v.trim() !== '') {
+            v = parseFloat(v);
+        }
+        if (typeof v === 'number') { 
+            const d = new Date((v - 25569) * 86400 * 1000); 
+            return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); 
+        } 
+        return v; 
+    }
+
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
         rows.forEach(row => {
@@ -514,6 +538,7 @@
             if (colA === "" && colB === "" && colC === "" && colD === "" && colE === "") return;
             if (colB === "") colB = "(Tiada Nama Aktiviti / Merged Cell)";
 
+            // Guna formatExcelDate baru yang kalis nombor float
             const j = formatExcelDate(colE); const s = formatExcelDate(colF);
             const st = getStatus(j, s);
 
@@ -540,7 +565,6 @@
     // 5. UPDATE UI (PAPARAN)
     // ==========================================
     function updateUI() {
-        // Pastikan activeId tidak rosak
         if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
         
         updateSidebar();
@@ -697,7 +721,6 @@
     function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); saveToLocalStorage(); updateUI(); }
 
     function confirmDeleteAll() { 
-        // Reset projek kepada template master
         projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate));
         activeId = "master_1";
         localStorage.removeItem("pnet_projects"); 
@@ -736,7 +759,6 @@
     // ==========================================
     // 9. UTILITIES
     // ==========================================
-    function parseDateHelper(d) { if(!d) return null; const p = d.split('/'); if(p.length < 3) return null; return new Date(p[2], p[1]-1, p[0]); }
     document.getElementById('searchInput').addEventListener('input', function(e) {
         const v = e.target.value.toLowerCase();
         document.querySelectorAll("#activityTable tbody tr").forEach(r => { if (r.cells.length === 1) return; r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none"; });
@@ -745,7 +767,6 @@
         let s = 0; const o = document.getElementById(id); const dur = 1200; const st = performance.now();
         function step(ts) { const p = Math.min((ts - st) / dur, 1); const e = 1 - Math.pow(1 - p, 3); o.innerHTML = Math.floor(e * (end - s) + s) + suffix; if (p < 1) requestAnimationFrame(step); } requestAnimationFrame(step);
     }
-    function formatExcelDate(v) { if (!v) return ""; if (typeof v === 'number') { const d = new Date((v - 25569) * 86400 * 1000); return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); } return v; }
 </script>
 
 </body>
