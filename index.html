@@ -137,7 +137,7 @@
         .chart-header-title { margin:0 0 15px; font-size: 14px; font-weight: 700; color: var(--text-main); display:flex; align-items:center; gap:8px; }
 
         /* ============================================================== */
-        /* PEMBAIKAN JADUAL V34: Jadual Sentiasa Fit Tanpa Mengira Teks   */
+        /* PEMBAIKAN JADUAL V35: Hirarki Tajuk Utama & Sub-Tajuk          */
         /* ============================================================== */
         .table-container { background: var(--card-bg); padding: 20px 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); width: 100%; overflow: hidden; }
         .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 100%; max-width: 350px; border: 1px solid var(--border); transition: 0.2s; }
@@ -145,24 +145,44 @@
         .search-box input { border: none !important; background: transparent !important; outline: none !important; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
 
         .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; padding-bottom: 10px; }
-        
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
         
-        th { text-align: left; padding: 12px 10px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-main); line-height: 1.4; vertical-align: middle; word-wrap: break-word; } /* DIBENARKAN PATAH BARIS */
+        th { text-align: left; padding: 12px 10px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-main); line-height: 1.4; vertical-align: middle; word-wrap: break-word; } 
         
-        /* Lebar Lajur Ditetapkan untuk Memastikan Skrin Fit */
-        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; } /* Bil */
-        th:nth-child(2), td:nth-child(2) { width: auto; min-width: 200px; } /* Aktiviti - Biar lebar, teks panjang akan wrap */
-        th:nth-child(3), td:nth-child(3) { width: 150px; } /* Tindakan */
-        th:nth-child(4), td:nth-child(4) { width: 80px; text-align: center; } /* Tempoh */
-        th:nth-child(5), td:nth-child(5) { width: 100px; text-align: center; } /* Jangkaan */
-        th:nth-child(6), td:nth-child(6) { width: 100px; text-align: center; } /* Sebenar */
-        th:nth-child(7), td:nth-child(7) { width: 120px; text-align: center; } /* Status */
+        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; } 
+        th:nth-child(2), td:nth-child(2) { width: auto; min-width: 200px; } 
+        th:nth-child(3), td:nth-child(3) { width: 150px; } 
+        th:nth-child(4), td:nth-child(4) { width: 80px; text-align: center; } 
+        th:nth-child(5), td:nth-child(5) { width: 100px; text-align: center; } 
+        th:nth-child(6), td:nth-child(6) { width: 100px; text-align: center; } 
+        th:nth-child(7), td:nth-child(7) { width: 120px; text-align: center; } 
 
-        .sec-row td { background: var(--hover-bg); color: var(--accent); font-weight: 800; font-size: 11px; padding: 12px 10px; border-left: 4px solid var(--accent); }
+        /* TEMA TAJUK UTAMA (PERKARA) */
+        .main-sec-row td { 
+            background: var(--primary); 
+            color: var(--card-bg); 
+            font-weight: 800; 
+            font-size: 13px; 
+            padding: 16px 10px; 
+            text-align: center; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--accent);
+        }
+        [data-theme="dark"] .main-sec-row td { background: var(--accent); color: #ffffff; }
 
-        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; display: inline-block; white-space: normal; text-align: center;} /* Benarkan wrap pada lencana jika panjang */
+        /* TEMA SUB-TAJUK (PENYEDIAAN...) */
+        .sec-row td { 
+            background: var(--hover-bg); 
+            color: var(--accent); 
+            font-weight: 800; 
+            font-size: 11px; 
+            padding: 12px 10px; 
+            border-left: 4px solid var(--accent); 
+        }
+
+        .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; display: inline-block; white-space: normal; text-align: center;} 
         [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); }
         
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; width: 100%; letter-spacing: 0.3px; white-space: nowrap; }
@@ -355,7 +375,7 @@
             <i data-lucide="alert-octagon" style="width:40px; height:40px; color:var(--danger);"></i>
         </div>
         <h3>Hapus Fail Muat Naik?</h3>
-        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi 5 Fail Master Cloud tidak akan terjejas.</b></p>
+        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b></p>
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="closeModal('clear-all-modal')">Batal</button>
             <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan Lokal</button>
@@ -378,9 +398,6 @@
     lucide.createIcons();
     Chart.register(ChartDataLabels);
 
-    // ==========================================
-    // 1. DATA MASTER GOOGLE SHEETS
-    // ==========================================
     const masterProjectsTemplate = {
         "master_1": { name: "Penyelenggaraan Switch", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=1633514067&single=true&output=csv", isCloud: true, data: [] },
         "master_2": { name: "Sewa Milik Wireless AP", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRC_etw9H7qIvPvsnMNIZVBAksMr4D14YSzu8HjA9raJHASlZxTBTRe-t9yV8hfEHi13hp_dQzuSSEp/pub?gid=563051949&single=true&output=csv", isCloud: true, data: [] },
@@ -421,9 +438,6 @@
         document.getElementById('empty-state').style.display = 'flex';
     }
 
-    // ==========================================
-    // 3. INIT (MULA SISTEM)
-    // ==========================================
     window.onload = async () => {
         document.getElementById('main-loader').style.display = 'flex';
 
@@ -445,10 +459,8 @@
                         if (!key.startsWith("master_")) projectsMap[key] = p.map[key];
                     }
                 }
-                if (p.active && projectsMap[p.active]) {
-                    activeId = p.active;
-                }
-            } catch(e) {}
+                if (p.active && projectsMap[p.active]) { activeId = p.active; }
+            } catch(e) { console.error("Ralat baca local storage"); }
         }
 
         forceRenderSidebarOnly();
@@ -493,9 +505,6 @@
         updateSidebar();
     }
 
-    // ==========================================
-    // 4. PENDERIA PINTAR + KALIS TARIKH ROSAK
-    // ==========================================
     function formatExcelDate(v) { 
         if (!v) return ""; 
         if (typeof v === 'string' && !isNaN(v) && v.trim() !== '') { v = parseFloat(v); }
@@ -549,12 +558,8 @@
         return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'MENGIKUT JADUAL', days: 0 };
     }
 
-    // ==========================================
-    // 5. UPDATE UI (PAPARAN)
-    // ==========================================
     function updateUI() {
         if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
-        
         updateSidebar();
         
         const p = projectsMap[activeId]; 
@@ -609,16 +614,28 @@
         const units = {}; tasks.forEach(t => { if(t.days > 0) units[t.unit] = (units[t.unit] || 0) + t.days; });
         if (unitChart) unitChart.destroy();
         unitChart = new Chart(document.getElementById('unitChart'), {
-            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: 'Hari', data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
+            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: 'Hari Kelewatan', data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
             options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " hari", font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 12 }, color: isDark ? '#cbd5e1' : '#475569' } } } }
         });
     }
 
+    // --- PEMBAIKAN V35: Hirarki Tajuk Utama & Sub-Tajuk ---
     function renderTable(data) {
         const tbody = document.querySelector("#activityTable tbody"); tbody.innerHTML = "";
-        data.forEach(item => {
+        let firstSecFound = false;
+
+        data.forEach((item, index) => {
             if (item.isSec) { 
-                tbody.innerHTML += `<tr class="sec-row"><td colspan="7">${item.title}</td></tr>`; 
+                // KESAN TAJUK UTAMA: Jika ada perkataan 'perkara' ATAU ia adalah tajuk pertama dalam data
+                let isMain = item.title.toLowerCase().includes("perkara") || !firstSecFound;
+                firstSecFound = true;
+
+                if (isMain) {
+                    let cleanTitle = item.title.toUpperCase();
+                    tbody.innerHTML += `<tr class="main-sec-row"><td colspan="7"><div style="display:flex; align-items:center; justify-content:center; gap:10px;"><i data-lucide="briefcase" style="width:18px;"></i> <span>${cleanTitle}</span></div></td></tr>`; 
+                } else {
+                    tbody.innerHTML += `<tr class="sec-row"><td colspan="7"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="folder-kanban" style="width:16px;"></i> <span>${item.title}</span></div></td></tr>`; 
+                }
             } 
             else {
                 const s = item.status.toLowerCase().replace(/\s/g, '');
@@ -639,9 +656,6 @@
         lucide.createIcons();
     }
 
-    // ==========================================
-    // 6. RUJUKAN & FOLDER (DRIVE/DOCS)
-    // ==========================================
     function addResource() {
         const name = document.getElementById('resourceName').value.trim();
         let url = document.getElementById('resourceUrl').value.trim();
@@ -677,9 +691,6 @@
         }
     }
 
-    // ==========================================
-    // 7. TINDAKAN MUAT NAIK & PADAM
-    // ==========================================
     const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputCenter'];
     fileInputs.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('change', handleFileUpload); });
 
@@ -727,9 +738,6 @@
         showToast("Projek muat naik dipadam. Fail Utama dikekalkan.");
     }
 
-    // ==========================================
-    // 8. MODAL KETERANGAN KPI
-    // ==========================================
     function openKpiModal(type) {
         if(!activeId) return; const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
         let filt = [], hBg = '', title = '', icon = '';
@@ -754,9 +762,6 @@
         openModal('details-modal');
     }
 
-    // ==========================================
-    // 9. UTILITIES
-    // ==========================================
     document.getElementById('searchInput').addEventListener('input', function(e) {
         const v = e.target.value.toLowerCase();
         document.querySelectorAll("#activityTable tbody tr").forEach(r => { if (r.cells.length === 1) return; r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none"; });
