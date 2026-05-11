@@ -195,19 +195,20 @@
         .premium-footer {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('1560128.jpg');
             background-size: cover; background-position: center; color: #cbd5e1;
-            padding: 40px 5%; margin-top: auto; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 20px;
+            padding: 40px 5%; margin-top: auto; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 20px; position: relative;
         }
         .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
         .footer-left { max-width: 500px; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
         
-        /* V50: Language Buttons Style in Footer */
-        .lang-btn { background: transparent; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 4px; filter: grayscale(100%); }
+        .lang-btn { background: transparent; border: 1px solid var(--border); font-size: 16px; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 4px 8px; border-radius: 8px; filter: grayscale(100%); }
         .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(0%); }
-        .lang-btn.active { opacity: 1; filter: grayscale(0%); drop-shadow: 0 0 5px rgba(255,255,255,0.5); }
-        .lang-kelate { opacity: 0.1; filter: grayscale(100%); }
-        .lang-kelate:hover { opacity: 0.5; filter: grayscale(0%); }
-        .lang-kelate.active { opacity: 1; filter: grayscale(0%); drop-shadow: 0 0 8px #3b82f6; }
+        .lang-btn.active { opacity: 1; border-color: var(--accent); background: var(--glow-color); filter: grayscale(0%); box-shadow: 0 0 10px var(--glow-color); }
+        
+        /* Butang Wau Tersorok Bawah Kanan */
+        .lang-kelate { position: absolute; bottom: 10px; right: 10px; font-size: 12px; opacity: 0.05; filter: grayscale(100%); border: none; }
+        .lang-kelate:hover { opacity: 0.5; filter: grayscale(0%); transform: scale(1.2); }
+        .lang-kelate.active { opacity: 1; filter: grayscale(0%); border: 1px solid var(--accent); }
 
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } .sidebar .card { padding: 20px; } }
         @media (max-width: 768px) { .header-main { flex-direction: column; align-items: flex-start; } .header-actions { width: 100%; justify-content: space-between; } .charts-grid { grid-template-columns: 1fr; } }
@@ -234,6 +235,11 @@
         </div>
         
         <div class="header-actions">
+            <div style="display:flex; gap:5px; margin-right:10px;">
+                <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">MY</button>
+                <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">ENG</button>
+            </div>
+
             <button class="btn btn-icon" style="color:var(--success); border-color:var(--border);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive"><i data-lucide="folder-plus"></i></button>
             <button class="btn-icon" onclick="location.reload()" title="Refresh Automatik"><i data-lucide="refresh-cw"></i></button>
             <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn"><i data-lucide="moon"></i></button>
@@ -359,15 +365,11 @@
             <span style="color:#94a3b8; font-size: 12px; font-family: monospace;" data-i18n="footer_date">11 Mei 2026</span>
         </div>
         <div style="font-size: 12px; color:#94a3b8; text-align: center; flex-grow: 1;" data-i18n="footer_copyright">
-            © 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
-        </div>
-        
-        <div style="display:flex; gap:10px; align-items:center;">
-            <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">🇲🇾</button>
-            <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">🇬🇧</button>
-            <button onclick="setLang('kel')" id="btn-lang-kel" class="lang-btn lang-kelate" title="Rahsia">🪁</button>
+            © 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
         </div>
     </div>
+    
+    <button onclick="setLang('kel')" id="btn-lang-kel" class="lang-btn lang-kelate" title="Rahsia">🪁</button>
 </footer>
 
 <div class="modal-overlay-custom" id="cloud-modal">
@@ -478,7 +480,7 @@
             "footer_email": "Emel :",
             "footer_modified": "DIKEMASKINI PADA :",
             "footer_date": "11 Mei 2026",
-            "footer_copyright": "© 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
+            "footer_copyright": "© 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
             "home_task": "TUGASAN",
             "home_progress": "Kemajuan:",
             "modal_cloud_title": "Sambung Google Sheets",
@@ -542,7 +544,7 @@
             "footer_email": "Email :",
             "footer_modified": "WEB LAST MODIFIED :",
             "footer_date": "May 11, 2026",
-            "footer_copyright": "© 2024-2026 PNET Ministry of Health Malaysia. All rights reserved.",
+            "footer_copyright": "© 2026 PNET Ministry of Health Malaysia. All rights reserved.",
             "home_task": "TASKS",
             "home_progress": "Progress:",
             "modal_cloud_title": "Connect Google Sheets",
@@ -573,66 +575,66 @@
         },
         "kel": {
             "header_title": "Garis Maso Projek PNET",
-            "header_subtitle": "Sistem Pata Awan",
-            "btn_upload": "Pukoh Naik Excel",
+            "header_subtitle": "Sistem Pemantauan Awan",
+            "btn_upload": "Wak Naik Excel",
             "loader_title": "Tengoh Tarik Awan...",
-            "loader_desc": "Sistem tengoh sedut pail projek hok utamo.",
+            "loader_desc": "Sistem duk loading fail projek hok utamo.",
             "hero_title": "Pusat Jago Projek",
-            "hero_desc": "Sistem tengok jadual de peformens projek impra maso loni hok paling canggih.",
-            "kpi_overall": "PERKEMBANGE SEMO",
+            "hero_desc": "Sistem untuk tengok status dengan kemajuan projek secaro maso loni.",
+            "kpi_overall": "PERKEMBANGE PROJEK NI",
             "kpi_task": "Kijoan",
             "kpi_done": "Siap Doh",
             "kpi_process": "Tengoh Buat",
-            "kpi_delay": "Lembak",
+            "kpi_delay": "Lambak",
             "ref_title": "Rujuke & Polder",
-            "proj_title": "Pail Projek",
-            "btn_clear": "Buang Lokal",
-            "btn_add_proj": "Nambah Projek",
+            "proj_title": "Fail Projek",
+            "btn_clear": "Tohok Lokal",
+            "btn_add_proj": "Buh Projek Baru",
             "chart_topic": "Maso Ikut Topik",
-            "chart_unit": "Lembak Ikut Unit (Ari)",
-            "table_title": "Tengoh Pusing...",
-            "table_desc": "Semo kijoan untok projek loni",
-            "table_search": "Pise kijo ko unit...",
+            "chart_unit": "Lambak Ikut Unit (Ari)",
+            "table_title": "Duk Musing...",
+            "table_desc": "Semo kijo projek loni",
+            "table_search": "Nyari kijo ko unit...",
             "th_bil": "Bil",
             "th_activity": "Kijoan",
             "th_action": "Tindake",
             "th_duration": "Maso",
-            "th_expected": "Jangko",
-            "th_actual": "Sebutir",
+            "th_expected": "Jangko Maso",
+            "th_actual": "Hok Sungguh",
             "th_status": "Status",
-            "footer_title": "PUSAT KAWAL PNET",
-            "footer_subtitle": "Kementerian Kesihaten Malaysia",
-            "footer_address": "Unit Penguruse Rangkaian,<br>Bahagian Penguruse Maklumat, Kementerian Kesihaten Malaysia,<br>Aras 5 Blok E7, Kompleks E, 62590 Putrajaya.",
+            "footer_title": "PUSAT KAWALE PNET",
+            "footer_subtitle": "Kementerian Kesihate Malaysia",
+            "footer_address": "Unit Penguruse Rangkaie,<br>Bahagie Penguruse Maklumat, Kementerian Kesihate Malaysia,<br>Arah 5 Blok E7, Kompleks E, 62590 Putrojayo.",
             "footer_email": "Emel :",
-            "footer_modified": "APTDET PADO :",
+            "footer_modified": "NGELAH EJAS PADO :",
             "footer_date": "11 Mei 2026",
-            "footer_copyright": "© 2024-2026 PNET Kementerian Kesihaten Malaysia. Hak Cipto Terpeliharo.",
+            "footer_copyright": "© 2026 PNET Kementerian Kesihate Malaysia. Hak Cipto Terpeliharo.",
             "home_task": "KIJO",
             "home_progress": "Nok Siap:",
             "modal_cloud_title": "Sambong Google Sheets",
             "modal_cloud_desc": "Masuk link CSV (Publish to Web) untok tab projek demo.",
-            "modal_ref_title": "Nambah Rujuke Awan",
+            "modal_ref_title": "Tamboh Rujuke Awan",
             "modal_ref_desc": "Simpe link Google Drive ko Google Docs untok mudoh cari.",
             "modal_ref_p1": "Namo (cth: Polder Tender Rasmi)",
-            "modal_del_title": "Buang Rekod Projek?",
-            "modal_del_desc": "Pasti ko nok buang rekod untok",
-            "modal_clear_title": "Hapuh Pail Hok Pukoh Naik?",
-            "modal_clear_desc": "Semo pail hok masuk sdiri akay dibuang. <br><b>Tapi Pail Master Cloud tok kaca gapo-gapo.</b>",
+            "modal_del_title": "Tohok Rekod Projek?",
+            "modal_del_desc": "Harap ko nok tohok ni?",
+            "modal_clear_title": "Tohok Fail Hok Wak Naik Sakni?",
+            "modal_clear_desc": "Semo fail hok demo masuk sdiri sistem tohok deh. <br><b>Tapi Fail Master Cloud tokdok kuca gapo la.</b>",
             "modal_list_title": "Senarai Kijoan",
-            "btn_cancel": "Kensel",
+            "btn_cancel": "Tok jadi la",
             "btn_connect": "Sambong",
             "btn_save": "Simpe",
-            "btn_yes_delete": "Yoh, Buang",
+            "btn_yes_delete": "Ho, Tohok la",
             "btn_clear_local": "Kosong Lokal",
             "btn_close": "Tutup Papare",
             "status_selesai": "SIAP DOH",
             "status_proses": "TENGOH BUAT",
             "status_hampir": "NOK ABIH DOH",
-            "status_lewat": "LEMBAK",
+            "status_lewat": "LAMBAK",
             "status_hari": "ARI",
             "no_record": "Takdok rekod.",
             "no_link": "Takdok link simpe.",
-            "expected": "Jangko",
+            "expected": "Jangko Maso",
             "actual": "Hok Sunggoh"
         }
     };
@@ -646,7 +648,9 @@
         document.getElementById('btn-lang-ms').classList.remove('active');
         document.getElementById('btn-lang-en').classList.remove('active');
         document.getElementById('btn-lang-kel').classList.remove('active');
-        document.getElementById('btn-lang-' + lang).classList.add('active');
+        if(document.getElementById('btn-lang-' + lang)) {
+            document.getElementById('btn-lang-' + lang).classList.add('active');
+        }
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -957,10 +961,28 @@
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
         
         const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
+        
+        // V51: Format text panjang jadi 2 line
+        const formattedLabels = Object.keys(units).map(l => {
+            if (l.length > 25) {
+                let chunks = [];
+                let str = l;
+                while(str.length > 25) {
+                    let splitIndex = str.lastIndexOf(' ', 25);
+                    if(splitIndex === -1) splitIndex = 25;
+                    chunks.push(str.substring(0, splitIndex));
+                    str = str.substring(splitIndex).trim();
+                }
+                chunks.push(str);
+                return chunks;
+            }
+            return l;
+        });
+
         if (unitChart) unitChart.destroy();
         unitChart = new Chart(document.getElementById('unitChart'), {
-            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: i18n[currentLang].th_duration, data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
-            options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " " + i18n[currentLang].status_hari.toLowerCase(), font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 12 }, color: isDark ? '#cbd5e1' : '#475569' } } } }
+            type: 'bar', data: { labels: formattedLabels, datasets: [{ label: i18n[currentLang].th_duration, data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
+            options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " " + i18n[currentLang].status_hari.toLowerCase(), font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: isDark ? '#cbd5e1' : '#475569', autoSkip: false } } } }
         });
     }
 
