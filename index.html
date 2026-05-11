@@ -82,15 +82,18 @@
         .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* Muka Depan */
-        #empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; position: relative; }
-        .hero-icon-wrapper { position: relative; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 25px; animation: fadeInUp 0.6s ease-out; }
-        .hero-icon-glow { position: absolute; width: 100px; height: 100px; background: var(--accent); filter: blur(40px); opacity: 0.4; border-radius: 50%; animation: pulseGlow 3s infinite alternate ease-in-out; z-index: -1; }
-        @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.3; } 100% { transform: scale(1.3); opacity: 0.6; } }
-        .gradient-text { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -0.5px; margin: 0 0 15px; background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeInUp 0.7s ease-out; }
-        .hero-subtitle { color: var(--text-muted); max-width: 600px; margin: 0 auto 35px; line-height: 1.7; font-size: clamp(14px, 1.5vw, 16px); animation: fadeInUp 0.8s ease-out; }
+        /* V46: PREMIUM HOMEPAGE */
+        #home-page { padding: 40px 20px; animation: fadeInUp 0.5s ease-out; }
+        .hero-icon-glow { position: absolute; width: 150px; height: 150px; background: var(--accent); filter: blur(60px); opacity: 0.3; border-radius: 50%; z-index: -1; animation: pulseGlow 4s infinite alternate ease-in-out; }
+        @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.2; } 100% { transform: scale(1.2); opacity: 0.5; } }
+        .gradient-text { font-size: clamp(32px, 5vw, 56px); font-weight: 800; letter-spacing: -1px; margin: 0 0 15px; background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .home-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; box-shadow: var(--card-shadow); }
+        .home-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 40px -10px var(--glow-color); border-color: var(--accent); }
+        .home-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
+        .home-card:hover::before { opacity: 1; }
 
-        /* PEMBAIKAN LAYOUT SIDEBAR */
+        /* DASHBOARD LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: clamp(240px, 20vw, 300px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -204,7 +207,7 @@
 
 <div class="container">
     <header class="header-main no-print">
-        <div class="logo-area" onclick="window.location.href='index.html'" title="Kembali ke Paparan Utama">
+        <div class="logo-area" onclick="showHome()" title="Kembali ke Laman Utama">
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
                 <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
@@ -219,10 +222,21 @@
         </div>
     </header>
 
-    <div id="empty-state" style="display:none;">
-        <div class="hero-icon-wrapper"><div class="hero-icon-glow"></div><i data-lucide="layers" style="width:75px; height:75px; color:var(--accent); stroke-width:1.5;"></i></div>
-        <h2 class="gradient-text">Papan Pemuka Sedia Digunakan</h2>
-        <p class="hero-subtitle">Sila pilih projek di bar sisi atau muat naik data untuk mula memantau prestasi projek.</p>
+    <div id="home-page" style="display:none;">
+        <div style="text-align: center; margin-bottom: 50px; position: relative;">
+            <div class="hero-icon-glow" style="top:-30px; left:50%; transform:translateX(-50%);"></div>
+            <h1 class="gradient-text">Pusat Kawalan Projek</h1>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.</p>
+            
+            <div style="display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 15px; background: rgba(148, 163, 184, 0.05); padding: 12px 25px; border-radius: 50px; border: 1px solid var(--border); backdrop-filter: blur(10px);">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:6px;"><i data-lucide="calendar-check" style="width:14px; color:var(--success);"></i> Terakhir Dikemaskini: 11 Mei 2026</span>
+                <span style="width: 1px; background: var(--border); margin: 0 5px;"></span>
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:6px;"><i data-lucide="code" style="width:14px; color:var(--accent);"></i> Dibangunkan oleh <span style="color: var(--accent); font-weight:800;">Kiyoshi</span></span>
+            </div>
+        </div>
+
+        <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; width: 100%;">
+            </div>
     </div>
 
     <div id="dashboard-content" style="display:none;" class="animate">
@@ -399,7 +413,9 @@
         localStorage.setItem("pnet_theme", next);
         document.querySelector('#themeBtn i').setAttribute('data-lucide', next === 'dark' ? 'sun' : 'moon');
         lucide.createIcons();
-        if(projectsMap[activeId] && projectsMap[activeId].data.length > 0) renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
+        if(document.getElementById('dashboard-content').style.display !== 'none' && projectsMap[activeId] && projectsMap[activeId].data.length > 0) {
+            renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
+        }
     }
 
     function showToast(msg) {
@@ -430,11 +446,8 @@
                         if (!key.startsWith("master_")) projectsMap[key] = p.map[key];
                     }
                 }
-                if (p.active && projectsMap[p.active]) { activeId = p.active; }
             } catch(e) {}
         }
-
-        forceRenderSidebarOnly();
 
         let fetchPromises = [];
         const cacheBuster = "&t=" + new Date().getTime();
@@ -458,20 +471,57 @@
 
         const loader = document.getElementById('main-loader');
         loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; document.getElementById('dashboard-content').style.display = 'block'; updateUI(); }, 400);
+        setTimeout(() => { 
+            loader.style.display = 'none'; 
+            showHome(); // V46: Lepas loading, terus tunjuk Homepage cantik
+        }, 400);
     };
+
+    // --- V46: FUNGSI TUNJUK HOMEPAGE ---
+    function showHome() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('home-page').style.display = 'block';
+
+        const grid = document.getElementById('home-project-grid');
+        grid.innerHTML = '';
+
+        Object.keys(projectsMap).forEach(id => {
+            const p = projectsMap[id];
+            const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
+            const done = tasks.filter(t => t.status === 'SELESAI').length;
+            const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
+            const iconName = p.isCloud ? 'cloud' : 'file-spreadsheet';
+
+            grid.innerHTML += `
+            <div class="home-card" onclick="openProjectFromHome('${id}')">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+                    <div style="background:var(--hover-bg); padding:10px; border-radius:12px; color:var(--accent);">
+                        <i data-lucide="${iconName}"></i>
+                    </div>
+                    <span style="font-size:10px; font-weight:800; background:var(--hover-bg); padding:4px 8px; border-radius:6px; color:var(--text-muted);">${tasks.length} TUGASAN</span>
+                </div>
+                <h3 style="margin:0 0 15px; font-size:16px; color:var(--text-main); line-height:1.4;">${p.name}</h3>
+                <div style="width:100%; background:var(--hover-bg); border-radius:4px; height:6px; margin-bottom:10px; overflow:hidden;">
+                    <div style="width:${perc}%; background:var(--accent); height:100%; border-radius:4px; transition: width 1s ease-in-out;"></div>
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); font-weight:600;">Kemajuan: <span style="color:var(--accent);">${perc}%</span></div>
+            </div>`;
+        });
+        lucide.createIcons();
+    }
+
+    function openProjectFromHome(id) {
+        activeId = id;
+        document.getElementById('home-page').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        updateUI();
+    }
 
     function saveToLocalStorage() {
         let localProjectsToSave = {};
         for (let k in projectsMap) { if (!k.startsWith("master_")) localProjectsToSave[k] = projectsMap[k]; }
         try { localStorage.setItem("pnet_projects", JSON.stringify({ map: localProjectsToSave, active: activeId })); } 
         catch(e) { showToast("Storan penuh!"); }
-    }
-
-    function forceRenderSidebarOnly() {
-        document.getElementById('empty-state').style.display = 'none';
-        document.getElementById('dashboard-content').style.display = 'block';
-        updateSidebar();
     }
 
     function formatExcelDate(v) { 
@@ -671,7 +721,7 @@
     function addResource() {
         const name = document.getElementById('resourceName').value.trim();
         let url = document.getElementById('resourceUrl').value.trim();
-        if(!name || !url) { showToast("Sila isi nama pautan"); return; }
+        if(!name || !url) { showToast("Sila isi nama dan pautan"); return; }
         if (!url.match(/^https?:\/\//i)) url = 'http://' + url;
         resourcesList.push({ name, url });
         localStorage.setItem("pnet_resources", JSON.stringify(resourcesList));
@@ -716,7 +766,7 @@
                 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                 const id = 'local_' + Date.now();
                 projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), data: processData(rows), isCloud: false };
-                activeId = id; saveToLocalStorage(); updateUI();
+                activeId = id; saveToLocalStorage(); openProjectFromHome(id);
             } catch(error) { showToast("Ralat membaca fail."); }
         };
         r.readAsBinaryString(file); e.target.value = ''; 
@@ -732,21 +782,21 @@
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
             projectsMap[id] = { name: "Manual Cloud Sync", data: processData(rows), isCloud: true, url: url };
-            activeId = id; saveToLocalStorage(); updateUI(); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
+            activeId = id; saveToLocalStorage(); openProjectFromHome(id); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
         } catch(e) { showToast("Gagal menarik pautan awan."); }
     }
 
     let pToDelete = null;
     function showDeleteModal(id, e) { e.stopPropagation(); pToDelete = id; document.getElementById('delete-project-name').innerText = projectsMap[id].name; openModal('delete-confirm-modal'); }
     function cancelDeleteProject() { closeModal('delete-confirm-modal'); pToDelete = null; }
-    function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); saveToLocalStorage(); updateUI(); }
+    function confirmDeleteProject() { if (!pToDelete) return; delete projectsMap[pToDelete]; cancelDeleteProject(); saveToLocalStorage(); showHome(); }
 
     function confirmDeleteAll() { 
         projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate));
         activeId = "master_1";
         localStorage.removeItem("pnet_projects"); 
         closeModal('clear-all-modal'); 
-        updateUI(); 
+        showHome(); 
         showToast("Projek muat naik dipadam. Fail Utama dikekalkan.");
     }
 
