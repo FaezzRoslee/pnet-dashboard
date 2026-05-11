@@ -163,10 +163,10 @@
         
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; width: 100%; letter-spacing: 0.3px; white-space: nowrap; }
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-        .status-mengikutjadual, .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
+        .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        /* V42: Ganti info jadual kepada dalam proses */
+        /* V43: DALAM PROSES */
         .status-dalamproses { background: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -237,7 +237,7 @@
                 <div class="mini-kpi-grid" style="margin-bottom: 20px;">
                     <div class="mini-kpi-card" onclick="openKpiModal('TUGASAN')"><div class="mini-kpi-header"><span>Tugasan</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div></div><h3 id="kpi-total">0</h3></div>
                     <div class="mini-kpi-card" onclick="openKpiModal('SELESAI')"><div class="mini-kpi-header"><span>Selesai</span><div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div></div><h3 id="kpi-done">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('MENGIKUT JADUAL')"><div class="mini-kpi-header"><span>Jadual</span><div class="mini-kpi-icon" style="background:rgba(245,158,11,0.1); color:var(--warning);"><i data-lucide="clock" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openKpiModal('DALAM PROSES')"><div class="mini-kpi-header"><span>Dalam Proses</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="activity" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
                     <div class="mini-kpi-card" onclick="openKpiModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);">Lewat</span><div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
                 </div>
 
@@ -485,6 +485,9 @@
         return v; 
     }
 
+    // ==========================================
+    // 4. PENDERIA PINTAR (V43) 
+    // ==========================================
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
@@ -557,16 +560,20 @@
         if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
         const p = String(j).split('/'); 
         
-        // V42: Tukar dari INFO JADUAL kepada DALAM PROSES
+        // V43: Semua aktiviti aktif yang bukan tarikh dikira DALAM PROSES
         if(p.length < 3) return { label: 'DALAM PROSES', days: 0 }; 
         const d = new Date(p[2], p[1]-1, p[0]); const t = new Date(); t.setHours(0,0,0,0);
         if(isNaN(d.getTime())) return { label: 'DALAM PROSES', days: 0 };
 
         const diff = Math.ceil((d - t) / (1000 * 3600 * 24));
         if (diff < 0) return { label: `LEWAT (${Math.abs(diff)} HARI)`, days: Math.abs(diff) };
-        return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'MENGIKUT JADUAL', days: 0 };
+        // V43: Gabungkan Mengikut Jadual ke DALAM PROSES
+        return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'DALAM PROSES', days: 0 };
     }
 
+    // ==========================================
+    // 5. UPDATE UI (PAPARAN)
+    // ==========================================
     function updateUI() {
         if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
         updateSidebar();
@@ -581,14 +588,13 @@
         
         animateNum('kpi-total', tasks.length);
         animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
-        // V42: Masukkan DALAM PROSES ke dalam kiraan "Mengikut Jadual"
-        animateNum('kpi-track', tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.status === 'DALAM PROSES').length);
+        // V43: Gabungkan kiraan
+        animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
         animateNum('kpi-delay', tasks.filter(t => t.status.includes('LEWAT')).length);
         
         const perc = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'SELESAI').length / tasks.length) * 100) : 0;
         animateNum('global-percent', perc, '%');
         
-        // V42: Dinamik Title Header
         let mainTitle = p.name;
         if (p.data.length > 0 && p.data[0].isSec && p.data[0].title.toLowerCase().includes("perkara")) {
             mainTitle = p.data[0].title;
@@ -656,10 +662,7 @@
             } 
             else {
                 const s = item.status.toLowerCase().replace(/\s/g, '');
-                let badgeClass = s.includes('lewat') ? 'lewat' : s;
-                
-                // V42: CSS Ganti
-                if(item.status === 'DALAM PROSES') badgeClass = 'dalamproses';
+                let badgeClass = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
                 
                 tbody.innerHTML += `<tr>
                     <td>${item.bil}</td>
@@ -762,7 +765,7 @@
         let filt = [], hBg = '', title = '', icon = '';
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; icon = 'clipboard-list'; } 
         else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI'); hBg = 'var(--success)'; title = 'Aktiviti Selesai'; icon = 'check-circle-2'; } 
-        else if(type === 'MENGIKUT JADUAL') { filt = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.status === 'DALAM PROSES'); hBg = 'var(--warning)'; title = 'Mengikut Jadual'; icon = 'clock'; } 
+        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); hBg = 'var(--accent)'; title = 'Dalam Proses / Jadual'; icon = 'activity'; } 
         else if(type === 'LEWAT') { filt = tasks.filter(t => t.status.includes('LEWAT')); hBg = 'var(--danger)'; title = 'Aktiviti Lewat'; icon = 'alert-triangle'; }
         
         document.getElementById('modal-header').style.background = hBg;
