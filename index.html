@@ -52,7 +52,7 @@
         
         .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px 25px; flex-grow: 1; display: flex; flex-direction: column;}
 
-        /* HEADER MODERNIZATION */
+        /* HEADER MODERNIZATION - REMOVED POINTED ELEMENTS */
         .header-main { 
             display: flex; justify-content: space-between; align-items: center; 
             margin-bottom: 30px; padding: 18px 30px; 
@@ -83,17 +83,7 @@
         .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(50%); }
         .lang-btn.active { opacity: 1; background: var(--card-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); filter: grayscale(0%); }
 
-        /* Ikon Tindakan Standard */
-        .action-icon { 
-            width: 42px; height: 42px; padding: 0; 
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; background: transparent; 
-            color: var(--text-muted); border: 1px solid var(--border); 
-            cursor: pointer; transition: 0.2s; 
-        }
-        .action-icon:hover { background: var(--hover-bg); color: var(--text-main); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-color: transparent;}
-        
-        /* Butang Standard & Muat Naik */
+        /* Butang Standard & Muat Naik - ALREADY HANDLED VIA REMOVAL */
         .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; outline: none; }
         .btn-upload { padding: 12px 20px; background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35); border-radius: 12px; font-size: 13px;}
         .btn-upload:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45); }
@@ -134,7 +124,28 @@
         .dashboard-layout { display: grid; grid-template-columns: clamp(240px, 20vw, 300px) minmax(0, 1fr); gap: 20px; flex-grow: 1;}
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
-        /* Mini KPI Sidebar */
+        /* KPI Cards with Liquid Glass Icons */
+        .liquid-glass-icon-box {
+            width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(15px) saturate(180%); 
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 2px rgba(0,0,0,0.1), 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .liquid-glass-icon-box {
+            background: rgba(30, 41, 59, 0.5);
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.05), inset 0 -2px 2px rgba(0,0,0,0.3), 0 4px 6px -1px rgba(0,0,0,0.4);
+        }
+        .liquid-glass-icon-box::before { /* Kesan Berkilat */
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.6; transform: rotate(30deg); 
+        }
+
+        /* Update standard mini kpi grid to use liquid glass boxes */
         .mini-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .mini-kpi-card { background: var(--hover-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; gap: 6px; }
         .mini-kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); border-color: var(--accent); }
@@ -270,23 +281,7 @@
                     <img src="https://flagcdn.com/w20/gb.png" alt="GB">
                 </button>
             </div>
-
-            <button class="action-icon" style="color:var(--success);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive">
-                <i data-lucide="folder-plus" style="width:18px;"></i>
-            </button>
-            <button class="action-icon" onclick="location.reload()" title="Refresh Automatik">
-                <i data-lucide="refresh-cw" style="width:18px;"></i>
-            </button>
-            <button class="action-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn">
-                <i data-lucide="moon" style="width:18px;"></i>
-            </button>
-            
-            <label class="btn btn-upload" id="headerUploadBtn">
-                <i data-lucide="file-up" style="width:16px;"></i> 
-                <span data-i18n="btn_upload">Muat Naik Excel</span> 
-                <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls">
-            </label>
-        </div>
+            </div>
     </header>
 
     <div id="home-page" style="display:none;">
@@ -309,10 +304,17 @@
                 </div>
 
                 <div class="mini-kpi-grid" style="margin-bottom: 20px;">
-                    <div class="mini-kpi-card" onclick="openKpiModal('TUGASAN')"><div class="mini-kpi-header"><span data-i18n="kpi_task">Tugasan</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div></div><h3 id="kpi-total">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('SELESAI')"><div class="mini-kpi-header"><span data-i18n="kpi_done">Selesai</span><div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div></div><h3 id="kpi-done">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('DALAM PROSES')"><div class="mini-kpi-header"><span data-i18n="kpi_process">Dalam Proses</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="activity" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);" data-i18n="kpi_delay">Lewat</span><div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openKpiModal('TUGASAN')"><div class="mini-kpi-header"><span data-i18n="kpi_task">Tugasan</span>
+                        <div class="mini-kpi-icon liquid-glass-icon-box" style="color:var(--accent);"><i data-lucide="clipboard-list" style="width:18px;"></i></div></div><h3 id="kpi-total">0</h3></div>
+                    
+                    <div class="mini-kpi-card" onclick="openKpiModal('SELESAI')"><div class="mini-kpi-header"><span data-i18n="kpi_done">Selesai</span>
+                        <div class="mini-kpi-icon liquid-glass-icon-box" style="color:var(--success);"><i data-lucide="check-circle-2" style="width:18px;"></i></div></div><h3 id="kpi-done">0</h3></div>
+                    
+                    <div class="mini-kpi-card" onclick="openKpiModal('DALAM PROSES')"><div class="mini-kpi-header"><span data-i18n="kpi_process">Dalam Proses</span>
+                        <div class="mini-kpi-icon liquid-glass-icon-box" style="color:var(--accent);"><i data-lucide="activity" style="width:18px;"></i></div></div><h3 id="kpi-track">0</h3></div>
+                    
+                    <div class="mini-kpi-card" onclick="openKpiModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);" data-i18n="kpi_delay">Lewat</span>
+                        <div class="mini-kpi-icon liquid-glass-icon-box" style="color:var(--danger);"><i data-lucide="alert-triangle" style="width:18px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
                 </div>
 
                 <div class="card" style="padding: 20px;">
@@ -385,11 +387,8 @@
         <div class="footer-left">
             <div style="display:flex; align-items:center; gap:18px; margin-bottom: 25px; flex-wrap: wrap;">
                 <img src="./jatanegara.png" alt="Jata Negara Malaysia" style="height: 60px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); object-fit: contain;">
-                
                 <div style="width: 1px; height: 45px; background: rgba(255,255,255,0.2);"></div>
-                
                 <img src="./uprlogo.png" alt="Logo KKM" style="height: 50px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); object-fit: contain;">
-                
                 <div>
                     <h2 style="margin:0; color:#fff; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;" data-i18n="footer_title">UNIT PENGURUSAN RANGKAIAN</h2>
                     <span style="color:#94a3b8; font-size:12px; font-weight: 600;" data-i18n="footer_subtitle">Kementerian Kesihatan Malaysia</span>
@@ -493,9 +492,8 @@
         "ms": {
             "header_title": "Garis Masa Projek PNET",
             "header_subtitle": "Sistem Pemantauan Projek PNET",
-            "btn_upload": "Muat Naik Excel",
-            "loader_title": "Menyegerak Data Awan...",
-            "loader_desc": "Sistem sedang memuat turun fail projek awan utama.",
+            "loader_title": "Menyegerak Data...",
+            "loader_desc": "Sistem sedang memuat turun fail projek utama.",
             "hero_title": "Pusat Kawalan Projek",
             "hero_desc": "Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.",
             "kpi_overall": "KEMAJUAN KESELURUHAN",
@@ -557,7 +555,6 @@
         "en": {
             "header_title": "PNET Project Timeline",
             "header_subtitle": "PNET Project Monitoring System",
-            "btn_upload": "Upload Excel",
             "loader_title": "Syncing Cloud Data...",
             "loader_desc": "System is downloading master cloud project files.",
             "hero_title": "Project Control Center",
@@ -669,8 +666,7 @@
         const next = curr === "dark" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", next);
         localStorage.setItem("pnet_theme", next);
-        document.querySelector('#themeBtn i').setAttribute('data-lucide', next === 'dark' ? 'sun' : 'moon');
-        lucide.createIcons();
+        // Removed header theme icon update
         if(document.getElementById('dashboard-content').style.display !== 'none' && projectsMap[activeId] && projectsMap[activeId].data.length > 0) {
             renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
         }
@@ -688,7 +684,7 @@
 
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
-        if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
+        // Removed header theme icon update
         lucide.createIcons();
 
         const savedRes = localStorage.getItem("pnet_resources");
@@ -753,8 +749,8 @@
             grid.innerHTML += `
             <div class="home-card" onclick="openProjectFromHome('${id}')">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
-                    <div style="background:var(--hover-bg); padding:10px; border-radius:12px; color:var(--accent);">
-                        <i data-lucide="${iconName}"></i>
+                    <div class="liquid-glass-icon-box" style="color:var(--accent);">
+                        <i data-lucide="${iconName}" style="width:18px;"></i>
                     </div>
                     <span style="font-size:10px; font-weight:800; background:var(--hover-bg); padding:4px 8px; border-radius:6px; color:var(--text-muted);">${tasks.length} ${i18n[currentLang].home_task}</span>
                 </div>
