@@ -201,7 +201,7 @@
         .footer-left { max-width: 500px; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
         
-        .lang-btn { background: transparent; border: 1px solid var(--border); font-size: 16px; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 4px 8px; border-radius: 8px; filter: grayscale(100%); }
+        .lang-btn { display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--border); cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 6px; border-radius: 8px; filter: grayscale(100%); }
         .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(0%); }
         .lang-btn.active { opacity: 1; border-color: var(--accent); background: var(--glow-color); filter: grayscale(0%); box-shadow: 0 0 10px var(--glow-color); }
 
@@ -231,8 +231,12 @@
         
         <div class="header-actions">
             <div style="display:flex; gap:5px; margin-right:10px;">
-                <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">🇲🇾</button>
-                <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">🇬🇧</button>
+                <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">
+                    <img src="https://flagcdn.com/w20/my.png" alt="MY" style="width: 20px; border-radius: 2px;">
+                </button>
+                <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">
+                    <img src="https://flagcdn.com/w20/gb.png" alt="GB" style="width: 20px; border-radius: 2px;">
+                </button>
             </div>
 
             <button class="btn btn-icon" style="color:var(--success); border-color:var(--border);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive"><i data-lucide="folder-plus"></i></button>
@@ -437,9 +441,6 @@
     lucide.createIcons();
     Chart.register(ChartDataLabels);
 
-    // ==========================================
-    // V50: KAMUS 2 BAHASA (BM, EN)
-    // ==========================================
     const i18n = {
         "ms": {
             "header_title": "Garis Masa Projek PNET",
@@ -893,11 +894,23 @@
         labels.forEach((l, i) => { const c = chartColors[i % chartColors.length]; leg += `<div class="legend-item" title="${l}"><div class="legend-left"><span class="legend-color" style="background:${c}"></span><span class="legend-text">${l}</span></div><span class="legend-val">${data[i]}</span></div>`; });
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
         
+        // PENGEMASKINIAN UNTUK GOAL 2: Potong ayat kepada 2 layer
         const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
+        const rawUnitLabels = Object.keys(units);
+        
+        const wrappedLabels = rawUnitLabels.map(label => {
+            if (label.length <= 20) return label; // Kalau ayat pendek, biar je
+            const words = label.split(' ');
+            if (words.length <= 1) return label;
+            const half = Math.ceil(words.length / 2);
+            // Susun kepada array untuk jadikan dia "2 layer"
+            return [words.slice(0, half).join(' '), words.slice(half).join(' ')];
+        });
+
         if (unitChart) unitChart.destroy();
         unitChart = new Chart(document.getElementById('unitChart'), {
-            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: i18n[currentLang].th_duration, data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
-            options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " " + i18n[currentLang].status_hari.toLowerCase(), font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 12 }, color: isDark ? '#cbd5e1' : '#475569' } } } }
+            type: 'bar', data: { labels: wrappedLabels, datasets: [{ label: i18n[currentLang].th_duration, data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
+            options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " " + i18n[currentLang].status_hari.toLowerCase(), font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: isDark ? '#cbd5e1' : '#475569' } } } }
         });
     }
 
