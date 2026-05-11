@@ -83,7 +83,7 @@
         .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* V49: PREMIUM HOMEPAGE */
+        /* HOMEPAGE */
         #home-page { padding: 40px 20px; animation: fadeInUp 0.5s ease-out; flex-grow: 1; display: flex; flex-direction: column; }
         .hero-icon-glow { position: absolute; width: 150px; height: 150px; background: var(--accent); filter: blur(60px); opacity: 0.3; border-radius: 50%; z-index: -1; animation: pulseGlow 4s infinite alternate ease-in-out; }
         @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.2; } 100% { transform: scale(1.2); opacity: 0.5; } }
@@ -94,7 +94,7 @@
         .home-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
         .home-card:hover::before { opacity: 1; }
 
-        /* PEMBAIKAN LAYOUT SIDEBAR */
+        /* DASHBOARD LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: clamp(240px, 20vw, 300px) minmax(0, 1fr); gap: 20px; flex-grow: 1;}
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -189,29 +189,21 @@
         .modal-card-custom { background: var(--card-bg); width: 90%; max-width: 420px; border-radius: 24px; padding: 35px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); transform: scale(0.9); transition: 0.3s; }
         .modal-overlay-custom.show .modal-card-custom, .modal-overlay.show .modal-container { transform: scale(1); }
         .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
-        
         .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; text-align: left;}
         
-        /* V49: PREMIUM FOOTER STYLING */
+        /* FOOTER & LANG BUTTONS */
         .premium-footer {
-            /* Pastikan gambar 1560128.jpg berada di folder yang sama dengan fail HTML ini */
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('1560128.jpg');
-            background-size: cover;
-            background-position: center;
-            color: #cbd5e1;
-            padding: 40px 5%;
-            margin-top: auto;
-            border-top: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            background-size: cover; background-position: center; color: #cbd5e1;
+            padding: 40px 5%; margin-top: auto; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 20px;
         }
         .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
-        .footer-left { max-width: 400px; }
+        .footer-left { max-width: 500px; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
-        .lang-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; opacity: 0.5; transition: 0.3s; padding: 0 5px; }
-        .lang-btn:hover { opacity: 0.8; transform: scale(1.1); }
-        .lang-btn.active { opacity: 1; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        
+        .lang-btn { background: transparent; border: 1px solid var(--border); font-size: 16px; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 4px 8px; border-radius: 8px; filter: grayscale(100%); }
+        .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(0%); }
+        .lang-btn.active { opacity: 1; border-color: var(--accent); background: var(--glow-color); filter: grayscale(0%); box-shadow: 0 0 10px var(--glow-color); }
 
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } .sidebar .card { padding: 20px; } }
         @media (max-width: 768px) { .header-main { flex-direction: column; align-items: flex-start; } .header-actions { width: 100%; justify-content: space-between; } .charts-grid { grid-template-columns: 1fr; } }
@@ -236,7 +228,14 @@
                 <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;" data-i18n="header_subtitle">Sistem Pemantauan Awan</span>
             </div>
         </div>
+        
         <div class="header-actions">
+            <div style="display:flex; gap:5px; margin-right:10px;">
+                <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">🇲🇾</button>
+                <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">🇬🇧</button>
+                <button onclick="setLang('kel')" id="btn-lang-kel" class="lang-btn" title="Bahasa Kelate">🪁</button>
+            </div>
+
             <button class="btn btn-icon" style="color:var(--success); border-color:var(--border);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive"><i data-lucide="folder-plus"></i></button>
             <button class="btn-icon" onclick="location.reload()" title="Refresh Automatik"><i data-lucide="refresh-cw"></i></button>
             <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn"><i data-lucide="moon"></i></button>
@@ -346,12 +345,11 @@
                 </div>
             </div>
             <p style="font-family: monospace; font-size: 13px; line-height: 1.6; color:#94a3b8;" data-i18n="footer_address">
-                Kementerian Kesihatan Malaysia,<br>
-                Kompleks E, Pusat Pentadbiran Kerajaan Persekutuan,<br>
-                62590 Putrajaya
+                Unit Pengurusan Rangkaian,<br>
+                Bahagian Pengurusan Maklumat, Kementerian Kesihatan Malaysia,<br>
+                Aras 5 Blok E7, Kompleks E, 62590 Putrajaya.
             </p>
             <div style="font-family: monospace; font-size: 13px; color:#94a3b8; margin-top: 15px;">
-                <div data-i18n="footer_tel">Tel : +603-8000 8000</div>
                 <div><span data-i18n="footer_email">Email :</span> <a href="mailto:network_mystep@moh.gov.my" style="color:#3b82f6; text-decoration: none;">network_mystep@moh.gov.my</a></div>
             </div>
         </div>
@@ -364,10 +362,6 @@
         </div>
         <div style="font-size: 12px; color:#94a3b8; text-align: center; flex-grow: 1;" data-i18n="footer_copyright">
             © 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
-        </div>
-        <div class="footer-lang">
-            <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">🇲🇾</button>
-            <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">🇬🇧</button>
         </div>
     </div>
 </footer>
@@ -445,7 +439,7 @@
     Chart.register(ChartDataLabels);
 
     // ==========================================
-    // V49: KAMUS DWIBAHASA (BM & ENGLISH)
+    // V50: KAMUS 3 BAHASA (BM, EN, KELATE)
     // ==========================================
     const i18n = {
         "ms": {
@@ -479,12 +473,11 @@
             "th_status": "Status",
             "footer_title": "PUSAT KAWALAN PNET",
             "footer_subtitle": "Kementerian Kesihatan Malaysia",
-            "footer_address": "Kementerian Kesihatan Malaysia,<br>Kompleks E, Pusat Pentadbiran Kerajaan Persekutuan,<br>62590 Putrajaya",
-            "footer_tel": "Tel : +603-8000 8000",
+            "footer_address": "Unit Pengurusan Rangkaian,<br>Bahagian Pengurusan Maklumat, Kementerian Kesihatan Malaysia,<br>Aras 5 Blok E7, Kompleks E, 62590 Putrajaya.",
             "footer_email": "Emel :",
             "footer_modified": "DIKEMASKINI PADA :",
             "footer_date": "11 Mei 2026",
-            "footer_copyright": "© 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
+            "footer_copyright": "© 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
             "home_task": "TUGASAN",
             "home_progress": "Kemajuan:",
             "modal_cloud_title": "Sambung Google Sheets",
@@ -544,12 +537,11 @@
             "th_status": "Status",
             "footer_title": "PNET CONTROL CENTER",
             "footer_subtitle": "Ministry of Health Malaysia",
-            "footer_address": "Ministry of Health Malaysia,<br>Complex E, Federal Government Administrative Centre,<br>62590 Putrajaya",
-            "footer_tel": "Tel : +603-8000 8000",
+            "footer_address": "Network Management Unit,<br>Information Management Division, Ministry of Health Malaysia,<br>Level 5 Block E7, Complex E, 62590 Putrajaya.",
             "footer_email": "Email :",
             "footer_modified": "WEB LAST MODIFIED :",
             "footer_date": "May 11, 2026",
-            "footer_copyright": "© 2024-2026 PNET Ministry of Health Malaysia. All rights reserved.",
+            "footer_copyright": "© 2026 PNET Ministry of Health Malaysia. All rights reserved.",
             "home_task": "TASKS",
             "home_progress": "Progress:",
             "modal_cloud_title": "Connect Google Sheets",
@@ -577,6 +569,70 @@
             "no_link": "No links saved.",
             "expected": "Expected",
             "actual": "Actual"
+        },
+        "kel": {
+            "header_title": "Garis Maso Projek PNET",
+            "header_subtitle": "Sistem Pata Awan",
+            "btn_upload": "Wak Naik Excel",
+            "loader_title": "Tengoh Tarik Awan...",
+            "loader_desc": "Sistem tengoh baco fail projek hok utamo.",
+            "hero_title": "Pusat Jago Projek",
+            "hero_desc": "Sistem untuk tengok status projek maso loni dengan hok paling canggih.",
+            "kpi_overall": "PERKEMBANGE SEMO",
+            "kpi_task": "Kijoan",
+            "kpi_done": "Siap Doh",
+            "kpi_process": "Tengoh Buat",
+            "kpi_delay": "Lambak",
+            "ref_title": "Rujuke & Polder",
+            "proj_title": "Fail Projek",
+            "btn_clear": "Tohok Lokal",
+            "btn_add_proj": "Tamboh Projek",
+            "chart_topic": "Maso Ikut Topik",
+            "chart_unit": "Lambak Ikut Unit (Ari)",
+            "table_title": "Duk Pusing...",
+            "table_desc": "Semo kijoan projek loni",
+            "table_search": "Nok cari kijo ko unit...",
+            "th_bil": "Bil",
+            "th_activity": "Kijoan",
+            "th_action": "Tindake",
+            "th_duration": "Maso",
+            "th_expected": "Jangko Maso",
+            "th_actual": "Hok Betul",
+            "th_status": "Status",
+            "footer_title": "PUSAT KAWAL PNET",
+            "footer_subtitle": "Kementerian Kesihaten Malaysia",
+            "footer_address": "Unit Penguruse Rangkaiye,<br>Bahagie Penguruse Maklumak, Kementerian Kesihate Malaysia,<br>Arah 5 Blok E7, Kompleks E, 62590 Putrajayo.",
+            "footer_email": "Emel :",
+            "footer_modified": "NGELAH UPDATE WEBSITE NI PADO :",
+            "footer_date": "11 Mei 2026",
+            "footer_copyright": "© 2026 PNET Kementerian Kesihate Malaysia. Hak Cipto Terpeliharo.",
+            "home_task": "KIJO",
+            "home_progress": "Nok Siap:",
+            "modal_cloud_title": "Sambong Google Sheets",
+            "modal_cloud_desc": "Masuk link CSV (Publish to Web) untok tab projek demo.",
+            "modal_ref_title": "Nambah Rujuke Awan",
+            "modal_ref_desc": "Simpe link Google Drive ko Google Docs untok mudoh cari.",
+            "modal_ref_p1": "Namo (cth: Polder Tender Rasmi)",
+            "modal_del_title": "Buang Rekod Projek?",
+            "modal_del_desc": "Arap ko nok tohok ni?",
+            "modal_clear_title": "Hapuh Fail Hok Upload Tadi?",
+            "modal_clear_desc": "Semo fail hok masuk sdiri kawe nok buang. <br><b>Tapi Fail Master Cloud tok hile.</b>",
+            "modal_list_title": "Senara Kijoan",
+            "btn_cancel": "Tokse",
+            "btn_connect": "Sambong",
+            "btn_save": "Sipe",
+            "btn_yes_delete": "Hom bue la",
+            "btn_clear_local": "Kosong Lokal",
+            "btn_close": "Tutup Papare",
+            "status_selesai": "SIAP DOH",
+            "status_proses": "TENGOH BUAT",
+            "status_hampir": "NOK ABIH DOH",
+            "status_lewat": "LAMBAK",
+            "status_hari": "ARI",
+            "no_record": "Takdok rekod.",
+            "no_link": "Takdok link simpe.",
+            "expected": "Jangkae maso",
+            "actual": "Hok Sunggoh"
         }
     };
 
@@ -589,6 +645,7 @@
         // Active Button styling
         document.getElementById('btn-lang-ms').classList.remove('active');
         document.getElementById('btn-lang-en').classList.remove('active');
+        document.getElementById('btn-lang-kel').classList.remove('active');
         document.getElementById('btn-lang-' + lang).classList.add('active');
 
         // Translate inner HTML
@@ -686,7 +743,6 @@
         
         await Promise.all(fetchPromises);
 
-        // Pasang bahasa awal
         setLang(currentLang);
 
         const loader = document.getElementById('main-loader');
@@ -834,7 +890,6 @@
         return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'DALAM PROSES', days: 0 };
     }
 
-    // Fungsi Pembantu Terjemahan Jadual & Status
     function getTranslatedStatus(statusLabel, days) {
         if(statusLabel === 'SELESAI') return i18n[currentLang].status_selesai;
         if(statusLabel === 'DALAM PROSES') return i18n[currentLang].status_proses;
