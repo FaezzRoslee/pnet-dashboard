@@ -154,7 +154,6 @@
         th:nth-child(6), td:nth-child(6) { width: 100px; text-align: center; } 
         th:nth-child(7), td:nth-child(7) { width: 120px; text-align: center; } 
 
-        /* TEMA TAJUK UTAMA (PERKARA) */
         .main-sec-row td { background: var(--primary); color: var(--card-bg); font-weight: 800; font-size: 13px; padding: 16px 20px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--accent); white-space: normal; }
         [data-theme="dark"] .main-sec-row td { background: var(--accent); color: #ffffff; }
         .sec-row td { background: var(--hover-bg); color: var(--accent); font-weight: 800; font-size: 11px; padding: 12px 15px; border-left: 4px solid var(--accent); white-space: normal; }
@@ -407,12 +406,6 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
-    function goHome() {
-        document.getElementById('dashboard-content').style.display = 'none';
-        document.getElementById('printBtn').style.display = 'none';
-        document.getElementById('empty-state').style.display = 'flex';
-    }
-
     window.onload = async () => {
         document.getElementById('main-loader').style.display = 'flex';
 
@@ -488,6 +481,9 @@
         return v; 
     }
 
+    // ==========================================
+    // 4. PENDERIA PINTAR (V41) - Pengesan Sub-Tugasan (a, b, c)
+    // ==========================================
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
@@ -504,27 +500,29 @@
             let checkA = colA.toLowerCase(); 
             let checkB = colB.toLowerCase();
 
-            // Abaikan Header Jadual
             if ((checkA === "bil" || checkA === "no") && (checkB.includes("aktiviti") || checkB.includes("perkara"))) return;
             if (checkA === "" && checkB.includes("aktiviti") && colC.toLowerCase().includes("tindakan")) return;
 
-            // ---> V40 FIX: ABAIKAN BARIS "JUMLAH HARI" <---
             let cleanCheckA = checkA.replace(/\s+/g, ''); 
             let cleanCheckB = checkB.replace(/\s+/g, '');
             if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") return;
 
-            // Kesan Tajuk Utama & Sub-Tajuk
+            // KESAN TAJUK vs SUB-TUGASAN
             let isSection = false;
             let titleText = "";
 
-            if (colA !== "" && colB === "" && colC === "" && colD === "") {
-                isSection = true; titleText = colA; 
-            } else if (colA === "" && colB !== "" && colC === "" && colD === "") {
-                isSection = true; titleText = colB; 
-            } else if (checkA.includes("perkara :") || checkA.includes("perkara:")) {
-                isSection = true; titleText = colA;
-            } else if (checkB.includes("perkara :") || checkB.includes("perkara:")) {
-                isSection = true; titleText = colB;
+            // Pengesan Sub-Tugasan: Jika mula dengan abjad (a., b., c.) atau sengkang (- )
+            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || colB.startsWith("-");
+
+            if (checkA.includes("perkara :") || checkA.includes("perkara:")) {
+                isSection = true; titleText = colA !== "" ? colA : colB;
+            } else if (!isSubTask) { 
+                // Hanya jadikan seksyen/tajuk JIKA ia BUKAN sub-tugasan (a, b, c)
+                if (colA !== "" && colB === "" && colC === "" && colD === "") {
+                    isSection = true; titleText = colA; 
+                } else if (colA === "" && colB !== "" && colC === "" && colD === "") {
+                    isSection = true; titleText = colB; 
+                }
             }
 
             if (isSection) {
@@ -533,19 +531,18 @@
                 return;
             }
 
-            // Betulkan kolum beralih (shifted)
             if (colB === "" && colC !== "") {
                 colB = colC; colC = colD; colD = colE; colE = colF; colF = String(row[6] || "").trim();
             }
 
             if (colB === "" || colB === "-") colB = "(Aktiviti Tidak Dinamakan)";
 
-            // Update Memori untuk Merged Cells
+            // Update Memori untuk Merged Cells (Jangan update jika kosong atau "-")
             if (colC !== "" && colC !== "-") memTindakan = colC;
             if (colD !== "" && colD !== "-") memTempoh = colD;
             if (colE !== "" && colE !== "-") memJangkaan = colE;
 
-            // Guna memori jika kosong
+            // Guna memori jika kosong (Inilah yang isikan data untuk a, b, c)
             if (colC === "") colC = memTindakan;
             if (colD === "") colD = memTempoh;
             if (colE === "") colE = memJangkaan;
@@ -554,7 +551,8 @@
             const s = formatExcelDate(colF);
             const st = getStatus(j, s);
 
-            res.push({ isSec: false, section: cs, bil: colA || "-", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: j || "-", s: s || "-", status: st.label, days: st.days });
+            // Bil: Biarkan kosong jika tiada, elak nampak semak
+            res.push({ isSec: false, section: cs, bil: colA || "", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: j || "-", s: s || "-", status: st.label, days: st.days });
         });
         return res;
     }
@@ -573,9 +571,6 @@
         return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'MENGIKUT JADUAL', days: 0 };
     }
 
-    // ==========================================
-    // 5. UPDATE UI (PAPARAN)
-    // ==========================================
     function updateUI() {
         if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
         updateSidebar();
@@ -664,21 +659,18 @@
                 
                 tbody.innerHTML += `<tr>
                     <td>${item.bil}</td>
-                    <td style="font-weight:600;">${item.aktiviti}</td>
+                    <td style="font-weight:600; padding-left:${item.bil === "" ? '20px' : '10px'}">${item.aktiviti}</td>
                     <td><span class="glass-badge">${item.unit}</span></td>
-                    <td>${item.tempoh}</td>
-                    <td style="font-weight:600;">${item.j}</td>
-                    <td style="font-weight:600; color:${item.s !== '-' ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td>
-                    <td><span class="badge status-${badgeClass}">${item.status === 'HAMPIR TAMAT' ? '<span class="pulse-dot"></span> HAMPIR TAMAT' : item.status}</span></td>
+                    <td style="text-align:center;">${item.tempoh}</td>
+                    <td style="font-weight:600; text-align:center;">${item.j}</td>
+                    <td style="font-weight:600; text-align:center; color:${item.s !== '-' ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td>
+                    <td style="text-align:center;"><span class="badge status-${badgeClass}">${item.status === 'HAMPIR TAMAT' ? '<span class="pulse-dot"></span> HAMPIR TAMAT' : item.status}</span></td>
                 </tr>`;
             }
         });
         lucide.createIcons();
     }
 
-    // ==========================================
-    // 6. RUJUKAN & FOLDER (DRIVE/DOCS)
-    // ==========================================
     function addResource() {
         const name = document.getElementById('resourceName').value.trim();
         let url = document.getElementById('resourceUrl').value.trim();
