@@ -49,7 +49,7 @@
             background-size: 30px 30px;
         }
         
-        .container { width: 100%; max-width: 100%; padding: 15px 25px; }
+        .container { width: 100%; max-width: 100%; padding: 15px 25px; display: flex; flex-direction: column; min-height: 100vh;}
 
         /* Header */
         .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 25px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); }
@@ -82,8 +82,8 @@
         .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* V46: PREMIUM HOMEPAGE */
-        #home-page { padding: 40px 20px; animation: fadeInUp 0.5s ease-out; }
+        /* V46 & V47: PREMIUM HOMEPAGE */
+        #home-page { padding: 40px 20px; animation: fadeInUp 0.5s ease-out; flex-grow: 1; display: flex; flex-direction: column; }
         .hero-icon-glow { position: absolute; width: 150px; height: 150px; background: var(--accent); filter: blur(60px); opacity: 0.3; border-radius: 50%; z-index: -1; animation: pulseGlow 4s infinite alternate ease-in-out; }
         @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.2; } 100% { transform: scale(1.2); opacity: 0.5; } }
         .gradient-text { font-size: clamp(32px, 5vw, 56px); font-weight: 800; letter-spacing: -1px; margin: 0 0 15px; background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -93,7 +93,7 @@
         .home-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
         .home-card:hover::before { opacity: 1; }
 
-        /* DASHBOARD LAYOUT */
+        /* PEMBAIKAN LAYOUT SIDEBAR */
         .dashboard-layout { display: grid; grid-template-columns: clamp(240px, 20vw, 300px) minmax(0, 1fr); gap: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
 
@@ -226,17 +226,28 @@
         <div style="text-align: center; margin-bottom: 50px; position: relative;">
             <div class="hero-icon-glow" style="top:-30px; left:50%; transform:translateX(-50%);"></div>
             <h1 class="gradient-text">Pusat Kawalan Projek</h1>
-            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.</p>
-            
-            <div style="display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 15px; background: rgba(148, 163, 184, 0.05); padding: 12px 25px; border-radius: 50px; border: 1px solid var(--border); backdrop-filter: blur(10px);">
-                <span style="font-size: 12px; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:6px;"><i data-lucide="calendar-check" style="width:14px; color:var(--success);"></i> Terakhir Dikemaskini: 11 Mei 2026</span>
-                <span style="width: 1px; background: var(--border); margin: 0 5px;"></span>
-                <span style="font-size: 12px; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:6px;"><i data-lucide="code" style="width:14px; color:var(--accent);"></i> Dibangunkan oleh <span style="color: var(--accent); font-weight:800;">Kiyoshi</span></span>
-            </div>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata.</p>
         </div>
 
         <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; width: 100%;">
             </div>
+
+        <div style="margin-top: auto; padding-top: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; width: 100%;">
+            <div style="font-size: 12px; color: var(--text-muted); display:flex; align-items:center; gap:6px; background: var(--card-bg); padding: 8px 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--card-shadow);">
+                <i data-lucide="mail" style="width:14px; color:var(--text-muted);"></i> Sebarang pertanyaan, hubungi: 
+                <a href="mailto:network_mystep@moh.gov.my" style="color:var(--accent); text-decoration:none; font-weight:700;">network_mystep@moh.gov.my</a>
+            </div>
+
+            <div style="display: flex; gap: 15px; background: rgba(148, 163, 184, 0.05); padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); backdrop-filter: blur(10px);">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="calendar-check" style="width:14px; color:var(--success);"></i> Terakhir Dikemaskini: 11 Mei 2026
+                </span>
+                <span style="width: 1px; background: var(--border); margin: 0 2px;"></span>
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="code" style="width:14px; color:var(--accent);"></i> Dibangunkan oleh <span style="color: var(--accent); font-weight:800;">Kiyoshi</span>
+                </span>
+            </div>
+        </div>
     </div>
 
     <div id="dashboard-content" style="display:none;" class="animate">
@@ -473,14 +484,13 @@
         loader.style.opacity = '0';
         setTimeout(() => { 
             loader.style.display = 'none'; 
-            showHome(); // V46: Lepas loading, terus tunjuk Homepage cantik
+            showHome(); 
         }, 400);
     };
 
-    // --- V46: FUNGSI TUNJUK HOMEPAGE ---
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
-        document.getElementById('home-page').style.display = 'block';
+        document.getElementById('home-page').style.display = 'flex';
 
         const grid = document.getElementById('home-project-grid');
         grid.innerHTML = '';
