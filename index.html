@@ -136,7 +136,7 @@
 
         /* JADUAL */
         .table-container { background: var(--card-bg); padding: 20px 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--card-shadow); width: 100%; overflow: hidden; }
-        .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 100%; max-width: 350px; border: 1px solid var(--border); transition: 0.2s; }
+        .search-box { display: flex; align-items: center; background: var(--hover-bg); padding: 10px 15px; border-radius: 12px; width: 100%; max-width: 300px; border: 1px solid var(--border); transition: 0.2s; flex-shrink: 0; }
         .search-box:focus-within { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px var(--glow-color); }
         .search-box input { border: none !important; background: transparent !important; outline: none !important; width: 100%; font-size: 13px; margin-left: 10px; color: var(--text-main); }
 
@@ -166,7 +166,8 @@
         .status-mengikutjadual, .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        .status-info { background: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
+        /* V42: Ganti info jadual kepada dalam proses */
+        .status-dalamproses { background: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeInUp 0.4s ease-out forwards; }
@@ -277,7 +278,10 @@
 
                 <div class="table-container">
                     <div class="table-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
-                        <div><h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main);">Memuatkan...</h3><span style="font-size: 13px; color: var(--text-muted);">Semua tugasan bagi projek semasa</span></div>
+                        <div style="flex:1; padding-right:15px;">
+                            <h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Memuatkan...</h3>
+                            <span style="font-size: 13px; color: var(--text-muted);">Semua tugasan bagi projek semasa</span>
+                        </div>
                         <div class="search-box no-print"><i data-lucide="search" style="width:16px; color:var(--text-muted);"></i><input type="text" id="searchInput" placeholder="Cari aktiviti atau unit..."></div>
                     </div>
                     <div class="table-wrapper">
@@ -428,7 +432,7 @@
                     }
                 }
                 if (p.active && projectsMap[p.active]) { activeId = p.active; }
-            } catch(e) { console.error("Ralat baca local storage"); }
+            } catch(e) {}
         }
 
         forceRenderSidebarOnly();
@@ -481,9 +485,6 @@
         return v; 
     }
 
-    // ==========================================
-    // 4. PENDERIA PINTAR (V41) - Pengesan Sub-Tugasan (a, b, c)
-    // ==========================================
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
@@ -507,17 +508,14 @@
             let cleanCheckB = checkB.replace(/\s+/g, '');
             if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") return;
 
-            // KESAN TAJUK vs SUB-TUGASAN
             let isSection = false;
             let titleText = "";
 
-            // Pengesan Sub-Tugasan: Jika mula dengan abjad (a., b., c.) atau sengkang (- )
             let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || colB.startsWith("-");
 
             if (checkA.includes("perkara :") || checkA.includes("perkara:")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
             } else if (!isSubTask) { 
-                // Hanya jadikan seksyen/tajuk JIKA ia BUKAN sub-tugasan (a, b, c)
                 if (colA !== "" && colB === "" && colC === "" && colD === "") {
                     isSection = true; titleText = colA; 
                 } else if (colA === "" && colB !== "" && colC === "" && colD === "") {
@@ -537,12 +535,10 @@
 
             if (colB === "" || colB === "-") colB = "(Aktiviti Tidak Dinamakan)";
 
-            // Update Memori untuk Merged Cells (Jangan update jika kosong atau "-")
             if (colC !== "" && colC !== "-") memTindakan = colC;
             if (colD !== "" && colD !== "-") memTempoh = colD;
             if (colE !== "" && colE !== "-") memJangkaan = colE;
 
-            // Guna memori jika kosong (Inilah yang isikan data untuk a, b, c)
             if (colC === "") colC = memTindakan;
             if (colD === "") colD = memTempoh;
             if (colE === "") colE = memJangkaan;
@@ -551,7 +547,6 @@
             const s = formatExcelDate(colF);
             const st = getStatus(j, s);
 
-            // Bil: Biarkan kosong jika tiada, elak nampak semak
             res.push({ isSec: false, section: cs, bil: colA || "", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: j || "-", s: s || "-", status: st.label, days: st.days });
         });
         return res;
@@ -561,10 +556,11 @@
         if (s && s !== "-") return { label: 'SELESAI', days: 0 }; 
         if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
         const p = String(j).split('/'); 
-        if(p.length < 3) return { label: 'INFO JADUAL', days: 0 }; 
-
+        
+        // V42: Tukar dari INFO JADUAL kepada DALAM PROSES
+        if(p.length < 3) return { label: 'DALAM PROSES', days: 0 }; 
         const d = new Date(p[2], p[1]-1, p[0]); const t = new Date(); t.setHours(0,0,0,0);
-        if(isNaN(d.getTime())) return { label: 'INFO JADUAL', days: 0 };
+        if(isNaN(d.getTime())) return { label: 'DALAM PROSES', days: 0 };
 
         const diff = Math.ceil((d - t) / (1000 * 3600 * 24));
         if (diff < 0) return { label: `LEWAT (${Math.abs(diff)} HARI)`, days: Math.abs(diff) };
@@ -585,13 +581,19 @@
         
         animateNum('kpi-total', tasks.length);
         animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
-        animateNum('kpi-track', tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.status === 'INFO JADUAL').length);
+        // V42: Masukkan DALAM PROSES ke dalam kiraan "Mengikut Jadual"
+        animateNum('kpi-track', tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.status === 'DALAM PROSES').length);
         animateNum('kpi-delay', tasks.filter(t => t.status.includes('LEWAT')).length);
         
         const perc = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'SELESAI').length / tasks.length) * 100) : 0;
         animateNum('global-percent', perc, '%');
         
-        document.getElementById('active-title').innerText = p.data[0].isSec && p.data[0].title.toLowerCase().includes("perkara") ? "Butiran Projek" : p.name;
+        // V42: Dinamik Title Header
+        let mainTitle = p.name;
+        if (p.data.length > 0 && p.data[0].isSec && p.data[0].title.toLowerCase().includes("perkara")) {
+            mainTitle = p.data[0].title;
+        }
+        document.getElementById('active-title').innerText = mainTitle;
         
         renderCharts(tasks); renderTable(p.data);
     }
@@ -655,7 +657,9 @@
             else {
                 const s = item.status.toLowerCase().replace(/\s/g, '');
                 let badgeClass = s.includes('lewat') ? 'lewat' : s;
-                if(item.status === 'INFO JADUAL') badgeClass = 'info';
+                
+                // V42: CSS Ganti
+                if(item.status === 'DALAM PROSES') badgeClass = 'dalamproses';
                 
                 tbody.innerHTML += `<tr>
                     <td>${item.bil}</td>
@@ -758,7 +762,7 @@
         let filt = [], hBg = '', title = '', icon = '';
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; icon = 'clipboard-list'; } 
         else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI'); hBg = 'var(--success)'; title = 'Aktiviti Selesai'; icon = 'check-circle-2'; } 
-        else if(type === 'MENGIKUT JADUAL') { filt = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.status === 'INFO JADUAL'); hBg = 'var(--warning)'; title = 'Mengikut Jadual'; icon = 'clock'; } 
+        else if(type === 'MENGIKUT JADUAL') { filt = tasks.filter(t => t.status === 'MENGIKUT JADUAL' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.status === 'DALAM PROSES'); hBg = 'var(--warning)'; title = 'Mengikut Jadual'; icon = 'clock'; } 
         else if(type === 'LEWAT') { filt = tasks.filter(t => t.status.includes('LEWAT')); hBg = 'var(--danger)'; title = 'Aktiviti Lewat'; icon = 'alert-triangle'; }
         
         document.getElementById('modal-header').style.background = hBg;
