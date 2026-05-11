@@ -47,9 +47,10 @@
             overflow-x: hidden;
             background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
             background-size: 30px 30px;
+            display: flex; flex-direction: column; min-height: 100vh;
         }
         
-        .container { width: 100%; max-width: 100%; padding: 15px 25px; display: flex; flex-direction: column; min-height: 100vh;}
+        .container { width: 100%; max-width: 100%; padding: 15px 25px; flex-grow: 1; display: flex; flex-direction: column;}
 
         /* Header */
         .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 25px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); }
@@ -82,7 +83,7 @@
         .toast { background: white; border-left: 5px solid var(--danger); padding: 15px 20px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; color: #0f172a; font-weight: 600; font-size: 14px; }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* V48: PREMIUM HOMEPAGE */
+        /* V49: PREMIUM HOMEPAGE */
         #home-page { padding: 40px 20px; animation: fadeInUp 0.5s ease-out; flex-grow: 1; display: flex; flex-direction: column; }
         .hero-icon-glow { position: absolute; width: 150px; height: 150px; background: var(--accent); filter: blur(60px); opacity: 0.3; border-radius: 50%; z-index: -1; animation: pulseGlow 4s infinite alternate ease-in-out; }
         @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.2; } 100% { transform: scale(1.2); opacity: 0.5; } }
@@ -191,6 +192,27 @@
         
         .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; text-align: left;}
         
+        /* V49: PREMIUM FOOTER STYLING */
+        .premium-footer {
+            /* Pastikan gambar 1560128.jpg berada di folder yang sama dengan fail HTML ini */
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('1560128.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #cbd5e1;
+            padding: 40px 5%;
+            margin-top: auto;
+            border-top: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
+        .footer-left { max-width: 400px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
+        .lang-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; opacity: 0.5; transition: 0.3s; padding: 0 5px; }
+        .lang-btn:hover { opacity: 0.8; transform: scale(1.1); }
+        .lang-btn.active { opacity: 1; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } .sidebar .card { padding: 20px; } }
         @media (max-width: 768px) { .header-main { flex-direction: column; align-items: flex-start; } .header-actions { width: 100%; justify-content: space-between; } .charts-grid { grid-template-columns: 1fr; } }
     </style>
@@ -201,8 +223,8 @@
 
 <div id="main-loader">
     <i data-lucide="cloud-download" class="loader-spinner"></i>
-    <h2 style="margin:0 0 10px;">Menyegerak Data Awan...</h2>
-    <p style="font-size: 14px; opacity: 0.8; margin:0;">Sistem sedang memuat turun fail projek awan utama.</p>
+    <h2 style="margin:0 0 10px;" data-i18n="loader_title">Menyegerak Data Awan...</h2>
+    <p style="font-size: 14px; opacity: 0.8; margin:0;" data-i18n="loader_desc">Sistem sedang memuat turun fail projek awan utama.</p>
 </div>
 
 <div class="container">
@@ -210,60 +232,47 @@
         <div class="logo-area" onclick="showHome()" title="Kembali ke Laman Utama">
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
-                <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
-                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Sistem Pemantauan Awan</span>
+                <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;" data-i18n="header_title">Garis Masa Projek PNET</h1>
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;" data-i18n="header_subtitle">Sistem Pemantauan Awan</span>
             </div>
         </div>
         <div class="header-actions">
             <button class="btn btn-icon" style="color:var(--success); border-color:var(--border);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive"><i data-lucide="folder-plus"></i></button>
             <button class="btn-icon" onclick="location.reload()" title="Refresh Automatik"><i data-lucide="refresh-cw"></i></button>
             <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn"><i data-lucide="moon"></i></button>
-            <label class="btn btn-primary" id="headerUploadBtn"><i data-lucide="file-up" style="width:16px;"></i> Muat Naik Excel <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls"></label>
+            <label class="btn btn-primary" id="headerUploadBtn"><i data-lucide="file-up" style="width:16px;"></i> <span data-i18n="btn_upload">Muat Naik Excel</span> <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls"></label>
         </div>
     </header>
 
     <div id="home-page" style="display:none;">
         <div style="text-align: center; margin-bottom: 50px; position: relative;">
             <div class="hero-icon-glow" style="top:-30px; left:50%; transform:translateX(-50%);"></div>
-            <h1 class="gradient-text">Pusat Kawalan Projek</h1>
-            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.</p>
+            <h1 class="gradient-text" data-i18n="hero_title">Pusat Kawalan Projek</h1>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;" data-i18n="hero_desc">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.</p>
         </div>
 
         <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; width: 100%;">
             </div>
-
-        <div style="margin-top: auto; padding-top: 50px; display: flex; justify-content: center; width: 100%;">
-            <div style="display: flex; align-items: center; gap: 15px; background: var(--card-bg); padding: 12px 25px; border-radius: 50px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
-                    <i data-lucide="calendar-clock" style="width:16px; color:var(--success);"></i> Terakhir Dikemaskini: 11 Mei 2026
-                </span>
-                <span style="width: 1px; height: 16px; background: var(--border);"></span>
-                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
-                    <i data-lucide="mail" style="width:16px; color:var(--accent);"></i> Hubungi: 
-                    <a href="mailto:network_mystep@moh.gov.my" style="color:var(--text-main); text-decoration:none; font-weight:800; letter-spacing: 0.2px;">network_mystep@moh.gov.my</a>
-                </span>
-            </div>
-        </div>
     </div>
 
     <div id="dashboard-content" style="display:none;" class="animate">
         <div class="dashboard-layout">
             <aside class="sidebar">
                 <div class="card" style="text-align:center; padding: 30px 20px;">
-                    <span style="font-size:11px; font-weight:800; color:var(--text-muted); letter-spacing: 1px;">KEMAJUAN KESELURUHAN</span>
+                    <span style="font-size:11px; font-weight:800; color:var(--text-muted); letter-spacing: 1px;" data-i18n="kpi_overall">KEMAJUAN KESELURUHAN</span>
                     <h1 id="global-percent" style="font-size:64px; margin:10px 0; color:var(--accent); font-weight: 800; letter-spacing: -2px;">0%</h1>
                 </div>
 
                 <div class="mini-kpi-grid" style="margin-bottom: 20px;">
-                    <div class="mini-kpi-card" onclick="openKpiModal('TUGASAN')"><div class="mini-kpi-header"><span>Tugasan</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div></div><h3 id="kpi-total">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('SELESAI')"><div class="mini-kpi-header"><span>Selesai</span><div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div></div><h3 id="kpi-done">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('DALAM PROSES')"><div class="mini-kpi-header"><span>Dalam Proses</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="activity" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
-                    <div class="mini-kpi-card" onclick="openKpiModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);">Lewat</span><div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openKpiModal('TUGASAN')"><div class="mini-kpi-header"><span data-i18n="kpi_task">Tugasan</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="clipboard-list" style="width:16px;"></i></div></div><h3 id="kpi-total">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openKpiModal('SELESAI')"><div class="mini-kpi-header"><span data-i18n="kpi_done">Selesai</span><div class="mini-kpi-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i data-lucide="check-circle-2" style="width:16px;"></i></div></div><h3 id="kpi-done">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openKpiModal('DALAM PROSES')"><div class="mini-kpi-header"><span data-i18n="kpi_process">Dalam Proses</span><div class="mini-kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--accent);"><i data-lucide="activity" style="width:16px;"></i></div></div><h3 id="kpi-track">0</h3></div>
+                    <div class="mini-kpi-card" onclick="openKpiModal('LEWAT')" style="background:rgba(239, 68, 68, 0.05); border-color:rgba(239, 68, 68, 0.2);"><div class="mini-kpi-header"><span style="color:var(--danger);" data-i18n="kpi_delay">Lewat</span><div class="mini-kpi-icon" style="background:rgba(239,68,68,0.15); color:var(--danger);"><i data-lucide="alert-triangle" style="width:16px;"></i></div></div><h3 id="kpi-delay" style="color:var(--danger);">0</h3></div>
                 </div>
 
                 <div class="card" style="padding: 20px;">
                     <div class="sidebar-section-title">
-                        Rujukan & Folder
+                        <span data-i18n="ref_title">Rujukan & Folder</span>
                         <button class="btn-icon" style="padding:4px; height:auto; border-radius:6px;" onclick="openModal('add-resource-modal')" title="Tambah Link Drive/Doc">
                             <i data-lucide="plus" style="width:14px; height:14px;"></i>
                         </button>
@@ -273,25 +282,25 @@
 
                 <div class="card" style="padding: 20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:800; letter-spacing: 0.5px;">Fail Projek</h3>
+                        <h3 style="font-size:12px; margin:0; color:var(--text-muted); text-transform:uppercase; font-weight:800; letter-spacing: 0.5px;" data-i18n="proj_title">Fail Projek</h3>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <button class="btn-clear-all" onclick="openModal('clear-all-modal')" title="Hapus Data Upload"><i data-lucide="trash-2" style="width:12px;"></i> Padam Lokal</button>
+                            <button class="btn-clear-all" onclick="openModal('clear-all-modal')" title="Hapus Data Upload"><i data-lucide="trash-2" style="width:12px;"></i> <span data-i18n="btn_clear">Padam Lokal</span></button>
                         </div>
                     </div>
                     <div id="project-list-sidebar" style="max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
-                    <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 15px; border-style: dashed; padding: 12px;"><i data-lucide="plus" style="width:16px;"></i> Tambah Projek <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls"></label>
+                    <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 15px; border-style: dashed; padding: 12px;"><i data-lucide="plus" style="width:16px;"></i> <span data-i18n="btn_add_proj">Tambah Projek</span> <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls"></label>
                 </div>
             </aside>
 
             <main>
                 <div class="charts-grid">
                     <div class="chart-box">
-                        <h4 class="chart-header-title"><i data-lucide="pie-chart" style="width:18px; color:var(--accent);"></i> Tempoh Mengikut Topik</h4>
+                        <h4 class="chart-header-title"><i data-lucide="pie-chart" style="width:18px; color:var(--accent);"></i> <span data-i18n="chart_topic">Tempoh Mengikut Topik</span></h4>
                         <div style="flex-grow: 1; position: relative; min-height: 200px;"><canvas id="topicChart"></canvas></div>
                         <div id="customLegendArea"></div>
                     </div>
                     <div class="chart-box">
-                        <h4 class="chart-header-title"><i data-lucide="bar-chart-3" style="width:18px; color:var(--danger);"></i> Kelewatan Mengikut Unit (Hari)</h4>
+                        <h4 class="chart-header-title"><i data-lucide="bar-chart-3" style="width:18px; color:var(--danger);"></i> <span data-i18n="chart_unit">Kelewatan Mengikut Unit (Hari)</span></h4>
                         <div style="flex-grow: 1; position: relative;"><canvas id="unitChart"></canvas></div>
                     </div>
                 </div>
@@ -299,22 +308,22 @@
                 <div class="table-container">
                     <div class="table-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
                         <div style="flex:1; padding-right:15px;">
-                            <h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Memuatkan...</h3>
-                            <span style="font-size: 13px; color: var(--text-muted);">Semua tugasan bagi projek semasa</span>
+                            <h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" data-i18n="table_title">Memuatkan...</h3>
+                            <span style="font-size: 13px; color: var(--text-muted);" id="sub-active-title" data-i18n="table_desc">Semua tugasan bagi projek semasa</span>
                         </div>
-                        <div class="search-box no-print"><i data-lucide="search" style="width:16px; color:var(--text-muted);"></i><input type="text" id="searchInput" placeholder="Cari aktiviti atau unit..."></div>
+                        <div class="search-box no-print"><i data-lucide="search" style="width:16px; color:var(--text-muted);"></i><input type="text" id="searchInput" data-i18n-placeholder="table_search" placeholder="Cari aktiviti atau unit..."></div>
                     </div>
                     <div class="table-wrapper">
                         <table id="activityTable">
                             <thead>
                                 <tr>
-                                    <th>Bil</th>
-                                    <th>Aktiviti</th>
-                                    <th>Tindakan</th>
-                                    <th>Tempoh</th>
-                                    <th>Jangkaan</th>
-                                    <th>Sebenar</th>
-                                    <th style="text-align: center;">Status</th>
+                                    <th data-i18n="th_bil">Bil</th>
+                                    <th data-i18n="th_activity">Aktiviti</th>
+                                    <th data-i18n="th_action">Tindakan</th>
+                                    <th data-i18n="th_duration">Tempoh</th>
+                                    <th data-i18n="th_expected">Jangkaan</th>
+                                    <th data-i18n="th_actual">Sebenar</th>
+                                    <th style="text-align: center;" data-i18n="th_status">Status</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -326,17 +335,54 @@
     </div>
 </div>
 
+<footer class="premium-footer no-print">
+    <div class="footer-content">
+        <div class="footer-left">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
+                <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo KKM" style="height: 50px;">
+                <div>
+                    <h2 style="margin:0; color:#fff; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;" data-i18n="footer_title">PUSAT KAWALAN PNET</h2>
+                    <span style="color:#94a3b8; font-size:12px; font-weight: 600;" data-i18n="footer_subtitle">Kementerian Kesihatan Malaysia</span>
+                </div>
+            </div>
+            <p style="font-family: monospace; font-size: 13px; line-height: 1.6; color:#94a3b8;" data-i18n="footer_address">
+                Kementerian Kesihatan Malaysia,<br>
+                Kompleks E, Pusat Pentadbiran Kerajaan Persekutuan,<br>
+                62590 Putrajaya
+            </p>
+            <div style="font-family: monospace; font-size: 13px; color:#94a3b8; margin-top: 15px;">
+                <div data-i18n="footer_tel">Tel : +603-8000 8000</div>
+                <div><span data-i18n="footer_email">Email :</span> <a href="mailto:network_mystep@moh.gov.my" style="color:#3b82f6; text-decoration: none;">network_mystep@moh.gov.my</a></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <div class="footer-modified">
+            <span style="font-size: 12px; font-weight: 800; color: #fff;" data-i18n="footer_modified">WEB LAST MODIFIED :</span><br>
+            <span style="color:#94a3b8; font-size: 12px; font-family: monospace;" data-i18n="footer_date">11 Mei 2026</span>
+        </div>
+        <div style="font-size: 12px; color:#94a3b8; text-align: center; flex-grow: 1;" data-i18n="footer_copyright">
+            © 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
+        </div>
+        <div class="footer-lang">
+            <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">🇲🇾</button>
+            <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">🇬🇧</button>
+        </div>
+    </div>
+</footer>
+
 <div class="modal-overlay-custom" id="cloud-modal">
     <div class="modal-card-custom">
         <div style="background:rgba(16, 185, 129, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
             <i data-lucide="cloud-upload" style="color:#10b981;"></i>
         </div>
-        <h3>Sambung Google Sheets</h3>
-        <p style="font-size:13px; color:var(--text-muted);">Masukkan pautan CSV (Publish to Web) bagi tab projek anda.</p>
+        <h3 data-i18n="modal_cloud_title">Sambung Google Sheets</h3>
+        <p style="font-size:13px; color:var(--text-muted);" data-i18n="modal_cloud_desc">Masukkan pautan CSV (Publish to Web) bagi tab projek anda.</p>
         <input type="text" id="cloudUrlInput" class="input-cloud" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv">
         <div class="modal-card-footer">
-            <button class="btn btn-outline" onclick="closeModal('cloud-modal')">Batal</button>
-            <button class="btn btn-sync" style="background:#10b981; color:white; border:none;" onclick="processCloudLink()">Sambung</button>
+            <button class="btn btn-outline" onclick="closeModal('cloud-modal')" data-i18n="btn_cancel">Batal</button>
+            <button class="btn btn-sync" style="background:#10b981; color:white; border:none;" onclick="processCloudLink()" data-i18n="btn_connect">Sambung</button>
         </div>
     </div>
 </div>
@@ -346,13 +392,13 @@
         <div style="background:rgba(59, 130, 246, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
             <i data-lucide="folder-plus" style="color:var(--accent);"></i>
         </div>
-        <h3>Tambah Rujukan Awan</h3>
-        <p style="font-size:13px; color:var(--text-muted);">Simpan pautan Google Drive atau Google Docs untuk rujukan pantas.</p>
-        <input type="text" id="resourceName" class="input-cloud" style="margin-bottom:10px;" placeholder="Nama (cth: Folder Tender Rasmi)">
+        <h3 data-i18n="modal_ref_title">Tambah Rujukan Awan</h3>
+        <p style="font-size:13px; color:var(--text-muted);" data-i18n="modal_ref_desc">Simpan pautan Google Drive atau Google Docs untuk rujukan pantas.</p>
+        <input type="text" id="resourceName" class="input-cloud" style="margin-bottom:10px;" data-i18n-placeholder="modal_ref_p1" placeholder="Nama (cth: Folder Tender Rasmi)">
         <input type="text" id="resourceUrl" class="input-cloud" placeholder="Pautan (https://drive.google.com/...)">
         <div class="modal-card-footer">
-            <button class="btn btn-outline" onclick="closeModal('add-resource-modal')">Batal</button>
-            <button class="btn btn-primary" onclick="addResource()">Simpan</button>
+            <button class="btn btn-outline" onclick="closeModal('add-resource-modal')" data-i18n="btn_cancel">Batal</button>
+            <button class="btn btn-primary" onclick="addResource()" data-i18n="btn_save">Simpan</button>
         </div>
     </div>
 </div>
@@ -360,11 +406,11 @@
 <div class="modal-overlay-custom" id="delete-confirm-modal">
     <div class="modal-card-custom">
         <i data-lucide="trash-2" class="icon-big"></i>
-        <h3>Padam Rekod Projek?</h3>
-        <p id="delete-modal-message">Adakah anda pasti mahu memadam rekod untuk <strong id="delete-project-name" style="color:var(--text-main);"></strong>?</p>
+        <h3 data-i18n="modal_del_title">Padam Rekod Projek?</h3>
+        <p id="delete-modal-message"><span data-i18n="modal_del_desc">Adakah anda pasti mahu memadam rekod untuk</span> <strong id="delete-project-name" style="color:var(--text-main);"></strong>?</p>
         <div class="modal-card-footer">
-            <button class="btn btn-outline" onclick="cancelDeleteProject()">Batal</button>
-            <button class="btn btn-danger" onclick="confirmDeleteProject()">Ya, Padam</button>
+            <button class="btn btn-outline" onclick="cancelDeleteProject()" data-i18n="btn_cancel">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteProject()" data-i18n="btn_yes_delete">Ya, Padam</button>
         </div>
     </div>
 </div>
@@ -374,11 +420,11 @@
         <div style="background:rgba(239, 68, 68, 0.1); width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
             <i data-lucide="alert-octagon" style="width:40px; height:40px; color:var(--danger);"></i>
         </div>
-        <h3>Hapus Fail Muat Naik?</h3>
-        <p style="font-size:13px; color:var(--text-muted);">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b></p>
+        <h3 data-i18n="modal_clear_title">Hapus Fail Muat Naik?</h3>
+        <p style="font-size:13px; color:var(--text-muted);" data-i18n="modal_clear_desc">Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b></p>
         <div class="modal-card-footer">
-            <button class="btn btn-outline" onclick="closeModal('clear-all-modal')">Batal</button>
-            <button class="btn btn-danger" onclick="confirmDeleteAll()">Kosongkan Lokal</button>
+            <button class="btn btn-outline" onclick="closeModal('clear-all-modal')" data-i18n="btn_cancel">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteAll()" data-i18n="btn_clear_local">Kosongkan Lokal</button>
         </div>
     </div>
 </div>
@@ -386,17 +432,182 @@
 <div class="modal-overlay" id="details-modal">
     <div class="modal-container">
         <div class="modal-header" id="modal-header">
-            <h3 id="modal-title"><i data-lucide="list" style="width:18px;"></i> Senarai Aktiviti</h3>
+            <h3 id="modal-title"><i data-lucide="list" style="width:18px;"></i> <span data-i18n="modal_list_title">Senarai Aktiviti</span></h3>
             <button class="modal-close" onclick="closeModal('details-modal')"><i data-lucide="x" style="width:18px;"></i></button>
         </div>
         <div class="modal-body" id="modal-body"></div>
-        <div class="modal-footer"><button class="btn btn-outline" style="border:none;" onclick="closeModal('details-modal')">Tutup Paparan</button></div>
+        <div class="modal-footer"><button class="btn btn-outline" style="border:none;" onclick="closeModal('details-modal')" data-i18n="btn_close">Tutup Paparan</button></div>
     </div>
 </div>
 
 <script>
     lucide.createIcons();
     Chart.register(ChartDataLabels);
+
+    // ==========================================
+    // V49: KAMUS DWIBAHASA (BM & ENGLISH)
+    // ==========================================
+    const i18n = {
+        "ms": {
+            "header_title": "Garis Masa Projek PNET",
+            "header_subtitle": "Sistem Pemantauan Awan",
+            "btn_upload": "Muat Naik Excel",
+            "loader_title": "Menyegerak Data Awan...",
+            "loader_desc": "Sistem sedang memuat turun fail projek awan utama.",
+            "hero_title": "Pusat Kawalan Projek",
+            "hero_desc": "Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.",
+            "kpi_overall": "KEMAJUAN KESELURUHAN",
+            "kpi_task": "Tugasan",
+            "kpi_done": "Selesai",
+            "kpi_process": "Dalam Proses",
+            "kpi_delay": "Lewat",
+            "ref_title": "Rujukan & Folder",
+            "proj_title": "Fail Projek",
+            "btn_clear": "Padam Lokal",
+            "btn_add_proj": "Tambah Projek",
+            "chart_topic": "Tempoh Mengikut Topik",
+            "chart_unit": "Kelewatan Mengikut Unit (Hari)",
+            "table_title": "Memuatkan...",
+            "table_desc": "Semua tugasan bagi projek semasa",
+            "table_search": "Cari aktiviti atau unit...",
+            "th_bil": "Bil",
+            "th_activity": "Aktiviti",
+            "th_action": "Tindakan",
+            "th_duration": "Tempoh",
+            "th_expected": "Jangkaan",
+            "th_actual": "Sebenar",
+            "th_status": "Status",
+            "footer_title": "PUSAT KAWALAN PNET",
+            "footer_subtitle": "Kementerian Kesihatan Malaysia",
+            "footer_address": "Kementerian Kesihatan Malaysia,<br>Kompleks E, Pusat Pentadbiran Kerajaan Persekutuan,<br>62590 Putrajaya",
+            "footer_tel": "Tel : +603-8000 8000",
+            "footer_email": "Emel :",
+            "footer_modified": "DIKEMASKINI PADA :",
+            "footer_date": "11 Mei 2026",
+            "footer_copyright": "© 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
+            "home_task": "TUGASAN",
+            "home_progress": "Kemajuan:",
+            "modal_cloud_title": "Sambung Google Sheets",
+            "modal_cloud_desc": "Masukkan pautan CSV (Publish to Web) bagi tab projek anda.",
+            "modal_ref_title": "Tambah Rujukan Awan",
+            "modal_ref_desc": "Simpan pautan Google Drive atau Google Docs untuk rujukan pantas.",
+            "modal_ref_p1": "Nama (cth: Folder Tender Rasmi)",
+            "modal_del_title": "Padam Rekod Projek?",
+            "modal_del_desc": "Adakah anda pasti mahu memadam rekod untuk",
+            "modal_clear_title": "Hapus Fail Muat Naik?",
+            "modal_clear_desc": "Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b>",
+            "modal_list_title": "Senarai Aktiviti",
+            "btn_cancel": "Batal",
+            "btn_connect": "Sambung",
+            "btn_save": "Simpan",
+            "btn_yes_delete": "Ya, Padam",
+            "btn_clear_local": "Kosongkan Lokal",
+            "btn_close": "Tutup Paparan",
+            "status_selesai": "SELESAI",
+            "status_proses": "DALAM PROSES",
+            "status_hampir": "HAMPIR TAMAT",
+            "status_lewat": "LEWAT",
+            "status_hari": "HARI",
+            "no_record": "Tiada rekod.",
+            "no_link": "Tiada pautan disimpan.",
+            "expected": "Jangkaan",
+            "actual": "Sebenar"
+        },
+        "en": {
+            "header_title": "PNET Project Timeline",
+            "header_subtitle": "Cloud Monitoring System",
+            "btn_upload": "Upload Excel",
+            "loader_title": "Syncing Cloud Data...",
+            "loader_desc": "System is downloading master cloud project files.",
+            "hero_title": "Project Control Center",
+            "hero_desc": "An innovative and efficient real-time infrastructure project schedule and performance monitoring system.",
+            "kpi_overall": "OVERALL PROGRESS",
+            "kpi_task": "Tasks",
+            "kpi_done": "Completed",
+            "kpi_process": "In Progress",
+            "kpi_delay": "Delayed",
+            "ref_title": "Resources & Folders",
+            "proj_title": "Project Files",
+            "btn_clear": "Clear Local",
+            "btn_add_proj": "Add Project",
+            "chart_topic": "Duration by Topic",
+            "chart_unit": "Delay by Unit (Days)",
+            "table_title": "Loading...",
+            "table_desc": "All tasks for the current project",
+            "table_search": "Search activity or unit...",
+            "th_bil": "No.",
+            "th_activity": "Activity",
+            "th_action": "Action By",
+            "th_duration": "Duration",
+            "th_expected": "Expected",
+            "th_actual": "Actual",
+            "th_status": "Status",
+            "footer_title": "PNET CONTROL CENTER",
+            "footer_subtitle": "Ministry of Health Malaysia",
+            "footer_address": "Ministry of Health Malaysia,<br>Complex E, Federal Government Administrative Centre,<br>62590 Putrajaya",
+            "footer_tel": "Tel : +603-8000 8000",
+            "footer_email": "Email :",
+            "footer_modified": "WEB LAST MODIFIED :",
+            "footer_date": "May 11, 2026",
+            "footer_copyright": "© 2024-2026 PNET Ministry of Health Malaysia. All rights reserved.",
+            "home_task": "TASKS",
+            "home_progress": "Progress:",
+            "modal_cloud_title": "Connect Google Sheets",
+            "modal_cloud_desc": "Enter the CSV link (Publish to Web) for your project tab.",
+            "modal_ref_title": "Add Cloud Resource",
+            "modal_ref_desc": "Save Google Drive or Google Docs link for quick access.",
+            "modal_ref_p1": "Name (e.g., Official Tender Folder)",
+            "modal_del_title": "Delete Project Record?",
+            "modal_del_desc": "Are you sure you want to delete the record for",
+            "modal_clear_title": "Clear Uploaded Files?",
+            "modal_clear_desc": "All manually uploaded files will be removed. <br><b>Master Cloud Files will not be affected.</b>",
+            "modal_list_title": "Activity List",
+            "btn_cancel": "Cancel",
+            "btn_connect": "Connect",
+            "btn_save": "Save",
+            "btn_yes_delete": "Yes, Delete",
+            "btn_clear_local": "Clear Local",
+            "btn_close": "Close View",
+            "status_selesai": "COMPLETED",
+            "status_proses": "IN PROGRESS",
+            "status_hampir": "ENDING SOON",
+            "status_lewat": "DELAYED",
+            "status_hari": "DAYS",
+            "no_record": "No records found.",
+            "no_link": "No links saved.",
+            "expected": "Expected",
+            "actual": "Actual"
+        }
+    };
+
+    let currentLang = localStorage.getItem('pnet_lang') || 'ms';
+
+    function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('pnet_lang', lang);
+        
+        // Active Button styling
+        document.getElementById('btn-lang-ms').classList.remove('active');
+        document.getElementById('btn-lang-en').classList.remove('active');
+        document.getElementById('btn-lang-' + lang).classList.add('active');
+
+        // Translate inner HTML
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if(i18n[lang][key]) { el.innerHTML = i18n[lang][key]; }
+        });
+
+        // Translate Placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if(i18n[lang][key]) { el.placeholder = i18n[lang][key]; }
+        });
+
+        // Re-render UI components if active
+        if(document.getElementById('home-page').style.display !== 'none') { showHome(); } 
+        else { updateUI(); }
+        renderResources();
+    }
 
     const masterProjectsTemplate = {
         "master_1": { name: "NPA Infra Fasa 1", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
@@ -442,7 +653,6 @@
 
         const savedRes = localStorage.getItem("pnet_resources");
         if (savedRes) resourcesList = JSON.parse(savedRes);
-        renderResources();
 
         const sd = localStorage.getItem("pnet_projects");
         if (sd) {
@@ -476,6 +686,9 @@
         
         await Promise.all(fetchPromises);
 
+        // Pasang bahasa awal
+        setLang(currentLang);
+
         const loader = document.getElementById('main-loader');
         loader.style.opacity = '0';
         setTimeout(() => { 
@@ -504,13 +717,13 @@
                     <div style="background:var(--hover-bg); padding:10px; border-radius:12px; color:var(--accent);">
                         <i data-lucide="${iconName}"></i>
                     </div>
-                    <span style="font-size:10px; font-weight:800; background:var(--hover-bg); padding:4px 8px; border-radius:6px; color:var(--text-muted);">${tasks.length} TUGASAN</span>
+                    <span style="font-size:10px; font-weight:800; background:var(--hover-bg); padding:4px 8px; border-radius:6px; color:var(--text-muted);">${tasks.length} ${i18n[currentLang].home_task}</span>
                 </div>
                 <h3 style="margin:0 0 15px; font-size:16px; color:var(--text-main); line-height:1.4;">${p.name}</h3>
                 <div style="width:100%; background:var(--hover-bg); border-radius:4px; height:6px; margin-bottom:10px; overflow:hidden;">
                     <div style="width:${perc}%; background:var(--accent); height:100%; border-radius:4px; transition: width 1s ease-in-out;"></div>
                 </div>
-                <div style="font-size:12px; color:var(--text-muted); font-weight:600;">Kemajuan: <span style="color:var(--accent);">${perc}%</span></div>
+                <div style="font-size:12px; color:var(--text-muted); font-weight:600;">${i18n[currentLang].home_progress} <span style="color:var(--accent);">${perc}%</span></div>
             </div>`;
         });
         lucide.createIcons();
@@ -602,7 +815,7 @@
             const s = formatExcelDate(colF);
             const st = getStatus(j, s);
 
-            res.push({ isSec: false, section: cs, bil: colA || "", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: j || "-", s: s || "-", status: st.label, days: st.days });
+            res.push({ isSec: false, section: cs, bil: colA || "", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: j || "-", s: s || "-", status: st.label, rawDays: st.days });
         });
         return res;
     }
@@ -617,8 +830,17 @@
         if(isNaN(d.getTime())) return { label: 'DALAM PROSES', days: 0 };
 
         const diff = Math.ceil((d - t) / (1000 * 3600 * 24));
-        if (diff < 0) return { label: `LEWAT (${Math.abs(diff)} HARI)`, days: Math.abs(diff) };
+        if (diff < 0) return { label: 'LEWAT', days: Math.abs(diff) };
         return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'DALAM PROSES', days: 0 };
+    }
+
+    // Fungsi Pembantu Terjemahan Jadual & Status
+    function getTranslatedStatus(statusLabel, days) {
+        if(statusLabel === 'SELESAI') return i18n[currentLang].status_selesai;
+        if(statusLabel === 'DALAM PROSES') return i18n[currentLang].status_proses;
+        if(statusLabel === 'HAMPIR TAMAT') return `<span class="pulse-dot"></span> ${i18n[currentLang].status_hampir}`;
+        if(statusLabel === 'LEWAT') return `${i18n[currentLang].status_lewat} (${days} ${i18n[currentLang].status_hari})`;
+        return statusLabel;
     }
 
     function updateUI() {
@@ -636,7 +858,7 @@
         animateNum('kpi-total', tasks.length);
         animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
         animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
-        animateNum('kpi-delay', tasks.filter(t => t.status.includes('LEWAT')).length);
+        animateNum('kpi-delay', tasks.filter(t => t.status === 'LEWAT').length);
         
         const perc = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'SELESAI').length / tasks.length) * 100) : 0;
         animateNum('global-percent', perc, '%');
@@ -682,11 +904,11 @@
         labels.forEach((l, i) => { const c = chartColors[i % chartColors.length]; leg += `<div class="legend-item" title="${l}"><div class="legend-left"><span class="legend-color" style="background:${c}"></span><span class="legend-text">${l}</span></div><span class="legend-val">${data[i]}</span></div>`; });
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
         
-        const units = {}; tasks.forEach(t => { if(t.days > 0) units[t.unit] = (units[t.unit] || 0) + t.days; });
+        const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
         if (unitChart) unitChart.destroy();
         unitChart = new Chart(document.getElementById('unitChart'), {
-            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: 'Hari Kelewatan', data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
-            options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " hari", font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 12 }, color: isDark ? '#cbd5e1' : '#475569' } } } }
+            type: 'bar', data: { labels: Object.keys(units), datasets: [{ label: i18n[currentLang].th_duration, data: Object.values(units), backgroundColor: '#ef4444', borderRadius: 8, maxBarThickness: 25 }] },
+            options: { indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 60 } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', formatter: (v) => v + " " + i18n[currentLang].status_hari.toLowerCase(), font: { weight: '800', size: 12 }, color: txt } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 12 }, color: isDark ? '#cbd5e1' : '#475569' } } } }
         });
     }
 
@@ -710,6 +932,8 @@
                 const s = item.status.toLowerCase().replace(/\s/g, '');
                 let badgeClass = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
                 
+                const translatedStatus = getTranslatedStatus(item.status, item.rawDays);
+
                 tbody.innerHTML += `<tr>
                     <td>${item.bil}</td>
                     <td style="font-weight:600; padding-left:${item.bil === "" ? '20px' : '10px'}">${item.aktiviti}</td>
@@ -717,7 +941,7 @@
                     <td style="text-align:center;">${item.tempoh}</td>
                     <td style="font-weight:600; text-align:center;">${item.j}</td>
                     <td style="font-weight:600; text-align:center; color:${item.s !== '-' ? 'var(--success)' : 'var(--text-muted)'};">${item.s || '-'}</td>
-                    <td style="text-align:center;"><span class="badge status-${badgeClass}">${item.status === 'HAMPIR TAMAT' ? '<span class="pulse-dot"></span> HAMPIR TAMAT' : item.status}</span></td>
+                    <td style="text-align:center;"><span class="badge status-${badgeClass}">${translatedStatus}</span></td>
                 </tr>`;
             }
         });
@@ -727,7 +951,7 @@
     function addResource() {
         const name = document.getElementById('resourceName').value.trim();
         let url = document.getElementById('resourceUrl').value.trim();
-        if(!name || !url) { showToast("Sila isi nama dan pautan"); return; }
+        if(!name || !url) { showToast("Sila isi ruang kosong"); return; }
         if (!url.match(/^https?:\/\//i)) url = 'http://' + url;
         resourcesList.push({ name, url });
         localStorage.setItem("pnet_resources", JSON.stringify(resourcesList));
@@ -737,7 +961,7 @@
 
     function renderResources() {
         const c = document.getElementById('resource-list-sidebar'); c.innerHTML = "";
-        if(resourcesList.length === 0) { c.innerHTML = '<div style="text-align:center; padding:10px; font-size:11px; color:var(--text-muted);">Tiada pautan disimpan.</div>'; return; }
+        if(resourcesList.length === 0) { c.innerHTML = `<div style="text-align:center; padding:10px; font-size:11px; color:var(--text-muted);">${i18n[currentLang].no_link}</div>`; return; }
         resourcesList.forEach((item, index) => {
             const iconName = item.url.includes('docs.google') ? 'file-text' : (item.url.includes('drive.google') ? 'folder' : 'external-link');
             c.innerHTML += `
@@ -764,7 +988,7 @@
 
     function handleFileUpload(e) {
         const file = e.target.files[0];
-        if (!file || !file.name.match(/\.xlsx$|\.xls$/)) { showToast("Muat naik Excel sahaja."); return; }
+        if (!file || !file.name.match(/\.xlsx$|\.xls$/)) { showToast("Sila muat naik Excel"); return; }
         const r = new FileReader();
         r.onload = function(evt) {
             try {
@@ -780,7 +1004,7 @@
 
     async function processCloudLink() {
         const url = document.getElementById('cloudUrlInput').value.trim();
-        if(!url.toLowerCase().includes('csv')) { showToast("Sila guna pautan CSV dari Sheets."); return; }
+        if(!url.toLowerCase().includes('csv')) { showToast("Sila guna pautan CSV"); return; }
         showToast("Menarik data...");
         try {
             const res = await fetch(url); const csv = await res.text();
@@ -803,32 +1027,34 @@
         localStorage.removeItem("pnet_projects"); 
         closeModal('clear-all-modal'); 
         showHome(); 
-        showToast("Projek muat naik dipadam. Fail Utama dikekalkan.");
+        showToast("Projek muat naik dipadam.");
     }
 
     function openKpiModal(type) {
         if(!activeId) return; const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
         let filt = [], hBg = '', title = '', icon = '';
-        if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = 'Keseluruhan Aktiviti'; icon = 'clipboard-list'; } 
-        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI'); hBg = 'var(--success)'; title = 'Aktiviti Selesai'; icon = 'check-circle-2'; } 
-        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); hBg = 'var(--accent)'; title = 'Dalam Proses / Jadual'; icon = 'activity'; } 
-        else if(type === 'LEWAT') { filt = tasks.filter(t => t.status.includes('LEWAT')); hBg = 'var(--danger)'; title = 'Aktiviti Lewat'; icon = 'alert-triangle'; }
+        if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = i18n[currentLang].kpi_task; icon = 'clipboard-list'; } 
+        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
+        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
+        else if(type === 'LEWAT') { filt = tasks.filter(t => t.status === 'LEWAT'); hBg = 'var(--danger)'; title = i18n[currentLang].kpi_delay; icon = 'alert-triangle'; }
         
         document.getElementById('modal-header').style.background = hBg;
         document.getElementById('modal-title').innerHTML = `<i data-lucide="${icon}"></i> ${p.name} - ${title}`;
         const b = document.getElementById('modal-body'); b.innerHTML = '';
         
-        if(filt.length === 0) { b.innerHTML = '<div style="text-align:center; padding: 50px;"><i data-lucide="inbox" style="width:48px; opacity:0.5;"></i><p>Tiada rekod.</p></div>'; } 
+        if(filt.length === 0) { b.innerHTML = `<div style="text-align:center; padding: 50px;"><i data-lucide="inbox" style="width:48px; opacity:0.5;"></i><p>${i18n[currentLang].no_record}</p></div>`; } 
         else {
             filt.forEach(t => {
                 let bt = '0', bb = 'var(--hover-bg)', bc = 'var(--text-muted)';
                 if(t.status === 'SELESAI' && t.j && t.s && t.j !== "-" && t.s !== "-") { const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s); if(dj && ds) { const d = Math.ceil((ds - dj)/(1000*3600*24)); bt = d > 0 ? `+${d}H` : `${d}H`; bb = d > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; bc = d > 0 ? 'var(--danger)' : 'var(--success)'; } }
-                else if(t.status.includes('LEWAT')) { bt = `+${t.days}H`; bb = 'rgba(239,68,68,0.1)'; bc = 'var(--danger)'; }
-                b.innerHTML += `<div class="modal-task-card" style="background:var(--card-bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:${bb}; color:${bc}; padding:10px; border-radius:8px; font-weight:bold; min-width:50px; text-align:center;">${bt}</div><div><h4 style="margin:0 0 5px; line-height: 1.4;">${t.aktiviti}</h4><span style="font-size:11px; color:var(--text-muted);">Jangkaan: ${t.j} | Sebenar: ${t.s}</span></div></div>`;
+                else if(t.status === 'LEWAT') { bt = `+${t.rawDays}H`; bb = 'rgba(239,68,68,0.1)'; bc = 'var(--danger)'; }
+                b.innerHTML += `<div class="modal-task-card" style="background:var(--card-bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:${bb}; color:${bc}; padding:10px; border-radius:8px; font-weight:bold; min-width:50px; text-align:center;">${bt}</div><div><h4 style="margin:0 0 5px; line-height: 1.4;">${t.aktiviti}</h4><span style="font-size:11px; color:var(--text-muted);">${i18n[currentLang].expected}: ${t.j} | ${i18n[currentLang].actual}: ${t.s}</span></div></div>`;
             });
         }
         openModal('details-modal');
     }
+
+    function parseDateHelper(dStr) { const p = dStr.split('/'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : null; }
 
     document.getElementById('searchInput').addEventListener('input', function(e) {
         const v = e.target.value.toLowerCase();
