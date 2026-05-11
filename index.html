@@ -50,25 +50,61 @@
             display: flex; flex-direction: column; min-height: 100vh;
         }
         
-        .container { width: 100%; max-width: 100%; padding: 15px 25px; flex-grow: 1; display: flex; flex-direction: column;}
+        .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px 25px; flex-grow: 1; display: flex; flex-direction: column;}
 
-        /* Header */
-        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 25px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); transition: 0.3s; flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
+        /* HEADER MODERNIZATION */
+        .header-main { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 30px; padding: 18px 30px; 
+            background: var(--card-bg); border-radius: 20px; 
+            box-shadow: 0 8px 30px -5px rgba(0,0,0,0.06); 
+            border: 1px solid var(--border); transition: 0.3s; 
+            flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); 
+        }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
         
         .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 12px; }
-        .logo-area:hover { background: var(--hover-bg); transform: translateX(5px); }
+        .logo-area:hover { transform: translateX(5px); }
 
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; outline: none; }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--glow-color); }
+        /* Kapsul Bahasa */
+        .lang-group {
+            display: flex; align-items: center; gap: 4px;
+            padding: 4px 8px; border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--hover-bg);
+        }
+        .lang-btn { 
+            display: flex; align-items: center; justify-content: center; 
+            background: transparent; border: none; cursor: pointer; 
+            opacity: 0.4; transition: 0.2s; padding: 6px; border-radius: 50%; 
+            filter: grayscale(100%); 
+        }
+        .lang-btn img { width: 20px; border-radius: 3px; object-fit: cover;}
+        .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(50%); }
+        .lang-btn.active { opacity: 1; background: var(--card-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); filter: grayscale(0%); }
+
+        /* Ikon Tindakan Standard */
+        .action-icon { 
+            width: 42px; height: 42px; padding: 0; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; background: transparent; 
+            color: var(--text-muted); border: 1px solid var(--border); 
+            cursor: pointer; transition: 0.2s; 
+        }
+        .action-icon:hover { background: var(--hover-bg); color: var(--text-main); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-color: transparent;}
+        
+        /* Butang Standard & Muat Naik */
+        .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; outline: none; }
+        .btn-upload { padding: 12px 20px; background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35); border-radius: 12px; font-size: 13px;}
+        .btn-upload:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45); }
+        
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--glow-color); padding: 10px 18px;}
         .btn-primary:hover { opacity: 0.95; transform: translateY(-3px); box-shadow: 0 8px 25px var(--glow-color); }
-        .btn-sync { background: var(--success); color: white; }
+        .btn-sync { background: var(--success); color: white; padding: 10px 18px;}
         .btn-sync:hover { background: #059669; transform: translateY(-1px); }
-        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); padding: 10px 18px;}
         .btn-outline:hover { background: var(--hover-bg); }
-        .btn-icon { padding: 10px; border-radius: 12px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .btn-icon:hover { background: var(--hover-bg); transform: scale(1.05); }
-        .btn-danger { background: var(--danger); color: white; border: none; }
+        .btn-danger { background: var(--danger); color: white; border: none; padding: 10px 18px;}
         .btn-danger:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2); }
         
         .btn-clear-all { font-size: 10px; padding: 5px 10px; color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); background: transparent; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; font-weight: 600; }
@@ -191,7 +227,7 @@
         .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
         .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; text-align: left;}
         
-        /* FOOTER & LANG BUTTONS */
+        /* FOOTER */
         .premium-footer {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('1560128.jpg');
             background-size: cover; background-position: center; color: #cbd5e1;
@@ -201,10 +237,6 @@
         .footer-left { max-width: 500px; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
         
-        .lang-btn { display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--border); cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 6px; border-radius: 8px; filter: grayscale(100%); }
-        .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(0%); }
-        .lang-btn.active { opacity: 1; border-color: var(--accent); background: var(--glow-color); filter: grayscale(0%); box-shadow: 0 0 10px var(--glow-color); }
-
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } .sidebar .card { padding: 20px; } }
         @media (max-width: 768px) { .header-main { flex-direction: column; align-items: flex-start; } .header-actions { width: 100%; justify-content: space-between; } .charts-grid { grid-template-columns: 1fr; } }
     </style>
@@ -222,27 +254,38 @@
 <div class="container">
     <header class="header-main no-print">
         <div class="logo-area" onclick="showHome()" title="Kembali ke Laman Utama">
-            <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
+            <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 42px; width: auto; object-fit: contain;">
             <div>
-                <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;" data-i18n="header_title">Garis Masa Projek PNET</h1>
-                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;" data-i18n="header_subtitle">Sistem Pemantauan Awan</span>
+                <h1 style="font-size:18px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.3px;" data-i18n="header_title">Garis Masa Projek PNET</h1>
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;" data-i18n="header_subtitle">Sistem Pemantauan Projek PNET</span>
             </div>
         </div>
         
         <div class="header-actions">
-            <div style="display:flex; gap:5px; margin-right:10px;">
+            <div class="lang-group">
                 <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">
-                    <img src="https://flagcdn.com/w20/my.png" alt="MY" style="width: 20px; border-radius: 2px;">
+                    <img src="https://flagcdn.com/w20/my.png" alt="MY">
                 </button>
                 <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn" title="English">
-                    <img src="https://flagcdn.com/w20/gb.png" alt="GB" style="width: 20px; border-radius: 2px;">
+                    <img src="https://flagcdn.com/w20/gb.png" alt="GB">
                 </button>
             </div>
 
-            <button class="btn btn-icon" style="color:var(--success); border-color:var(--border);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive"><i data-lucide="folder-plus"></i></button>
-            <button class="btn-icon" onclick="location.reload()" title="Refresh Automatik"><i data-lucide="refresh-cw"></i></button>
-            <button class="btn-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn"><i data-lucide="moon"></i></button>
-            <label class="btn btn-primary" id="headerUploadBtn"><i data-lucide="file-up" style="width:16px;"></i> <span data-i18n="btn_upload">Muat Naik Excel</span> <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls"></label>
+            <button class="action-icon" style="color:var(--success);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive">
+                <i data-lucide="folder-plus" style="width:18px;"></i>
+            </button>
+            <button class="action-icon" onclick="location.reload()" title="Refresh Automatik">
+                <i data-lucide="refresh-cw" style="width:18px;"></i>
+            </button>
+            <button class="action-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn">
+                <i data-lucide="moon" style="width:18px;"></i>
+            </button>
+            
+            <label class="btn btn-upload" id="headerUploadBtn">
+                <i data-lucide="file-up" style="width:16px;"></i> 
+                <span data-i18n="btn_upload">Muat Naik Excel</span> 
+                <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls">
+            </label>
         </div>
     </header>
 
@@ -343,7 +386,7 @@
             <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
                 <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo KKM" style="height: 50px;">
                 <div>
-                    <h2 style="margin:0; color:#fff; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;" data-i18n="footer_title">PUSAT KAWALAN PNET</h2>
+                    <h2 style="margin:0; color:#fff; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;" data-i18n="footer_title">UNIT PENGURUSAN RANGKAIAN</h2>
                     <span style="color:#94a3b8; font-size:12px; font-weight: 600;" data-i18n="footer_subtitle">Kementerian Kesihatan Malaysia</span>
                 </div>
             </div>
@@ -477,7 +520,7 @@
             "footer_email": "Emel :",
             "footer_modified": "DIKEMASKINI PADA :",
             "footer_date": "11 Mei 2026",
-            "footer_copyright": "© 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
+            "footer_copyright": "© 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
             "home_task": "TUGASAN",
             "home_progress": "Kemajuan:",
             "modal_cloud_title": "Sambung Google Sheets",
@@ -508,7 +551,7 @@
         },
         "en": {
             "header_title": "PNET Project Timeline",
-            "header_subtitle": "Cloud Monitoring System",
+            "header_subtitle": "PNET Project Monitoring System",
             "btn_upload": "Upload Excel",
             "loader_title": "Syncing Cloud Data...",
             "loader_desc": "System is downloading master cloud project files.",
@@ -535,11 +578,11 @@
             "th_expected": "Expected",
             "th_actual": "Actual",
             "th_status": "Status",
-            "footer_title": "UNIT PENGURUSAN RANGKAIAN",
+            "footer_title": "NETWORK MANAGEMENT UNIT",
             "footer_subtitle": "Ministry of Health Malaysia",
-            "footer_address": "Unit Pengurusan Rangkaian,<br>Bahagian Pengurusan Maklumat, Kementerian Kesihatan Malaysia,<br>Level 5 Block E7, Kompleks E, 62590 Putrajaya.",
+            "footer_address": "Network Management Unit,<br>Information Management Division, Ministry of Health Malaysia,<br>Level 5 Block E7, Complex E, 62590 Putrajaya.",
             "footer_email": "Email :",
-            "footer_modified": "WEB LAST MODIFIED :",
+            "footer_modified": "PORTAL LAST MODIFIED :",
             "footer_date": "May 11, 2026",
             "footer_copyright": "© 2026 PNET Ministry of Health Malaysia. All rights reserved.",
             "home_task": "TASKS",
@@ -894,16 +937,14 @@
         labels.forEach((l, i) => { const c = chartColors[i % chartColors.length]; leg += `<div class="legend-item" title="${l}"><div class="legend-left"><span class="legend-color" style="background:${c}"></span><span class="legend-text">${l}</span></div><span class="legend-val">${data[i]}</span></div>`; });
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
         
-        // PENGEMASKINIAN UNTUK GOAL 2: Potong ayat kepada 2 layer
         const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
         const rawUnitLabels = Object.keys(units);
         
         const wrappedLabels = rawUnitLabels.map(label => {
-            if (label.length <= 20) return label; // Kalau ayat pendek, biar je
+            if (label.length <= 20) return label;
             const words = label.split(' ');
             if (words.length <= 1) return label;
             const half = Math.ceil(words.length / 2);
-            // Susun kepada array untuk jadikan dia "2 layer"
             return [words.slice(0, half).join(' '), words.slice(half).join(' ')];
         });
 
