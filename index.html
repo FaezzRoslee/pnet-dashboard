@@ -204,11 +204,6 @@
         .lang-btn { background: transparent; border: 1px solid var(--border); font-size: 16px; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 4px 8px; border-radius: 8px; filter: grayscale(100%); }
         .lang-btn:hover { opacity: 0.8; transform: scale(1.1); filter: grayscale(0%); }
         .lang-btn.active { opacity: 1; border-color: var(--accent); background: var(--glow-color); filter: grayscale(0%); box-shadow: 0 0 10px var(--glow-color); }
-        
-        /* Butang Wau Tersorok Bawah Kanan */
-        .lang-kelate { position: absolute; bottom: 10px; right: 10px; font-size: 12px; opacity: 0.05; filter: grayscale(100%); border: none; }
-        .lang-kelate:hover { opacity: 0.5; filter: grayscale(0%); transform: scale(1.2); }
-        .lang-kelate.active { opacity: 1; filter: grayscale(0%); border: 1px solid var(--accent); }
 
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } .sidebar .card { padding: 20px; } }
         @media (max-width: 768px) { .header-main { flex-direction: column; align-items: flex-start; } .header-actions { width: 100%; justify-content: space-between; } .charts-grid { grid-template-columns: 1fr; } }
@@ -368,8 +363,6 @@
             © 2024-2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
         </div>
     </div>
-    
-    <button onclick="setLang('kel')" id="btn-lang-kel" class="lang-btn lang-kelate" title="Rahsia">🪁</button>
 </footer>
 
 <div class="modal-overlay-custom" id="cloud-modal">
@@ -572,70 +565,6 @@
             "no_link": "No links saved.",
             "expected": "Expected",
             "actual": "Actual"
-        },
-        "kel": {
-            "header_title": "Garis Maso Projek PNET",
-            "header_subtitle": "Sistem Pata Awan",
-            "btn_upload": "Pukoh Naik Excel",
-            "loader_title": "Tengoh Tarik Awan...",
-            "loader_desc": "Sistem tengoh sedut pail projek hok utamo.",
-            "hero_title": "Pusat Jago Projek",
-            "hero_desc": "Sistem tengok jadual de peformens projek impra maso loni hok paling canggih.",
-            "kpi_overall": "PERKEMBANGE SEMO",
-            "kpi_task": "Kijoan",
-            "kpi_done": "Siap Doh",
-            "kpi_process": "Tengoh Buat",
-            "kpi_delay": "Lembak",
-            "ref_title": "Rujuke & Polder",
-            "proj_title": "Pail Projek",
-            "btn_clear": "Buang Lokal",
-            "btn_add_proj": "Nambah Projek",
-            "chart_topic": "Maso Ikut Topik",
-            "chart_unit": "Lembak Ikut Unit (Ari)",
-            "table_title": "Tengoh Pusing...",
-            "table_desc": "Semo kijoan untok projek loni",
-            "table_search": "Pise kijo ko unit...",
-            "th_bil": "Bil",
-            "th_activity": "Kijoan",
-            "th_action": "Tindake",
-            "th_duration": "Maso",
-            "th_expected": "Jangko",
-            "th_actual": "Sebutir",
-            "th_status": "Status",
-            "footer_title": "PUSAT KAWAL PNET",
-            "footer_subtitle": "Kementerian Kesihaten Malaysia",
-            "footer_address": "Unit Penguruse Rangkaiye,<br>Bahagie Penguruse Maklumak, Kementerian Kesihate Malaysia,<br>Arah 5 Blok E7, Kompleks E, 62590 Putrajayo.",
-            "footer_email": "Emel :",
-            "footer_modified": "APTDET PADO :",
-            "footer_date": "11 Mei 2026",
-            "footer_copyright": "© 2026 PNET Kementerian Kesihate Malaysia. Hak Cipto Terpeliharo.",
-            "home_task": "KIJO",
-            "home_progress": "Nok Siap:",
-            "modal_cloud_title": "Sambong Google Sheets",
-            "modal_cloud_desc": "Masuk link CSV (Publish to Web) untok tab projek demo.",
-            "modal_ref_title": "Nambah Rujuke Awan",
-            "modal_ref_desc": "Simpe link Google Drive ko Google Docs untok mudoh cari.",
-            "modal_ref_p1": "Namo (cth: Polder Tender Rasmi)",
-            "modal_del_title": "Buang Rekod Projek?",
-            "modal_del_desc": "Arap ko nok tohok ni?",
-            "modal_clear_title": "Hapuh Fail Hok Upload Tadi?",
-            "modal_clear_desc": "Semo fail hok masuk sdiri kawe nok buang. <br><b>Tapi Fail Master Cloud tok hile.</b>",
-            "modal_list_title": "Senara Kijoan",
-            "btn_cancel": "Tokse",
-            "btn_connect": "Sambong",
-            "btn_save": "Sipe",
-            "btn_yes_delete": "Hom bue la",
-            "btn_clear_local": "Kosong Lokal",
-            "btn_close": "Tutup Papare",
-            "status_selesai": "SIAP DOH",
-            "status_proses": "TENGOH BUAT",
-            "status_hampir": "NOK ABIH DOH",
-            "status_lewat": "LEMBAK",
-            "status_hari": "ARI",
-            "no_record": "Takdok rekod.",
-            "no_link": "Takdok link simpe.",
-            "expected": "Jangkae maso",
-            "actual": "Hok Sunggoh"
         }
     };
 
@@ -647,10 +576,7 @@
         
         document.getElementById('btn-lang-ms').classList.remove('active');
         document.getElementById('btn-lang-en').classList.remove('active');
-        document.getElementById('btn-lang-kel').classList.remove('active');
-        if(document.getElementById('btn-lang-' + lang)) {
-            document.getElementById('btn-lang-' + lang).classList.add('active');
-        }
+        document.getElementById('btn-lang-' + lang).classList.add('active');
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -726,6 +652,7 @@
 
         let fetchPromises = [];
 
+        // V55: KOD LOADING ASAL HOK LAJU TANPA TIMEOUT/CACHEBUSTER
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
@@ -961,7 +888,6 @@
         
         const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
         
-        // V54: Format text panjang jadi 2 line (Maksimum 25 huruf sebaris)
         const formattedLabels = Object.keys(units).map(l => {
             if (l.length > 25) {
                 let chunks = [];
