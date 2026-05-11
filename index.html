@@ -166,7 +166,6 @@
         .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        /* V43: DALAM PROSES */
         .status-dalamproses { background: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -205,7 +204,7 @@
 
 <div class="container">
     <header class="header-main no-print">
-        <div class="logo-area" onclick="location.reload()" title="Refresh Paparan">
+        <div class="logo-area" onclick="window.location.href='index.html'" title="Kembali ke Paparan Utama">
             <img src="https://pnet.moh.gov.my/images/uprlogo.png" alt="Logo UPR" style="height: 40px; width: auto; object-fit: contain;">
             <div>
                 <h1 style="font-size:20px; margin:0; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px;">Garis Masa Projek PNET</h1>
@@ -485,9 +484,6 @@
         return v; 
     }
 
-    // ==========================================
-    // 4. PENDERIA PINTAR (V43) 
-    // ==========================================
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
@@ -560,20 +556,15 @@
         if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
         const p = String(j).split('/'); 
         
-        // V43: Semua aktiviti aktif yang bukan tarikh dikira DALAM PROSES
         if(p.length < 3) return { label: 'DALAM PROSES', days: 0 }; 
         const d = new Date(p[2], p[1]-1, p[0]); const t = new Date(); t.setHours(0,0,0,0);
         if(isNaN(d.getTime())) return { label: 'DALAM PROSES', days: 0 };
 
         const diff = Math.ceil((d - t) / (1000 * 3600 * 24));
         if (diff < 0) return { label: `LEWAT (${Math.abs(diff)} HARI)`, days: Math.abs(diff) };
-        // V43: Gabungkan Mengikut Jadual ke DALAM PROSES
         return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'DALAM PROSES', days: 0 };
     }
 
-    // ==========================================
-    // 5. UPDATE UI (PAPARAN)
-    // ==========================================
     function updateUI() {
         if (!projectsMap[activeId]) activeId = Object.keys(projectsMap)[0];
         updateSidebar();
@@ -588,7 +579,6 @@
         
         animateNum('kpi-total', tasks.length);
         animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
-        // V43: Gabungkan kiraan
         animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
         animateNum('kpi-delay', tasks.filter(t => t.status.includes('LEWAT')).length);
         
@@ -681,7 +671,7 @@
     function addResource() {
         const name = document.getElementById('resourceName').value.trim();
         let url = document.getElementById('resourceUrl').value.trim();
-        if(!name || !url) { showToast("Sila isi nama dan pautan"); return; }
+        if(!name || !url) { showToast("Sila isi nama pautan"); return; }
         if (!url.match(/^https?:\/\//i)) url = 'http://' + url;
         resourcesList.push({ name, url });
         localStorage.setItem("pnet_resources", JSON.stringify(resourcesList));
