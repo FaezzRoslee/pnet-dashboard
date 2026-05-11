@@ -725,56 +725,32 @@
         }
 
         let fetchPromises = [];
-        const cacheBuster = "&t=" + new Date().getTime();
 
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
-                const fetchWithTimeout = new Promise(resolve => {
-                    const timer = setTimeout(() => {
-                        console.warn("Timeout for: " + projectsMap[id].name);
-                        resolve(); 
-                    }, 5000); 
-
-                    fetch(projectsMap[id].url + cacheBuster, { cache: "no-store" })
+                fetchPromises.push(
+                    fetch(projectsMap[id].url)
                         .then(res => res.text())
                         .then(csv => {
-                            clearTimeout(timer);
                             const wb = XLSX.read(csv, { type: 'string' });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                             projectsMap[id].data = processData(rows);
-                            resolve();
                         })
-                        .catch(e => {
-                            clearTimeout(timer);
-                            console.warn("Google Sheets terhalang untuk:", projectsMap[id].name);
-                            resolve();
-                        });
-                });
-                fetchPromises.push(fetchWithTimeout);
+                        .catch(e => console.warn("Google Sheets terhalang untuk:", projectsMap[id].name))
+                );
             }
         }
         
-        const masterFailsafe = setTimeout(() => {
-            const loader = document.getElementById('main-loader');
-            if (loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; showHome(); }, 400);
-            }
-        }, 6000);
-
         await Promise.all(fetchPromises);
-        clearTimeout(masterFailsafe);
 
         setLang(currentLang);
 
         const loader = document.getElementById('main-loader');
-        if (loader.style.display !== 'none') {
-            loader.style.opacity = '0';
-            setTimeout(() => { 
-                loader.style.display = 'none'; 
-                showHome(); 
-            }, 400);
-        }
+        loader.style.opacity = '0';
+        setTimeout(() => { 
+            loader.style.display = 'none'; 
+            showHome(); 
+        }, 400);
     };
 
     function showHome() {
@@ -985,7 +961,7 @@
         
         const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
         
-        // V51: Format text panjang jadi 2 line
+        // V54: Format text panjang jadi 2 line (Maksimum 25 huruf sebaris)
         const formattedLabels = Object.keys(units).map(l => {
             if (l.length > 25) {
                 let chunks = [];
