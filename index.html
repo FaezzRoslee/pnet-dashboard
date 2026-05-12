@@ -834,7 +834,7 @@
 
             let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || colB.startsWith("-");
 
-            if (checkA.includes("perkara :") || checkA.includes("perkara:")) {
+            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
             } else if (!isSubTask) { 
                 if (colA !== "" && colB === "" && colC === "" && colD === "") {
@@ -916,7 +916,7 @@
         animateNum('global-percent', perc, '%');
         
         let mainTitle = p.name;
-        if (p.data.length > 0 && p.data[0].isSec && p.data[0].title.toLowerCase().includes("perkara")) {
+        if (p.data.length > 0 && p.data[0].isSec && (p.data[0].title.toLowerCase().includes("perkara") || p.data[0].title.toLowerCase().includes("jadual"))) {
             mainTitle = p.data[0].title;
         }
         document.getElementById('active-title').innerText = mainTitle;
@@ -980,7 +980,7 @@
 
         data.forEach(item => {
             if (item.isSec) { 
-                let isMain = item.title.toLowerCase().includes("perkara") || !firstSecFound;
+                let isMain = item.title.toLowerCase().includes("perkara") || item.title.toLowerCase().includes("jadual") || !firstSecFound;
                 firstSecFound = true;
                 
                 if (isMain) {
