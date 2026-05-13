@@ -668,12 +668,6 @@
             if(i18n[lang][key]) { el.placeholder = i18n[lang][key]; }
         });
 
-        // Update Waktu Terkini (Jika ada dalam bahasa tersebut)
-        const savedTime = localStorage.getItem("pnet_last_update");
-        if(savedTime) {
-            document.getElementById('last-update-time').innerText = savedTime;
-        }
-
         // Re-render UI components if active
         if(document.getElementById('home-page').style.display !== 'none') { showHome(); } 
         else { updateUI(); }
@@ -693,10 +687,10 @@
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // Fungsi format tarikh masa kemaskini
+    // --- FUNGSI MASA KEMASKINI ---
     function updateTimestamp() {
         const now = new Date();
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
         const timeStr = now.toLocaleDateString(currentLang === 'ms' ? 'ms-MY' : 'en-GB', options);
         localStorage.setItem("pnet_last_update", timeStr);
         document.getElementById('last-update-time').innerText = timeStr;
@@ -732,6 +726,12 @@
         if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
 
+        // Kembalikan timestamp jika ada disimpan
+        const savedTime = localStorage.getItem("pnet_last_update");
+        if (savedTime) {
+            document.getElementById('last-update-time').innerText = savedTime;
+        }
+
         const savedRes = localStorage.getItem("pnet_resources");
         if (savedRes) resourcesList = JSON.parse(savedRes);
 
@@ -766,7 +766,10 @@
         }
         
         await Promise.all(fetchPromises);
+        
+        // Kemaskini masa selesai tarik data
         updateTimestamp();
+
         setLang(currentLang);
 
         const loader = document.getElementById('main-loader');
@@ -803,7 +806,9 @@
         }
         
         Promise.all(fetchPromises).then(() => {
+            // Rekod masa selepas berjaya disync
             updateTimestamp();
+            
             const loader = document.getElementById('main-loader');
             loader.style.opacity = '0';
             setTimeout(() => { 
@@ -881,61 +886,41 @@
     }
 
     function processData(rows) {
-        let res = []; 
-        let cs = "Maklumat Projek";
+        let res = []; let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
 
-        let idxBil = 0, idxAktiviti = 1, idxTindakan = 2, idxTempoh = 3, idxJangkaan = 4, idxSebenar = 5;
-        let headerFound = false;
-
-        rows.forEach((row, rowIndex) => {
+        rows.forEach(row => {
             if (!row || row.length === 0) return;
-
-            // 1. CARI BARISAN HEADER SECARA DINAMIK
-            if (!headerFound) {
-                let rowStr = row.map(c => String(c).toLowerCase().replace(/[^a-z0-9]/g, '')).join(" ");
-                if (rowStr.includes("aktiviti") || rowStr.includes("perkara") || rowStr.includes("taskname")) {
-                    
-                    row.forEach((colRaw, index) => {
-                        let cClean = String(colRaw).toLowerCase().replace(/[^a-z0-9]/g, '');
-                        if (cClean === 'bil' || cClean === 'no' || cClean === 'wbs') idxBil = index;
-                        if (cClean.includes('aktiviti') || cClean.includes('perkara') || cClean.includes('taskname')) idxAktiviti = index;
-                        if (cClean.includes('tindakan') || cClean.includes('pic') || cClean.includes('resource')) idxTindakan = index;
-                        if (cClean.includes('tempoh') || cClean.includes('duration') || cClean.includes('hari')) idxTempoh = index;
-                        if (cClean.includes('jangkaan') || cClean.includes('tarikh') || cClean.includes('start')) idxJangkaan = index;
-                        if (cClean.includes('sebenar') || cClean.includes('tandatangan') || cClean.includes('finish') || cClean.includes('end')) idxSebenar = index;
-                    });
-                    
-                    headerFound = true;
-                    return; 
-                }
-            }
-
-            let colA = String(row[idxBil] || "").trim();
-            let colB = String(row[idxAktiviti] || "").trim();
-            let colC = String(row[idxTindakan] || "").trim();
-            let colD = String(row[idxTempoh] || "").trim();
-            let colE = String(row[idxJangkaan] || "").trim();
-            let colF = String(row[idxSebenar] || "").trim();
+            
+            let cols = [];
+            for(let i=0; i<6; i++) cols.push(String(row[i] || "").trim());
+            let [colA, colB, colC, colD, colE, colF] = cols;
 
             if (colA === "" && colB === "" && colC === "" && colD === "" && colE === "" && colF === "") return;
 
             let cA = colA.toLowerCase().replace(/[^a-z0-9]/g, ''); 
             let cB = colB.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cC = colC.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cD = colD.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cE = colE.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cF = colF.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // ABAIKAN BARISAN JUMLAH
-            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA === "jumlah" || cA === "total") return;
+            // ABAIKAN BARISAN HEADER
+            if ((cA === "bil" || cA === "no") && (cB.includes("aktiviti") || cB.includes("perkara"))) return;
+            if (cA === "" && cB.includes("aktiviti") && cC.includes("tindakan")) return;
+            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA.includes("jumlah")) return;
 
             let isSection = false;
             let titleText = "";
             let checkA = String(colA).toLowerCase();
-            
-            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-") || !isNaN(colA);
+            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-");
 
-            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:") || checkA.includes("fasa") || checkA.includes("phase")) {
+            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
-            } else if (!isSubTask && colB !== "") { 
-                if (colA === "" && colC === "" && colD === "") {
+            } else if (!isSubTask) { 
+                if (colA !== "" && colB === "" && colC === "" && colD === "") {
+                    isSection = true; titleText = colA; 
+                } else if (colA === "" && colB !== "" && colC === "" && colD === "") {
                     isSection = true; titleText = colB; 
                 }
             }
@@ -984,7 +969,6 @@
                     const diffComp = Math.ceil((ds - dj) / (1000 * 3600 * 24));
                     if (diffComp < 0) return { label: 'SIAP AWAL', days: Math.abs(diffComp) };
                     if (diffComp > 0) return { label: 'SIAP LEWAT', days: diffComp };
-                    return { label: 'SELESAI', days: 0 }; 
                 }
             }
             return { label: 'SELESAI', days: 0 }; 
@@ -1098,7 +1082,7 @@
 
         data.forEach(item => {
             if (item.isSec) { 
-                let isMain = item.title.toLowerCase().includes("perkara") || item.title.toLowerCase().includes("jadual") || item.title.toLowerCase().includes("fasa") || item.title.toLowerCase().includes("phase") || !firstSecFound;
+                let isMain = item.title.toLowerCase().includes("perkara") || item.title.toLowerCase().includes("jadual") || !firstSecFound;
                 firstSecFound = true;
                 
                 if (isMain) {
