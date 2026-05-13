@@ -883,16 +883,20 @@
             let cleanCheckA = String(colA).toLowerCase().replace(/\s+/g, ''); 
             let cleanCheckB = String(colB).toLowerCase().replace(/\s+/g, '');
             let cleanCheckC = String(colC).toLowerCase().replace(/\s+/g, '');
+            let cleanCheckD = String(colD).toLowerCase().replace(/\s+/g, '');
+            let cleanCheckE = String(colE).toLowerCase().replace(/\s+/g, '');
+            let cleanCheckF = String(colF).toLowerCase().replace(/\s+/g, '');
 
-            // 1. ABAIKAN BARISAN HEADER JADUAL EXCEL SUNGGUH-SUNGGUH
-            if ((cleanCheckA === "bil" || cleanCheckA === "bil." || cleanCheckA === "no" || cleanCheckA === "no.") && 
-                (cleanCheckB.includes("aktiviti") || cleanCheckB.includes("perkara"))) {
-                return;
+            // ABAIKAN BARISAN HEADER (Pukat Habis)
+            // Kalau kotak pertama tu "bil" atau "no" atau kosong, 
+            // DAN kotak lain ada perkataan macam "aktiviti", "tindakan", "tempoh", "jangkaan", "sebenar"
+            if (
+                (cleanCheckA === "bil" || cleanCheckA === "bil." || cleanCheckA === "no" || cleanCheckA === "no." || cleanCheckA === "") &&
+                (cleanCheckB.includes("aktiviti") || cleanCheckB.includes("perkara") || cleanCheckC.includes("tindakan") || cleanCheckD.includes("tempoh") || cleanCheckE.includes("jangkaan") || cleanCheckF.includes("sebenar") || cleanCheckE.includes("tarikh") || cleanCheckF.includes("tandatangan"))
+            ) {
+                return; // Abaikan baris ini (jangan masuk dalam array res)
             }
-            if (cleanCheckA === "" && cleanCheckB.includes("aktiviti") && cleanCheckC.includes("tindakan")) {
-                return;
-            }
-            
+
             // Abaikan barisan yang ada perkataan "jumlah"
             if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") {
                 return;
@@ -946,7 +950,6 @@
         });
         return res;
     }
-
     function getStatus(j, s) {
         if (s && s !== "-") {
             if (j && j !== "-") {
