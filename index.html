@@ -818,8 +818,6 @@
         });
     }
 
-    document.getElementById('syncBtn').onclick = forceSyncAll;
-
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
@@ -893,7 +891,7 @@
         rows.forEach((row, rowIndex) => {
             if (!row || row.length === 0) return;
 
-            // 1. CARI BARISAN HEADER
+            // 1. CARI BARISAN HEADER SECARA DINAMIK
             if (!headerFound) {
                 let rowStr = row.map(c => String(c).toLowerCase().replace(/[^a-z0-9]/g, '')).join(" ");
                 if (rowStr.includes("aktiviti") || rowStr.includes("perkara") || rowStr.includes("taskname")) {
@@ -925,6 +923,7 @@
             let cA = colA.toLowerCase().replace(/[^a-z0-9]/g, ''); 
             let cB = colB.toLowerCase().replace(/[^a-z0-9]/g, '');
 
+            // ABAIKAN BARISAN JUMLAH
             if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA === "jumlah" || cA === "total") return;
 
             let isSection = false;
@@ -1099,7 +1098,7 @@
 
         data.forEach(item => {
             if (item.isSec) { 
-                let isMain = item.title.toLowerCase().includes("perkara") || item.title.toLowerCase().includes("jadual") || !firstSecFound;
+                let isMain = item.title.toLowerCase().includes("perkara") || item.title.toLowerCase().includes("jadual") || item.title.toLowerCase().includes("fasa") || item.title.toLowerCase().includes("phase") || !firstSecFound;
                 firstSecFound = true;
                 
                 if (isMain) {
