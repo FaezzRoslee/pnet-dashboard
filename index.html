@@ -910,11 +910,11 @@
 
     function getTranslatedStatus(statusLabel, days) {
         if(statusLabel === 'SELESAI') return i18n[currentLang].status_selesai;
-        if(statusLabel === 'SIAP AWAL') return `${i18n[currentLang].status_siap_awal} (${days} ${i18n[currentLang].status_hari})`;
-        if(statusLabel === 'SIAP LEWAT') return `${i18n[currentLang].status_siap_lewat} (${days} ${i18n[currentLang].status_hari})`;
+        if(statusLabel === 'SIAP AWAL') return `<div>${i18n[currentLang].status_siap_awal}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} hari)</div>`;
+        if(statusLabel === 'SIAP LEWAT') return `<div>${i18n[currentLang].status_siap_lewat}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} hari)</div>`;
         if(statusLabel === 'DALAM PROSES') return i18n[currentLang].status_proses;
         if(statusLabel === 'HAMPIR TAMAT') return `<span class="pulse-dot"></span> ${i18n[currentLang].status_hampir}`;
-        if(statusLabel === 'LEWAT') return `${i18n[currentLang].status_lewat} (${days} ${i18n[currentLang].status_hari})`;
+        if(statusLabel === 'LEWAT') return `<div>${i18n[currentLang].status_lewat}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} hari)</div>`;
         return statusLabel;
     }
 
