@@ -566,7 +566,7 @@
             "status_proses": "DALAM PROSES",
             "status_hampir": "HAMPIR TAMAT",
             "status_lewat": "LEWAT",
-            "status_hari": "HARI",
+            "status_hari": "hari",
             "no_record": "Tiada rekod.",
             "no_link": "Tiada pautan disimpan.",
             "expected": "Jangkaan",
@@ -632,7 +632,7 @@
             "status_proses": "IN PROGRESS",
             "status_hampir": "ENDING SOON",
             "status_lewat": "DELAYED",
-            "status_hari": "DAYS",
+            "status_hari": "days",
             "no_record": "No records found.",
             "no_link": "No links saved.",
             "expected": "Expected",
@@ -862,7 +862,6 @@
     // Fungsi isValidDate tambahan untuk semak jika text itu mematuhi format dd/mm/yyyy
     function isValidDate(dateStr) {
         if(!dateStr || typeof dateStr !== 'string') return false;
-        // Benarkan format macam 1/2/2026 atau 01/02/2026
         const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
         return regex.test(dateStr.trim());
     }
@@ -882,20 +881,23 @@
 
             let checkA = colA.toLowerCase(); 
             let checkB = colB.toLowerCase();
-
-            // TAMBAHAN BARU: Abaikan barisan Header Jadual Excel 
-            // (Baris yang mengandungi perkataan 'Bil' di kotak pertama DAN 'Aktiviti' ATAU 'Tindakan' di kotak lain)
-            if ((checkA === "bil" || checkA === "bil.") && 
-                (checkB.includes("aktiviti") || checkB.includes("perkara") || colC.toLowerCase().includes("tindakan"))) {
-                return; // Berhenti proses untuk baris ini
-            }
-
-            if ((checkA === "bil" || checkA === "no") && (checkB.includes("aktiviti") || checkB.includes("perkara"))) return;
-            if (checkA === "" && checkB.includes("aktiviti") && colC.toLowerCase().includes("tindakan")) return;
-
+            
             let cleanCheckA = checkA.replace(/\s+/g, ''); 
             let cleanCheckB = checkB.replace(/\s+/g, '');
-            if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") return;
+            let cleanCheckC = String(colC).toLowerCase().replace(/\s+/g, '');
+
+            // Abaikan Header Jadual (Baris yang ada "Bil", "Aktiviti", "Tindakan") 
+            // supaya tak dikira sebagai tugasan.
+            if ((cleanCheckA === "bil" || cleanCheckA === "bil." || cleanCheckA === "no" || cleanCheckA === "no.") && 
+                (cleanCheckB.includes("aktiviti") || cleanCheckB.includes("perkara"))) {
+                return;
+            }
+            if (cleanCheckA === "" && cleanCheckB.includes("aktiviti") && cleanCheckC.includes("tindakan")) {
+                return;
+            }
+            if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") {
+                return;
+            }
 
             let isSection = false;
             let titleText = "";
@@ -944,11 +946,9 @@
         });
         return res;
     }
-    
+
     function getStatus(j, s) {
-        // Jika ada Tarikh Sebenar (dan ia telah melepasi tapisan isValidDate jadi ia bukan '-')
         if (s && s !== "-") {
-            // Jika ada Tarikh Jangkaan untuk diukur
             if (j && j !== "-") {
                 const pj = String(j).split('/');
                 const ps = String(s).split('/');
@@ -963,7 +963,6 @@
             return { label: 'SELESAI', days: 0 }; 
         }
         
-        // Jika Tiada Tarikh Sebenar
         if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
         const p = String(j).split('/'); 
         
@@ -978,11 +977,11 @@
 
     function getTranslatedStatus(statusLabel, days) {
         if(statusLabel === 'SELESAI') return i18n[currentLang].status_selesai;
-        if(statusLabel === 'SIAP AWAL') return `<div>${i18n[currentLang].status_siap_awal}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} hari)</div>`;
-        if(statusLabel === 'SIAP LEWAT') return `<div>${i18n[currentLang].status_siap_lewat}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} hari)</div>`;
+        if(statusLabel === 'SIAP AWAL') return `<div>${i18n[currentLang].status_siap_awal}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} ${i18n[currentLang].status_hari})</div>`;
+        if(statusLabel === 'SIAP LEWAT') return `<div>${i18n[currentLang].status_siap_lewat}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} ${i18n[currentLang].status_hari})</div>`;
         if(statusLabel === 'DALAM PROSES') return i18n[currentLang].status_proses;
         if(statusLabel === 'HAMPIR TAMAT') return `<span class="pulse-dot"></span> ${i18n[currentLang].status_hampir}`;
-        if(statusLabel === 'LEWAT') return `<div>${i18n[currentLang].status_lewat}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} hari)</div>`;
+        if(statusLabel === 'LEWAT') return `<div>${i18n[currentLang].status_lewat}</div><div style="font-size: 8px; font-weight: normal; opacity: 0.8; margin-top: 2px;">(${days} ${i18n[currentLang].status_hari})</div>`;
         return statusLabel;
     }
 
@@ -1166,7 +1165,6 @@
         if(!url.toLowerCase().includes('csv')) { showToast("Sila guna pautan CSV"); return; }
         showToast("Menarik data...");
         try {
-            // bypass cache untuk cloud import baru
             const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
             const res = await fetch(bypassUrl); const csv = await res.text();
             const wb = XLSX.read(csv, { type: 'string' });
