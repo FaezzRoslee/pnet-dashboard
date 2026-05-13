@@ -54,7 +54,7 @@
 
         /* HEADER MODERNIZATION */
         .header-main { 
-            display: flex; justify-content: flex-end; align-items: center; /* flex-end supaya butang rapat kanan */
+            display: flex; justify-content: flex-end; align-items: center; 
             margin-bottom: 30px; padding: 18px 30px; 
             background: var(--card-bg); border-radius: 20px; 
             box-shadow: 0 8px 30px -5px rgba(0,0,0,0.06); 
@@ -219,9 +219,13 @@
         [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); }
         
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; width: 100%; letter-spacing: 0.3px; white-space: nowrap; }
+        
+        /* Status Colors Update */
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .status-siaplewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px dashed rgba(239, 68, 68, 0.5); }
         .status-menunggu { background: var(--hover-bg); color: var(--text-muted); }
         .status-selesai { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .status-siapawal { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-hampirtamat { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
         .status-dalamproses { background: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
 
@@ -557,6 +561,8 @@
             "btn_clear_local": "Kosongkan Lokal",
             "btn_close": "Tutup Paparan",
             "status_selesai": "SELESAI",
+            "status_siap_awal": "AWAL",
+            "status_siap_lewat": "SIAP LEWAT",
             "status_proses": "DALAM PROSES",
             "status_hampir": "HAMPIR TAMAT",
             "status_lewat": "LEWAT",
@@ -621,6 +627,8 @@
             "btn_clear_local": "Clear Local",
             "btn_close": "Close View",
             "status_selesai": "COMPLETED",
+            "status_siap_awal": "EARLY",
+            "status_siap_lewat": "LATE DONE",
             "status_proses": "IN PROGRESS",
             "status_hampir": "ENDING SOON",
             "status_lewat": "DELAYED",
@@ -760,7 +768,7 @@
         Object.keys(projectsMap).forEach(id => {
             const p = projectsMap[id];
             const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
-            const done = tasks.filter(t => t.status === 'SELESAI').length;
+            const done = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
             const iconName = p.isCloud ? 'cloud' : 'file-spreadsheet';
 
@@ -874,7 +882,20 @@
     }
 
     function getStatus(j, s) {
-        if (s && s !== "-") return { label: 'SELESAI', days: 0 }; 
+        if (s && s !== "-") {
+            if (j && j !== "-") {
+                const pj = String(j).split('/');
+                const ps = String(s).split('/');
+                if (pj.length === 3 && ps.length === 3) {
+                    const dj = new Date(pj[2], pj[1]-1, pj[0]);
+                    const ds = new Date(ps[2], ps[1]-1, ps[0]);
+                    const diffComp = Math.ceil((ds - dj) / (1000 * 3600 * 24));
+                    if (diffComp < 0) return { label: 'SIAP AWAL', days: Math.abs(diffComp) };
+                    if (diffComp > 0) return { label: 'SIAP LEWAT', days: diffComp };
+                }
+            }
+            return { label: 'SELESAI', days: 0 }; 
+        }
         if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
         const p = String(j).split('/'); 
         
@@ -889,6 +910,8 @@
 
     function getTranslatedStatus(statusLabel, days) {
         if(statusLabel === 'SELESAI') return i18n[currentLang].status_selesai;
+        if(statusLabel === 'SIAP AWAL') return `${i18n[currentLang].status_siap_awal} (${days} ${i18n[currentLang].status_hari})`;
+        if(statusLabel === 'SIAP LEWAT') return `${i18n[currentLang].status_siap_lewat} (${days} ${i18n[currentLang].status_hari})`;
         if(statusLabel === 'DALAM PROSES') return i18n[currentLang].status_proses;
         if(statusLabel === 'HAMPIR TAMAT') return `<span class="pulse-dot"></span> ${i18n[currentLang].status_hampir}`;
         if(statusLabel === 'LEWAT') return `${i18n[currentLang].status_lewat} (${days} ${i18n[currentLang].status_hari})`;
@@ -908,11 +931,12 @@
         const tasks = p.data.filter(d => !d.isSec);
         
         animateNum('kpi-total', tasks.length);
-        animateNum('kpi-done', tasks.filter(t => t.status === 'SELESAI').length);
+        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
+        animateNum('kpi-done', doneCount);
         animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
         animateNum('kpi-delay', tasks.filter(t => t.status === 'LEWAT').length);
         
-        const perc = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'SELESAI').length / tasks.length) * 100) : 0;
+        const perc = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
         animateNum('global-percent', perc, '%');
         
         let mainTitle = p.name;
@@ -992,7 +1016,12 @@
             } 
             else {
                 const s = item.status.toLowerCase().replace(/\s/g, '');
-                let badgeClass = s.includes('lewat') ? 'lewat' : s.replace(/\s/g, '');
+                let badgeClass = '';
+                
+                if (s === 'siapawal') badgeClass = 'siapawal';
+                else if (s === 'siaplewat') badgeClass = 'siaplewat';
+                else if (s.includes('lewat')) badgeClass = 'lewat';
+                else badgeClass = s;
                 
                 const translatedStatus = getTranslatedStatus(item.status, item.rawDays);
 
@@ -1095,8 +1124,9 @@
     function openKpiModal(type) {
         if(!activeId) return; const p = projectsMap[activeId]; const tasks = p.data.filter(d => !d.isSec);
         let filt = [], hBg = '', title = '', icon = '';
+        
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = i18n[currentLang].kpi_task; icon = 'clipboard-list'; } 
-        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
+        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
         else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
         else if(type === 'LEWAT') { filt = tasks.filter(t => t.status === 'LEWAT'); hBg = 'var(--danger)'; title = i18n[currentLang].kpi_delay; icon = 'alert-triangle'; }
         
@@ -1108,8 +1138,17 @@
         else {
             filt.forEach(t => {
                 let bt = '0', bb = 'var(--hover-bg)', bc = 'var(--text-muted)';
-                if(t.status === 'SELESAI' && t.j && t.s && t.j !== "-" && t.s !== "-") { const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s); if(dj && ds) { const d = Math.ceil((ds - dj)/(1000*3600*24)); bt = d > 0 ? `+${d}H` : `${d}H`; bb = d > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; bc = d > 0 ? 'var(--danger)' : 'var(--success)'; } }
+                if((t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT') && t.j && t.s && t.j !== "-" && t.s !== "-") { 
+                    const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s); 
+                    if(dj && ds) { 
+                        const d = Math.ceil((ds - dj)/(1000*3600*24)); 
+                        bt = d > 0 ? `+${d}H` : `${d}H`; 
+                        bb = d > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'; 
+                        bc = d > 0 ? 'var(--danger)' : 'var(--success)'; 
+                    } 
+                }
                 else if(t.status === 'LEWAT') { bt = `+${t.rawDays}H`; bb = 'rgba(239,68,68,0.1)'; bc = 'var(--danger)'; }
+                
                 b.innerHTML += `<div class="modal-task-card" style="background:var(--card-bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:${bb}; color:${bc}; padding:10px; border-radius:8px; font-weight:bold; min-width:50px; text-align:center;">${bt}</div><div><h4 style="margin:0 0 5px; line-height: 1.4;">${t.aktiviti}</h4><span style="font-size:11px; color:var(--text-muted);">${i18n[currentLang].expected}: ${t.j} | ${i18n[currentLang].actual}: ${t.s}</span></div></div>`;
             });
         }
@@ -1122,6 +1161,7 @@
         const v = e.target.value.toLowerCase();
         document.querySelectorAll("#activityTable tbody tr").forEach(r => { if (r.cells.length === 1) return; r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none"; });
     });
+    
     function animateNum(id, end, suffix = '') {
         let s = 0; const o = document.getElementById(id); const dur = 1200; const st = performance.now();
         function step(ts) { const p = Math.min((ts - st) / dur, 1); const e = 1 - Math.pow(1 - p, 3); o.innerHTML = Math.floor(e * (end - s) + s) + suffix; if (p < 1) requestAnimationFrame(step); } requestAnimationFrame(step);
