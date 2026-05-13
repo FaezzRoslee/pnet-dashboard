@@ -218,7 +218,7 @@
         .glass-badge { background: rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; display: inline-block; white-space: normal; text-align: center;} 
         [data-theme="dark"] .glass-badge { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; width: 100%; letter-spacing: 0.3px; white-space: nowrap; }
+        .badge { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; width: 100%; letter-spacing: 0.3px; white-space: nowrap; line-height: 1.1; }
         
         /* Status Colors Update */
         .status-lewat { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
@@ -287,7 +287,7 @@
             <button class="action-icon" style="color:var(--success);" onclick="openModal('add-resource-modal')" title="Tambah Rujukan Docs/Drive">
                 <i data-lucide="folder-plus" style="width:18px;"></i>
             </button>
-            <button class="action-icon" onclick="location.reload()" title="Refresh Automatik">
+            <button class="action-icon" onclick="forceSyncAll()" title="Tarik Data Terbaru dari Cloud" id="syncBtn">
                 <i data-lucide="refresh-cw" style="width:18px;"></i>
             </button>
             <button class="action-icon" onclick="toggleTheme()" title="Tukar Mod Gelap/Cerah" id="themeBtn">
@@ -705,7 +705,7 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
-    window.onload = async () => {
+    async function loadData() {
         document.getElementById('main-loader').style.display = 'flex';
 
         const st = localStorage.getItem("pnet_theme") || "light";
@@ -729,12 +729,13 @@
         }
 
         let fetchPromises = [];
-        const cacheBuster = "&t=" + new Date().getTime();
+        // Force refresh cache with detailed timestamp
+        const cacheBuster = "&t=" + new Date().getTime() + Math.random();
 
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
-                    fetch(projectsMap[id].url + cacheBuster, { cache: "no-store" })
+                    fetch(projectsMap[id].url + cacheBuster, { cache: "no-store", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
                         .then(res => res.text())
                         .then(csv => {
                             const wb = XLSX.read(csv, { type: 'string' });
@@ -756,7 +757,51 @@
             loader.style.display = 'none'; 
             showHome(); 
         }, 400);
-    };
+    }
+
+    window.onload = loadData;
+
+    function forceSyncAll() {
+        // Fungsi untuk butang Refresh supaya ia paksa tarik data baru
+        showToast("Menarik data awan terkini...");
+        document.getElementById('main-loader').style.display = 'flex';
+        document.getElementById('main-loader').style.opacity = '1';
+        
+        let fetchPromises = [];
+        const cacheBuster = "&force=" + new Date().getTime() + Math.random();
+
+        for (let id in projectsMap) {
+            if (projectsMap[id].isCloud && projectsMap[id].url) {
+                fetchPromises.push(
+                    fetch(projectsMap[id].url + cacheBuster, { cache: "reload", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
+                        .then(res => res.text())
+                        .then(csv => {
+                            const wb = XLSX.read(csv, { type: 'string' });
+                            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+                            projectsMap[id].data = processData(rows);
+                        })
+                        .catch(e => console.warn("Google Sheets terhalang untuk:", projectsMap[id].name))
+                );
+            }
+        }
+        
+        Promise.all(fetchPromises).then(() => {
+            const loader = document.getElementById('main-loader');
+            loader.style.opacity = '0';
+            setTimeout(() => { 
+                loader.style.display = 'none'; 
+                if(document.getElementById('dashboard-content').style.display === 'block'){
+                    updateUI();
+                } else {
+                    showHome();
+                }
+                showToast("Selesai dikemaskini.");
+            }, 400);
+        });
+    }
+
+    // Menggantikan fungsi location.reload() pada butang refresh di header
+    document.getElementById('syncBtn').onclick = forceSyncAll;
 
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
@@ -805,13 +850,21 @@
     }
 
     function formatExcelDate(v) { 
-        if (!v) return ""; 
+        if (!v || String(v).trim() === "" || String(v).trim() === "-") return ""; 
         if (typeof v === 'string' && !isNaN(v) && v.trim() !== '') { v = parseFloat(v); }
         if (typeof v === 'number') { 
             const d = new Date((v - 25569) * 86400 * 1000); 
             return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); 
         } 
-        return v; 
+        return String(v).trim(); 
+    }
+
+    // Fungsi isValidDate tambahan untuk semak jika text itu mematuhi format dd/mm/yyyy
+    function isValidDate(dateStr) {
+        if(!dateStr || typeof dateStr !== 'string') return false;
+        // Benarkan format macam 1/2/2026 atau 01/02/2026
+        const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+        return regex.test(dateStr.trim());
     }
 
     function processData(rows) {
@@ -873,16 +926,24 @@
             if (colE === "") colE = memJangkaan;
 
             const j = formatExcelDate(colE); 
+            // Pastikan jika cell F (Tarikh Sebenar) itu kosong atau bukan tarikh, formatExcelDate return string kosong
             const s = formatExcelDate(colF);
-            const st = getStatus(j, s);
+            
+            // Hantar ke getStatus hanya jika format itu betul
+            const final_j = isValidDate(j) ? j : "-";
+            const final_s = isValidDate(s) ? s : "-";
+            
+            const st = getStatus(final_j, final_s);
 
-            res.push({ isSec: false, section: cs, bil: colA || "", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: j || "-", s: s || "-", status: st.label, rawDays: st.days });
+            res.push({ isSec: false, section: cs, bil: colA || "", aktiviti: colB, unit: colC || "-", tempoh: colD || "-", j: final_j, s: final_s, status: st.label, rawDays: st.days });
         });
         return res;
     }
 
     function getStatus(j, s) {
+        // Jika ada Tarikh Sebenar (dan ia telah melepasi tapisan isValidDate jadi ia bukan '-')
         if (s && s !== "-") {
+            // Jika ada Tarikh Jangkaan untuk diukur
             if (j && j !== "-") {
                 const pj = String(j).split('/');
                 const ps = String(s).split('/');
@@ -896,6 +957,8 @@
             }
             return { label: 'SELESAI', days: 0 }; 
         }
+        
+        // Jika Tiada Tarikh Sebenar
         if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
         const p = String(j).split('/'); 
         
@@ -1098,7 +1161,9 @@
         if(!url.toLowerCase().includes('csv')) { showToast("Sila guna pautan CSV"); return; }
         showToast("Menarik data...");
         try {
-            const res = await fetch(url); const csv = await res.text();
+            // bypass cache untuk cloud import baru
+            const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
+            const res = await fetch(bypassUrl); const csv = await res.text();
             const wb = XLSX.read(csv, { type: 'string' });
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
