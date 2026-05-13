@@ -879,15 +879,12 @@
 
             if (colA === "" && colB === "" && colC === "" && colD === "" && colE === "" && colF === "") return;
 
-            let checkA = colA.toLowerCase(); 
-            let checkB = colB.toLowerCase();
-            
-            let cleanCheckA = checkA.replace(/\s+/g, ''); 
-            let cleanCheckB = checkB.replace(/\s+/g, '');
+            // Bersihkan teks untuk pastikan tapisan tepat
+            let cleanCheckA = String(colA).toLowerCase().replace(/\s+/g, ''); 
+            let cleanCheckB = String(colB).toLowerCase().replace(/\s+/g, '');
             let cleanCheckC = String(colC).toLowerCase().replace(/\s+/g, '');
 
-            // Abaikan Header Jadual (Baris yang ada "Bil", "Aktiviti", "Tindakan") 
-            // supaya tak dikira sebagai tugasan.
+            // 1. ABAIKAN BARISAN HEADER JADUAL EXCEL SUNGGUH-SUNGGUH
             if ((cleanCheckA === "bil" || cleanCheckA === "bil." || cleanCheckA === "no" || cleanCheckA === "no.") && 
                 (cleanCheckB.includes("aktiviti") || cleanCheckB.includes("perkara"))) {
                 return;
@@ -895,6 +892,8 @@
             if (cleanCheckA === "" && cleanCheckB.includes("aktiviti") && cleanCheckC.includes("tindakan")) {
                 return;
             }
+            
+            // Abaikan barisan yang ada perkataan "jumlah"
             if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") {
                 return;
             }
@@ -902,7 +901,8 @@
             let isSection = false;
             let titleText = "";
 
-            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || colB.startsWith("-");
+            let checkA = String(colA).toLowerCase();
+            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-");
 
             if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
