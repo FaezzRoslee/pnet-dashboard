@@ -883,6 +883,13 @@
             let checkA = colA.toLowerCase(); 
             let checkB = colB.toLowerCase();
 
+            // TAMBAHAN BARU: Abaikan barisan Header Jadual Excel 
+            // (Baris yang mengandungi perkataan 'Bil' di kotak pertama DAN 'Aktiviti' ATAU 'Tindakan' di kotak lain)
+            if ((checkA === "bil" || checkA === "bil.") && 
+                (checkB.includes("aktiviti") || checkB.includes("perkara") || colC.toLowerCase().includes("tindakan"))) {
+                return; // Berhenti proses untuk baris ini
+            }
+
             if ((checkA === "bil" || checkA === "no") && (checkB.includes("aktiviti") || checkB.includes("perkara"))) return;
             if (checkA === "" && checkB.includes("aktiviti") && colC.toLowerCase().includes("tindakan")) return;
 
@@ -926,10 +933,8 @@
             if (colE === "") colE = memJangkaan;
 
             const j = formatExcelDate(colE); 
-            // Pastikan jika cell F (Tarikh Sebenar) itu kosong atau bukan tarikh, formatExcelDate return string kosong
             const s = formatExcelDate(colF);
             
-            // Hantar ke getStatus hanya jika format itu betul
             const final_j = isValidDate(j) ? j : "-";
             const final_s = isValidDate(s) ? s : "-";
             
@@ -939,7 +944,7 @@
         });
         return res;
     }
-
+    
     function getStatus(j, s) {
         // Jika ada Tarikh Sebenar (dan ia telah melepasi tapisan isValidDate jadi ia bukan '-')
         if (s && s !== "-") {
