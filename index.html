@@ -278,7 +278,7 @@
             <button class="action-icon" style="color:var(--accent); margin-right:auto;" onclick="showHome()" title="Kembali ke Halaman Utama" id="homeBtn">
                 <i data-lucide="home" style="width:18px;"></i>
             </button>
-        
+            
             <div class="lang-group">
                 <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">
                     <img src="https://flagcdn.com/w20/my.png" alt="MY">
@@ -430,7 +430,7 @@
     <div class="footer-bottom">
         <div class="footer-modified">
             <span style="font-size: 12px; font-weight: 800; color: #fff;" data-i18n="footer_modified">PORTAL LAST MODIFIED :</span><br>
-            <span style="color:#94a3b8; font-size: 12px; font-family: monospace;" data-i18n="footer_date">11 Mei 2026</span>
+            <span id="last-update-time" style="color:#94a3b8; font-size: 12px; font-family: monospace;" data-i18n="footer_date">-</span>
         </div>
         <div style="font-size: 12px; color:#94a3b8; text-align: center; flex-grow: 1;" data-i18n="footer_copyright">
             © 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
@@ -544,7 +544,7 @@
             "footer_address": "Unit Pengurusan Rangkaian,<br>Bahagian Pengurusan Maklumat, Kementerian Kesihatan Malaysia,<br>Aras 5 Blok E7, Kompleks E, 62590 Putrajaya.",
             "footer_email": "Emel :",
             "footer_modified": "DIKEMASKINI PADA :",
-            "footer_date": "11 Mei 2026",
+            "footer_date": "-",
             "footer_copyright": "© 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.",
             "home_task": "TUGASAN",
             "home_progress": "Kemajuan:",
@@ -610,7 +610,7 @@
             "footer_address": "Network Management Unit,<br>Information Management Division, Ministry of Health Malaysia,<br>Level 5 Block E7, Complex E, 62590 Putrajaya.",
             "footer_email": "Email :",
             "footer_modified": "PORTAL LAST MODIFIED :",
-            "footer_date": "May 11, 2026",
+            "footer_date": "-",
             "footer_copyright": "© 2026 PNET Ministry of Health Malaysia. All rights reserved.",
             "home_task": "TASKS",
             "home_progress": "Progress:",
@@ -668,6 +668,12 @@
             if(i18n[lang][key]) { el.placeholder = i18n[lang][key]; }
         });
 
+        // Update Waktu Terkini (Jika ada dalam bahasa tersebut)
+        const savedTime = localStorage.getItem("pnet_last_update");
+        if(savedTime) {
+            document.getElementById('last-update-time').innerText = savedTime;
+        }
+
         // Re-render UI components if active
         if(document.getElementById('home-page').style.display !== 'none') { showHome(); } 
         else { updateUI(); }
@@ -686,6 +692,15 @@
     let resourcesList = [];
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
+
+    // Fungsi format tarikh masa kemaskini
+    function updateTimestamp() {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const timeStr = now.toLocaleDateString(currentLang === 'ms' ? 'ms-MY' : 'en-GB', options);
+        localStorage.setItem("pnet_last_update", timeStr);
+        document.getElementById('last-update-time').innerText = timeStr;
+    }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
@@ -751,7 +766,7 @@
         }
         
         await Promise.all(fetchPromises);
-
+        updateTimestamp();
         setLang(currentLang);
 
         const loader = document.getElementById('main-loader');
@@ -788,6 +803,7 @@
         }
         
         Promise.all(fetchPromises).then(() => {
+            updateTimestamp();
             const loader = document.getElementById('main-loader');
             loader.style.opacity = '0';
             setTimeout(() => { 
@@ -801,6 +817,8 @@
             }, 400);
         });
     }
+
+    document.getElementById('syncBtn').onclick = forceSyncAll;
 
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
