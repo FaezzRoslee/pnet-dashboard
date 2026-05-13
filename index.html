@@ -867,20 +867,17 @@
         let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
 
-        // Pembolehubah untuk menyimpan index lajur (default: 0, 1, 2, 3, 4, 5)
         let idxBil = 0, idxAktiviti = 1, idxTindakan = 2, idxTempoh = 3, idxJangkaan = 4, idxSebenar = 5;
         let headerFound = false;
 
         rows.forEach((row, rowIndex) => {
             if (!row || row.length === 0) return;
 
-            // 1. CARI BARISAN HEADER (Mencari indeks yang betul)
+            // 1. CARI BARISAN HEADER
             if (!headerFound) {
                 let rowStr = row.map(c => String(c).toLowerCase().replace(/[^a-z0-9]/g, '')).join(" ");
-                // Periksa jika barisan ini mengandungi gabungan perkataan yang menandakan ia adalah Header
                 if (rowStr.includes("aktiviti") || rowStr.includes("perkara") || rowStr.includes("taskname")) {
                     
-                    // Kita cari indeks sebenar untuk setiap keperluan
                     row.forEach((colRaw, index) => {
                         let cClean = String(colRaw).toLowerCase().replace(/[^a-z0-9]/g, '');
                         if (cClean === 'bil' || cClean === 'no' || cClean === 'wbs') idxBil = index;
@@ -892,14 +889,10 @@
                     });
                     
                     headerFound = true;
-                    return; // Skip barisan ini dari dimasukkan dalam data jadual
+                    return; 
                 }
-                // Jika masih belum jumpa header, dan ini bukan header, kita boleh pilih untuk abaikan (return)
-                // ATAU teruskan (tapi mungkin berisiko kalau ada tajuk pelik). 
-                // Buat masa ni, kita teruskan je dengan default index kalau fail tu tiada header langsung.
             }
 
-            // Selepas Header dijumpai, baca data mengikut Indeks Dinamik
             let colA = String(row[idxBil] || "").trim();
             let colB = String(row[idxAktiviti] || "").trim();
             let colC = String(row[idxTindakan] || "").trim();
@@ -912,21 +905,17 @@
             let cA = colA.toLowerCase().replace(/[^a-z0-9]/g, ''); 
             let cB = colB.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // Tambahan Filter: Buang baris "Jumlah Hari"
             if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA === "jumlah" || cA === "total") return;
 
             let isSection = false;
             let titleText = "";
             let checkA = String(colA).toLowerCase();
             
-            // Pengesanan Tajuk Kumpulan / Fasa (Is Section)
-            // Kalau kotak aktiviti mula dengan huruf dan titik, ia sub-task
             let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-") || !isNaN(colA);
 
             if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:") || checkA.includes("fasa") || checkA.includes("phase")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
             } else if (!isSubTask && colB !== "") { 
-                // Kalau Bil kosong, tapi ada Aktiviti, dan bukan sub-task -> anggap sebagai Tajuk Kumpulan
                 if (colA === "" && colC === "" && colD === "") {
                     isSection = true; titleText = colB; 
                 }
@@ -938,7 +927,6 @@
                 return;
             }
 
-            // Jika Kotak Aktiviti Kosong, tapi ada info di kotak Tindakan, mungkin tersilap lajur
             if (colB === "" && colC !== "") {
                 colB = colC; colC = colD; colD = colE; colE = colF; colF = String(row[6] || "").trim();
             }
