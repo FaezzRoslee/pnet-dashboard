@@ -729,7 +729,6 @@
         }
 
         let fetchPromises = [];
-        // Force refresh cache with detailed timestamp
         const cacheBuster = "&t=" + new Date().getTime() + Math.random();
 
         for (let id in projectsMap) {
@@ -762,7 +761,6 @@
     window.onload = loadData;
 
     function forceSyncAll() {
-        // Fungsi untuk butang Refresh supaya ia paksa tarik data baru
         showToast("Menarik data awan terkini...");
         document.getElementById('main-loader').style.display = 'flex';
         document.getElementById('main-loader').style.opacity = '1';
@@ -800,7 +798,6 @@
         });
     }
 
-    // Menggantikan fungsi location.reload() pada butang refresh di header
     document.getElementById('syncBtn').onclick = forceSyncAll;
 
     function showHome() {
@@ -859,7 +856,6 @@
         return String(v).trim(); 
     }
 
-    // Fungsi isValidDate tambahan untuk semak jika text itu mematuhi format dd/mm/yyyy
     function isValidDate(dateStr) {
         if(!dateStr || typeof dateStr !== 'string') return false;
         const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
@@ -879,30 +875,27 @@
 
             if (colA === "" && colB === "" && colC === "" && colD === "" && colE === "" && colF === "") return;
 
-            // --- PERMULAAN PENAPIS KUKUH BESI ---
-            // Buang semua *space*, titik, dan kurungan untuk perbandingan
-            let cleanCheckA = String(colA).toLowerCase().replace(/[\s\.\(\)]/g, ''); 
-            let cleanCheckB = String(colB).toLowerCase().replace(/[\s\.\(\)]/g, '');
-            
-            // JIKA KOTAK PERTAMA (A) ADALAH BIL/NO DAN KOTAK KEDUA (B) ADALAH AKTIVITI/PERKARA -> ABAIKAN
-            if ((cleanCheckA === "bil" || cleanCheckA === "no") && (cleanCheckB.includes("aktiviti") || cleanCheckB.includes("perkara"))) {
-                return;
-            }
-            
-            // JIKA KOTAK KEDUA (B) MENGANDUNGI AKTIVITI SAHAJA (Kotak pertama mungkin digabungkan) -> ABAIKAN
-            if (cleanCheckB === "aktiviti" || cleanCheckB === "perkara") {
-                return;
-            }
+            let cA = colA.toLowerCase().replace(/[^a-z0-9]/g, ''); 
+            let cB = colB.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cC = colC.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cD = colD.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cE = colE.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let cF = colF.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // JIKA BARIS ITU ADALAH BARIS "JUMLAH HARI" -> ABAIKAN
-            if (cleanCheckA.includes("jumlahhari") || cleanCheckB.includes("jumlahhari") || cleanCheckA === "jumlah") {
-                return;
-            }
-            // --- AKHIR PENAPIS KUKUH BESI ---
+            let headerMatches = 0;
+            if (cA === "bil" || cA === "no") headerMatches++;
+            if (cB.includes("aktiviti") || cB.includes("perkara") || cA.includes("aktiviti") || cA.includes("perkara")) headerMatches++;
+            if (cC.includes("tindakan") || cB.includes("tindakan")) headerMatches++;
+            if (cD.includes("tempoh") || cC.includes("tempoh")) headerMatches++;
+            if (cE.includes("jangkaan") || cD.includes("jangkaan") || cE.includes("tarikh")) headerMatches++;
+            if (cF.includes("sebenar") || cE.includes("sebenar") || cF.includes("tandatangan")) headerMatches++;
+
+            if (headerMatches >= 2) return;
+
+            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA.includes("jumlah")) return;
 
             let isSection = false;
             let titleText = "";
-
             let checkA = String(colA).toLowerCase();
             let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-");
 
@@ -948,7 +941,7 @@
         });
         return res;
     }
-    
+
     function getStatus(j, s) {
         if (s && s !== "-") {
             if (j && j !== "-") {
