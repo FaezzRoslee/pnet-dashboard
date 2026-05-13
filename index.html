@@ -275,6 +275,10 @@
 <div class="container">
     <header class="header-main no-print">
         <div class="header-actions">
+            <button class="action-icon" style="color:var(--accent); margin-right:auto;" onclick="showHome()" title="Kembali ke Halaman Utama" id="homeBtn">
+                <i data-lucide="home" style="width:18px;"></i>
+            </button>
+        
             <div class="lang-group">
                 <button onclick="setLang('ms')" id="btn-lang-ms" class="lang-btn active" title="Bahasa Melayu">
                     <img src="https://flagcdn.com/w20/my.png" alt="MY">
@@ -766,7 +770,7 @@
         document.getElementById('main-loader').style.opacity = '1';
         
         let fetchPromises = [];
-        const cacheBuster = "&force=" + new Date().getTime() + Math.random();
+        const cacheBuster = "&force=" + new Date().getTime() + "_" + Math.random().toString(36).substring(7);
 
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
@@ -797,8 +801,6 @@
             }, 400);
         });
     }
-
-    document.getElementById('syncBtn').onclick = forceSyncAll;
 
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
@@ -863,48 +865,60 @@
     }
 
     function processData(rows) {
-        let res = []; let cs = "Maklumat Projek";
+        let res = []; 
+        let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
 
-        rows.forEach(row => {
+        let idxBil = 0, idxAktiviti = 1, idxTindakan = 2, idxTempoh = 3, idxJangkaan = 4, idxSebenar = 5;
+        let headerFound = false;
+
+        rows.forEach((row, rowIndex) => {
             if (!row || row.length === 0) return;
-            
-            let cols = [];
-            for(let i=0; i<6; i++) cols.push(String(row[i] || "").trim());
-            let [colA, colB, colC, colD, colE, colF] = cols;
+
+            // 1. CARI BARISAN HEADER
+            if (!headerFound) {
+                let rowStr = row.map(c => String(c).toLowerCase().replace(/[^a-z0-9]/g, '')).join(" ");
+                if (rowStr.includes("aktiviti") || rowStr.includes("perkara") || rowStr.includes("taskname")) {
+                    
+                    row.forEach((colRaw, index) => {
+                        let cClean = String(colRaw).toLowerCase().replace(/[^a-z0-9]/g, '');
+                        if (cClean === 'bil' || cClean === 'no' || cClean === 'wbs') idxBil = index;
+                        if (cClean.includes('aktiviti') || cClean.includes('perkara') || cClean.includes('taskname')) idxAktiviti = index;
+                        if (cClean.includes('tindakan') || cClean.includes('pic') || cClean.includes('resource')) idxTindakan = index;
+                        if (cClean.includes('tempoh') || cClean.includes('duration') || cClean.includes('hari')) idxTempoh = index;
+                        if (cClean.includes('jangkaan') || cClean.includes('tarikh') || cClean.includes('start')) idxJangkaan = index;
+                        if (cClean.includes('sebenar') || cClean.includes('tandatangan') || cClean.includes('finish') || cClean.includes('end')) idxSebenar = index;
+                    });
+                    
+                    headerFound = true;
+                    return; 
+                }
+            }
+
+            let colA = String(row[idxBil] || "").trim();
+            let colB = String(row[idxAktiviti] || "").trim();
+            let colC = String(row[idxTindakan] || "").trim();
+            let colD = String(row[idxTempoh] || "").trim();
+            let colE = String(row[idxJangkaan] || "").trim();
+            let colF = String(row[idxSebenar] || "").trim();
 
             if (colA === "" && colB === "" && colC === "" && colD === "" && colE === "" && colF === "") return;
 
             let cA = colA.toLowerCase().replace(/[^a-z0-9]/g, ''); 
             let cB = colB.toLowerCase().replace(/[^a-z0-9]/g, '');
-            let cC = colC.toLowerCase().replace(/[^a-z0-9]/g, '');
-            let cD = colD.toLowerCase().replace(/[^a-z0-9]/g, '');
-            let cE = colE.toLowerCase().replace(/[^a-z0-9]/g, '');
-            let cF = colF.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            let headerMatches = 0;
-            if (cA === "bil" || cA === "no") headerMatches++;
-            if (cB.includes("aktiviti") || cB.includes("perkara") || cA.includes("aktiviti") || cA.includes("perkara")) headerMatches++;
-            if (cC.includes("tindakan") || cB.includes("tindakan")) headerMatches++;
-            if (cD.includes("tempoh") || cC.includes("tempoh")) headerMatches++;
-            if (cE.includes("jangkaan") || cD.includes("jangkaan") || cE.includes("tarikh")) headerMatches++;
-            if (cF.includes("sebenar") || cE.includes("sebenar") || cF.includes("tandatangan")) headerMatches++;
-
-            if (headerMatches >= 2) return;
-
-            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA.includes("jumlah")) return;
+            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA === "jumlah" || cA === "total") return;
 
             let isSection = false;
             let titleText = "";
             let checkA = String(colA).toLowerCase();
-            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-");
+            
+            let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-") || !isNaN(colA);
 
-            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:")) {
+            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:") || checkA.includes("fasa") || checkA.includes("phase")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
-            } else if (!isSubTask) { 
-                if (colA !== "" && colB === "" && colC === "" && colD === "") {
-                    isSection = true; titleText = colA; 
-                } else if (colA === "" && colB !== "" && colC === "" && colD === "") {
+            } else if (!isSubTask && colB !== "") { 
+                if (colA === "" && colC === "" && colD === "") {
                     isSection = true; titleText = colB; 
                 }
             }
@@ -953,6 +967,7 @@
                     const diffComp = Math.ceil((ds - dj) / (1000 * 3600 * 24));
                     if (diffComp < 0) return { label: 'SIAP AWAL', days: Math.abs(diffComp) };
                     if (diffComp > 0) return { label: 'SIAP LEWAT', days: diffComp };
+                    return { label: 'SELESAI', days: 0 }; 
                 }
             }
             return { label: 'SELESAI', days: 0 }; 
