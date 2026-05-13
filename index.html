@@ -732,6 +732,12 @@
         if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
 
+        // Kembalikan timestamp jika ada disimpan
+        const savedTime = localStorage.getItem("pnet_last_update");
+        if (savedTime) {
+            document.getElementById('last-update-time').innerText = savedTime;
+        }
+
         const savedRes = localStorage.getItem("pnet_resources");
         if (savedRes) resourcesList = JSON.parse(savedRes);
 
@@ -808,7 +814,9 @@
         }
         
         Promise.all(fetchPromises).then(() => {
+            // Rekod masa selepas berjaya disync
             updateTimestamp();
+            
             const loader = document.getElementById('main-loader');
             loader.style.opacity = '0';
             setTimeout(() => { 
@@ -822,6 +830,8 @@
             }, 400);
         });
     }
+
+    document.getElementById('syncBtn').onclick = forceSyncAll;
 
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
@@ -888,12 +898,19 @@
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
-        
-        let stopReading = false;
+
+        let stopReading = false; // FLAG BERHENTI BACA
 
         rows.forEach(row => {
-            if (stopReading) return;
+            if (stopReading) return; 
             if (!row || row.length === 0) return;
+
+            // PENAPIS KEJAM: TANGKAP ACTIVITY DEPENDENCIES
+            let wholeRowText = row.map(c => String(c || "")).join("").toLowerCase().replace(/\s+/g, '');
+            if (wholeRowText.includes("activitydependencies") || wholeRowText.includes("petunjuk")) {
+                stopReading = true;
+                return;
+            }
             
             let cols = [];
             for(let i=0; i<6; i++) cols.push(String(row[i] || "").trim());
@@ -908,24 +925,24 @@
             let cE = colE.toLowerCase().replace(/[^a-z0-9]/g, '');
             let cF = colF.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            // ABAIKAN BARISAN HEADER
-            if ((cA === "bil" || cA === "no") && (cB.includes("aktiviti") || cB.includes("perkara"))) return;
-            if (cA === "" && cB.includes("aktiviti") && cC.includes("tindakan")) return;
-            
-            // Berhenti baca jika terjumpa Activity Dependencies
-            if (cB.includes("activitydependencies") || String(colB).toLowerCase().includes("activity dependencies")) {
-                stopReading = true;
-                return;
-            }
+            let headerMatches = 0;
+            if (cA === "bil" || cA === "no") headerMatches++;
+            if (cB.includes("aktiviti") || cB.includes("perkara") || cA.includes("aktiviti") || cA.includes("perkara")) headerMatches++;
+            if (cC.includes("tindakan") || cB.includes("tindakan")) headerMatches++;
+            if (cD.includes("tempoh") || cC.includes("tempoh")) headerMatches++;
+            if (cE.includes("jangkaan") || cD.includes("jangkaan") || cE.includes("tarikh")) headerMatches++;
+            if (cF.includes("sebenar") || cE.includes("sebenar") || cF.includes("tandatangan")) headerMatches++;
 
-            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA.includes("jumlah") || cA.includes("total")) return;
+            if (headerMatches >= 2) return;
+
+            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA.includes("jumlah")) return;
 
             let isSection = false;
             let titleText = "";
             let checkA = String(colA).toLowerCase();
             let isSubTask = /^[a-z]\.\s/i.test(colB) || /^[a-z]\)\s/i.test(colB) || String(colB).startsWith("-");
 
-            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:") || checkA.includes("fasa") || checkA.includes("phase")) {
+            if (checkA.includes("perkara :") || checkA.includes("perkara:") || checkA.includes("jadual :") || checkA.includes("jadual:")) {
                 isSection = true; titleText = colA !== "" ? colA : colB;
             } else if (!isSubTask) { 
                 if (colA !== "" && colB === "" && colC === "" && colD === "") {
