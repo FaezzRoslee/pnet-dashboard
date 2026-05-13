@@ -766,7 +766,7 @@
         document.getElementById('main-loader').style.opacity = '1';
         
         let fetchPromises = [];
-        const cacheBuster = "&force=" + new Date().getTime() + Math.random();
+        const cacheBuster = "&force=" + new Date().getTime() + "_" + Math.random().toString(36).substring(7);
 
         for (let id in projectsMap) {
             if (projectsMap[id].isCloud && projectsMap[id].url) {
@@ -882,17 +882,17 @@
             let cE = colE.toLowerCase().replace(/[^a-z0-9]/g, '');
             let cF = colF.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-            let headerMatches = 0;
-            if (cA === "bil" || cA === "no") headerMatches++;
-            if (cB.includes("aktiviti") || cB.includes("perkara") || cA.includes("aktiviti") || cA.includes("perkara")) headerMatches++;
-            if (cC.includes("tindakan") || cB.includes("tindakan")) headerMatches++;
-            if (cD.includes("tempoh") || cC.includes("tempoh")) headerMatches++;
-            if (cE.includes("jangkaan") || cD.includes("jangkaan") || cE.includes("tarikh")) headerMatches++;
-            if (cF.includes("sebenar") || cE.includes("sebenar") || cF.includes("tandatangan")) headerMatches++;
+            let headerKeywords = 0;
+            if (cA === 'bil' || cA === 'no') headerKeywords++;
+            if (cB === 'aktiviti' || cB === 'perkara') headerKeywords++;
+            if (cC === 'tindakan') headerKeywords++;
+            if (cD === 'tempoh' || cD.includes('hari')) headerKeywords++;
+            if (cE === 'jangkaan' || cE === 'tarikh') headerKeywords++;
+            if (cF === 'sebenar' || cF === 'tandatangan') headerKeywords++;
+            
+            if (headerKeywords >= 2) return; 
 
-            if (headerMatches >= 2) return;
-
-            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA.includes("jumlah")) return;
+            if (cA.includes("jumlahhari") || cB.includes("jumlahhari") || cA === "jumlah") return;
 
             let isSection = false;
             let titleText = "";
@@ -953,6 +953,7 @@
                     const diffComp = Math.ceil((ds - dj) / (1000 * 3600 * 24));
                     if (diffComp < 0) return { label: 'SIAP AWAL', days: Math.abs(diffComp) };
                     if (diffComp > 0) return { label: 'SIAP LEWAT', days: diffComp };
+                    return { label: 'SELESAI', days: 0 }; 
                 }
             }
             return { label: 'SELESAI', days: 0 }; 
