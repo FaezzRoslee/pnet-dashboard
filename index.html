@@ -763,7 +763,8 @@
                     fetch(projectsMap[id].url + cacheBuster, { cache: "no-store", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
                         .then(res => res.text())
                         .then(csv => {
-                            const wb = XLSX.read(csv, { type: 'string' });
+                            // UPDATE: RAW DATA TRUE (Mengelakkan format tarikh terbalik US MM/DD)
+                            const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                             projectsMap[id].data = processData(rows);
                         })
@@ -805,7 +806,8 @@
                     fetch(projectsMap[id].url + cacheBuster, { cache: "reload", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
                         .then(res => res.text())
                         .then(csv => {
-                            const wb = XLSX.read(csv, { type: 'string' });
+                            // UPDATE: RAW DATA TRUE (Mengelakkan format tarikh terbalik US MM/DD)
+                            const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                             projectsMap[id].data = processData(rows);
                         })
@@ -1214,7 +1216,8 @@
         try {
             const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
             const res = await fetch(bypassUrl); const csv = await res.text();
-            const wb = XLSX.read(csv, { type: 'string' });
+            // UPDATE: RAW DATA TRUE (Mengelakkan format tarikh terbalik US MM/DD)
+            const wb = XLSX.read(csv, { type: 'string', raw: true });
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
             projectsMap[id] = { name: "Manual Cloud Sync", data: processData(rows), isCloud: true, url: url };
