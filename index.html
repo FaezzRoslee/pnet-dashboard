@@ -890,11 +890,10 @@
         return String(v).trim(); 
     }
 
-   function isValidDate(dateStr) {
+    // UPDATE: Fungsi ini dipisahkan mengikut "-" untuk menyokong julat tarikh
+    function isValidDate(dateStr) {
         if(!dateStr || typeof dateStr !== 'string') return false;
         const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-        
-        // Pecahkan mengikut dash "-" jika ia adalah range, dan periksa setiap tarikh
         const dates = dateStr.split('-').map(d => d.trim());
         return dates.every(d => regex.test(d));
     }
@@ -989,8 +988,8 @@
         return res;
     }
 
+    // UPDATE: Mengambil tarikh yang terakhir (bahagian kanan pemisah "-") untuk pengiraan KPI
     function getStatus(j, s) {
-        // Ekstrak tarikh AKHIR (selepas dash) jika wujud format range untuk pengiraan
         const target_j = j && j !== "-" ? String(j).split('-').pop().trim() : "-";
         const target_s = s && s !== "-" ? String(s).split('-').pop().trim() : "-";
 
@@ -1016,18 +1015,6 @@
         const d = new Date(p[2], p[1]-1, p[0]); 
         const t = new Date(); t.setHours(0,0,0,0);
         
-        if(isNaN(d.getTime())) return { label: 'DALAM PROSES', days: 0 };
-
-        const diff = Math.ceil((d - t) / (1000 * 3600 * 24));
-        if (diff < 0) return { label: 'LEWAT', days: Math.abs(diff) };
-        return { label: diff <= 3 ? 'HAMPIR TAMAT' : 'DALAM PROSES', days: 0 };
-    }
-        
-        if (!j || j === "-") return { label: 'MENUNGGU', days: 0 };
-        const p = String(j).split('/'); 
-        
-        if(p.length < 3) return { label: 'DALAM PROSES', days: 0 }; 
-        const d = new Date(p[2], p[1]-1, p[0]); const t = new Date(); t.setHours(0,0,0,0);
         if(isNaN(d.getTime())) return { label: 'DALAM PROSES', days: 0 };
 
         const diff = Math.ceil((d - t) / (1000 * 3600 * 24));
@@ -1283,12 +1270,18 @@
         openModal('details-modal');
     }
 
+    // UPDATE: Pisahkan string dengan "-" dan ambil tarikh akhir untuk pengiraan dalam popup modal
     function parseDateHelper(dStr) { 
         if (!dStr || dStr === "-") return null;
-        const target = dStr.split('-').pop().trim(); // Ambil tarikh akhir sahaja
+        const target = dStr.split('-').pop().trim();
         const p = target.split('/'); 
         return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : null; 
     }
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const v = e.target.value.toLowerCase();
+        document.querySelectorAll("#activityTable tbody tr").forEach(r => { if (r.cells.length === 1) return; r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none"; });
+    });
     
     function animateNum(id, end, suffix = '') {
         let s = 0; const o = document.getElementById(id); const dur = 1200; const st = performance.now();
