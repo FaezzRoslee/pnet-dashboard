@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Papan Pemuka PNET - Pemantauan Projek</title>
-    <meta name="description" content="Sistem Papan Pemuka PNET rasmi untuk pemantauan jadual, status, dan kelewatan projek secara interaktif.">
+    <meta name="description" content="Sistem Papan Pemuka PNET rasmi untuk pemantauan jadual, status, and kelewatan projek secara interaktif.">
     <link rel="icon" href="./uprlogo.png" type="image/png">
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -314,7 +314,7 @@
         </div>
 
         <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; width: 100%;">
-            </div>
+        </div>
     </div>
 
     <div id="dashboard-content" style="display:none;" class="animate">
@@ -680,9 +680,9 @@
         renderResources();
     }
 
-    // UPDATE PENTING: TAMBAH "pic" DALAM TEMPLATE INI
+    // UPDATE: MEMAKAI TEMPLATE PROJEK BARU ANDA (TERMASUK PIC & TAJUK)
     const masterProjectsTemplate = {
-        "master_1": { name: "NPA Infra Fasa 1", pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan "Network Performance Analysis" Infrastruktur Rangkaian Fasa 1 Di Fasiliti Kementerian Kesihatan Malaysia Bagi Tempoh 6 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
+        "master_1": { name: "NPA Infra Fasa 1", pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan \"Network Performance Analysis\" Infrastruktur Rangkaian Fasa 1 Di Fasiliti Kementerian Kesihatan Malaysia Bagi Tempoh 6 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
         "master_2": { name: "Sewa Milik Infra Rangkaian", pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan Sewa Milik Bagi Membekal, Menghantar, Memasang, Menguji Serta Mentauliah Guna Infrastruktur Rangkaian Di Fasiliti Kesihatan KKM Bagi Tempoh Kontrak 44 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1832222206&single=true&output=csv", isCloud: true, data: [] },
         "master_3": { name: "Penyelenggaraan Switch", pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan Penyelenggaraan Switch Rangkaian Di Kementerian Kesihatan Malaysia Bagi Tempoh 36 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1371097133&single=true&output=csv", isCloud: true, data: [] },
         "master_4": { name: "Sebut Harga Wifi Awam (Retender)", pic: "Encik Muhammad Muzammil", tajuk: "Jadual pelaksanaan sebut harga perkhidmatan sewa milik peralatan wireless access point untuk penggunaan WiFi awam di fasiliti KKM bagi tempoh kontrak 40 bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1284339032&single=true&output=csv", isCloud: true, data: [] },
@@ -696,7 +696,7 @@
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // Fungsi format tarikh masa kemaskini (Sudah include masa 10:10:19 AM)
+    // Fungsi format tarikh masa kemaskini
     function updateTimestamp() {
         const now = new Date();
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -765,7 +765,6 @@
                     fetch(projectsMap[id].url + cacheBuster, { cache: "no-store", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
                         .then(res => res.text())
                         .then(csv => {
-                            // UPDATE: RAW DATA TRUE (Mengelakkan format tarikh terbalik US MM/DD)
                             const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                             projectsMap[id].data = processData(rows);
@@ -777,7 +776,6 @@
         
         await Promise.all(fetchPromises);
         
-        // Cek jika ada last update sebelum set date, jika tak set tarikh baru
         if (!localStorage.getItem("pnet_last_update")) {
             updateTimestamp();
         }
@@ -808,7 +806,6 @@
                     fetch(projectsMap[id].url + cacheBuster, { cache: "reload", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
                         .then(res => res.text())
                         .then(csv => {
-                            // UPDATE: RAW DATA TRUE (Mengelakkan format tarikh terbalik US MM/DD)
                             const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                             projectsMap[id].data = processData(rows);
@@ -819,7 +816,6 @@
         }
         
         Promise.all(fetchPromises).then(() => {
-            // Rekod masa selepas berjaya disync
             updateTimestamp();
             
             const loader = document.getElementById('main-loader');
@@ -838,7 +834,7 @@
 
     document.getElementById('syncBtn').onclick = forceSyncAll;
 
-    // UPDATE: FUNGSI showHome() UNTUK PIC MANUAL DAN TARIKH+MASA
+    // UPDATE: FUNGSI showHome() UNTUK MEMPUNYAI PIC DAN TAJUK MANUSIA SECARA PENUH
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
@@ -853,14 +849,14 @@
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
             const iconName = p.isCloud ? 'cloud' : 'file-spreadsheet';
 
-            // Ambil PIC Manual dari backend, jika tiada tunjuk 'Tidak Ditetapkan'
+            // Menarik maklumat PIC dan Tajuk dari Template
             const projectPic = p.pic || "Tidak Ditetapkan";
+            const projectTajuk = p.tajuk || "Tidak Ditetapkan";
             
-            // Ambil tarikh & masa terkini dari local storage
             const lastUpdated = localStorage.getItem("pnet_last_update") || "-";
 
             grid.innerHTML += `
-            <div class="home-card" onclick="openProjectFromHome('${id}')" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 240px;">
+            <div class="home-card" onclick="openProjectFromHome('${id}')" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 280px;">
                 
                 <div>
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
@@ -873,14 +869,19 @@
                     <h3 style="margin:0 0 15px; font-size:16px; color:var(--text-main); line-height:1.5; word-break: break-word;">${p.name}</h3>
                     
                     <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text-muted);">
+                            <i data-lucide="tag" style="width:14px; color:var(--success); margin-top: 2px; flex-shrink: 0;"></i>
+                            <span style="font-weight:600; flex-shrink: 0;">Tajuk:</span> 
+                            <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;" title="${projectTajuk}">${projectTajuk}</span>
+                        </div>
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);">
-                            <i data-lucide="user" style="width:14px; color:var(--accent);"></i>
-                            <span style="font-weight:600;">PIC:</span> 
+                            <i data-lucide="user" style="width:14px; color:var(--accent); flex-shrink: 0;"></i>
+                            <span style="font-weight:600; flex-shrink: 0;">PIC:</span> 
                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${projectPic}</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);">
-                            <i data-lucide="clock" style="width:14px; color:var(--warning);"></i>
-                            <span style="font-weight:600;">Kemaskini:</span> 
+                            <i data-lucide="clock" style="width:14px; color:var(--warning); flex-shrink: 0;"></i>
+                            <span style="font-weight:600; flex-shrink: 0;">Kemaskini:</span> 
                             <span>${lastUpdated}</span>
                         </div>
                     </div>
@@ -925,7 +926,6 @@
         return String(v).trim(); 
     }
 
-    // UPDATE: Fungsi ini dipisahkan mengikut "-" untuk menyokong julat tarikh
     function isValidDate(dateStr) {
         if(!dateStr || typeof dateStr !== 'string') return false;
         const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
@@ -935,17 +935,15 @@
 
     function processData(rows) {
         let res = []; let cs = "Maklumat Projek";
-        // Tambah pembolehubah memori untuk Aktiviti
         let memAktiviti = "(Aktiviti Tidak Dinamakan)";
         let memTindakan = "-"; let memTempoh = "-"; let memJangkaan = "-";
 
-        let stopReading = false; // FLAG BERHENTI BACA
+        let stopReading = false;
 
         rows.forEach(row => {
             if (stopReading) return; 
             if (!row || row.length === 0) return;
 
-            // PENAPIS KEJAM: TANGKAP ACTIVITY DEPENDENCIES
             let wholeRowText = row.map(c => String(c || "")).join("").toLowerCase().replace(/\s+/g, '');
             if (wholeRowText.includes("activitydependencies") || wholeRowText.includes("petunjuk")) {
                 stopReading = true;
@@ -998,7 +996,6 @@
                 return;
             }
 
-            // SIMPAN MEMORI AKTIVITI JIKA CELL MERGE (KOSONG)
             if (colB !== "" && colB !== "-") memAktiviti = colB;
             if (colB === "" || colB === "-") colB = memAktiviti;
 
@@ -1023,7 +1020,6 @@
         return res;
     }
 
-    // UPDATE: Mengambil tarikh yang terakhir (bahagian kanan pemisah "-") untuk pengiraan KPI
     function getStatus(j, s) {
         const target_j = j && j !== "-" ? String(j).split('-').pop().trim() : "-";
         const target_s = s && s !== "-" ? String(s).split('-').pop().trim() : "-";
@@ -1235,8 +1231,7 @@
                 const wb = XLSX.read(evt.target.result, { type: 'binary' });
                 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                 const id = 'local_' + Date.now();
-                // Jika muat naik secara manual, letakkan pic sebagai "Upload Manual" secara lalai
-                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), pic: "Upload Manual", data: processData(rows), isCloud: false };
+                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), pic: "Upload Manual", tajuk: "Muat Naik Manual", data: processData(rows), isCloud: false };
                 activeId = id; saveToLocalStorage(); openProjectFromHome(id);
             } catch(error) { showToast("Ralat membaca fail."); }
         };
@@ -1250,11 +1245,10 @@
         try {
             const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
             const res = await fetch(bypassUrl); const csv = await res.text();
-            // UPDATE: RAW DATA TRUE (Mengelakkan format tarikh terbalik US MM/DD)
             const wb = XLSX.read(csv, { type: 'string', raw: true });
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
-            projectsMap[id] = { name: "Manual Cloud Sync", pic: "Cloud Sync", data: processData(rows), isCloud: true, url: url };
+            projectsMap[id] = { name: "Manual Cloud Sync", pic: "Cloud Sync", tajuk: "Pautan Awan Manual", data: processData(rows), isCloud: true, url: url };
             activeId = id; saveToLocalStorage(); openProjectFromHome(id); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
         } catch(e) { showToast("Gagal menarik pautan awan."); }
     }
@@ -1307,7 +1301,6 @@
         openModal('details-modal');
     }
 
-    // UPDATE: Pisahkan string dengan "-" dan ambil tarikh akhir untuk pengiraan dalam popup modal
     function parseDateHelper(dStr) { 
         if (!dStr || dStr === "-") return null;
         const target = dStr.split('-').pop().trim();
