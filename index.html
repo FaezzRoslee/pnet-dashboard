@@ -695,11 +695,15 @@
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // Fungsi format tarikh masa kemaskini
-    function updateTimestamp() {
-        const now = new Date();
+    // Helper Fungsi Format Masa
+    function formatDateTime(d) {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-        const timeStr = now.toLocaleDateString(currentLang === 'ms' ? 'ms-MY' : 'en-GB', options);
+        return d.toLocaleDateString(currentLang === 'ms' ? 'ms-MY' : 'en-GB', options);
+    }
+
+    // Fungsi format tarikh masa kemaskini GLOBAL (Footer)
+    function updateTimestamp() {
+        const timeStr = formatDateTime(new Date());
         localStorage.setItem("pnet_last_update", timeStr);
         document.getElementById('last-update-time').innerText = timeStr;
     }
@@ -762,7 +766,13 @@
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
                     fetch(projectsMap[id].url + cacheBuster, { cache: "no-store", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
-                        .then(res => res.text())
+                        .then(res => {
+                            // Dapatkan masa sebenar fail google sheets dikemaskini.
+                            // Jika disekat (CORS), gunakan masa ia ditarik (fetch time).
+                            const lastMod = res.headers.get('Last-Modified');
+                            projectsMap[id].lastUpdated = lastMod ? formatDateTime(new Date(lastMod)) : formatDateTime(new Date());
+                            return res.text();
+                        })
                         .then(csv => {
                             const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
@@ -803,7 +813,11 @@
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
                     fetch(projectsMap[id].url + cacheBuster, { cache: "reload", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
-                        .then(res => res.text())
+                        .then(res => {
+                            const lastMod = res.headers.get('Last-Modified');
+                            projectsMap[id].lastUpdated = lastMod ? formatDateTime(new Date(lastMod)) : formatDateTime(new Date());
+                            return res.text();
+                        })
                         .then(csv => {
                             const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
@@ -833,7 +847,7 @@
 
     document.getElementById('syncBtn').onclick = forceSyncAll;
 
-    // UPDATE REDESIGN: Fungsi showHome dengan layout baharu premium, licin dan moden
+    // UPDATE REDESIGN: Fungsi showHome dengan layout baharu premium, licin dan moden (MASA ASING)
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
@@ -850,7 +864,9 @@
 
             const projectPic = p.pic || "Tidak Ditetapkan";
             const projectTajuk = p.tajuk || "Tidak Ditetapkan";
-            const lastUpdated = localStorage.getItem("pnet_last_update") || "-";
+            
+            // TARIK MASA SPESIFIK UNTUK PROJEK INI (ATAU GUNA FALLBACK JIKA TIADA)
+            const projectLastUpdated = p.lastUpdated || localStorage.getItem("pnet_last_update") || "-";
 
             grid.innerHTML += `
             <div class="home-card" onclick="openProjectFromHome('${id}')" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 290px; padding: 28px;">
@@ -885,7 +901,7 @@
 
                         <div style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); padding: 0 4px;">
                             <i data-lucide="clock" style="width:14px; height:14px; color:var(--text-muted); flex-shrink: 0;"></i>
-                            <span style="font-weight:500;">${lastUpdated}</span>
+                            <span style="font-weight:500;">${projectLastUpdated}</span>
                         </div>
                     </div>
                 </div>
@@ -1234,7 +1250,7 @@
                 const wb = XLSX.read(evt.target.result, { type: 'binary' });
                 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                 const id = 'local_' + Date.now();
-                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), pic: "Upload Manual", tajuk: "Muat Naik Manual", data: processData(rows), isCloud: false };
+                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), pic: "Upload Manual", tajuk: "Muat Naik Manual", data: processData(rows), isCloud: false, lastUpdated: formatDateTime(new Date()) };
                 activeId = id; saveToLocalStorage(); openProjectFromHome(id);
             } catch(error) { showToast("Ralat membaca fail."); }
         };
@@ -1247,11 +1263,15 @@
         showToast("Menarik data...");
         try {
             const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
-            const res = await fetch(bypassUrl); const csv = await res.text();
+            const res = await fetch(bypassUrl); 
+            const lastMod = res.headers.get('Last-Modified');
+            const lUpd = lastMod ? formatDateTime(new Date(lastMod)) : formatDateTime(new Date());
+            
+            const csv = await res.text();
             const wb = XLSX.read(csv, { type: 'string', raw: true });
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
-            projectsMap[id] = { name: "Manual Cloud Sync", pic: "Cloud Sync", tajuk: "Pautan Awan Manual", data: processData(rows), isCloud: true, url: url };
+            projectsMap[id] = { name: "Manual Cloud Sync", pic: "Cloud Sync", tajuk: "Pautan Awan Manual", data: processData(rows), isCloud: true, url: url, lastUpdated: lUpd };
             activeId = id; saveToLocalStorage(); openProjectFromHome(id); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
         } catch(e) { showToast("Gagal menarik pautan awan."); }
     }
