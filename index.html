@@ -668,7 +668,7 @@
             if(i18n[lang][key]) { el.placeholder = i18n[lang][key]; }
         });
 
-        // Update Waktu Terkini (Jika ada dalam bahasa tersebut)
+        // Update Waktu Terkini
         const savedTime = localStorage.getItem("pnet_last_update");
         if(savedTime) {
             document.getElementById('last-update-time').innerText = savedTime;
@@ -738,7 +738,6 @@
         if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
         lucide.createIcons();
 
-        // Kembalikan timestamp jika ada disimpan
         const savedTime = localStorage.getItem("pnet_last_update");
         if (savedTime) {
             document.getElementById('last-update-time').innerText = savedTime;
@@ -759,6 +758,14 @@
             } catch(e) {}
         }
 
+        // Ambil data tarikh lama dari simpanan setempat (Cache Meta)
+        let masterMeta = JSON.parse(localStorage.getItem("pnet_master_meta") || "{}");
+        for (let id in projectsMap) {
+            if (masterMeta[id]) {
+                projectsMap[id].lastUpdated = masterMeta[id].lastUpdated;
+            }
+        }
+
         let fetchPromises = [];
         const cacheBuster = "&t=" + new Date().getTime() + Math.random();
 
@@ -766,17 +773,27 @@
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
                     fetch(projectsMap[id].url + cacheBuster, { cache: "no-store", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
-                        .then(res => {
-                            // Dapatkan masa sebenar fail google sheets dikemaskini.
-                            // Jika disekat (CORS), gunakan masa ia ditarik (fetch time).
-                            const lastMod = res.headers.get('Last-Modified');
-                            projectsMap[id].lastUpdated = lastMod ? formatDateTime(new Date(lastMod)) : formatDateTime(new Date());
-                            return res.text();
-                        })
+                        .then(res => res.text())
                         .then(csv => {
                             const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-                            projectsMap[id].data = processData(rows);
+                            const newData = processData(rows);
+                            
+                            // LOGIK BARU: Bandingkan data text JSON tab ini
+                            const dataString = JSON.stringify(newData);
+                            let currentMeta = JSON.parse(localStorage.getItem("pnet_master_meta") || "{}");
+                            
+                            if (!currentMeta[id]) {
+                                currentMeta[id] = { lastUpdated: formatDateTime(new Date()), dataHash: dataString };
+                            } else if (currentMeta[id].dataHash !== dataString) {
+                                // JIKA KANDUNGAN DATA DALAM TAB BERUBAH -> KEMASKINI MASA BARU!
+                                currentMeta[id].lastUpdated = formatDateTime(new Date());
+                                currentMeta[id].dataHash = dataString;
+                            }
+                            
+                            localStorage.setItem("pnet_master_meta", JSON.stringify(currentMeta));
+                            projectsMap[id].lastUpdated = currentMeta[id].lastUpdated;
+                            projectsMap[id].data = newData;
                         })
                         .catch(e => console.warn("Google Sheets terhalang untuk:", projectsMap[id].name))
                 );
@@ -813,15 +830,26 @@
             if (projectsMap[id].isCloud && projectsMap[id].url) {
                 fetchPromises.push(
                     fetch(projectsMap[id].url + cacheBuster, { cache: "reload", headers: {'Pragma': 'no-cache', 'Cache-Control': 'no-cache'} })
-                        .then(res => {
-                            const lastMod = res.headers.get('Last-Modified');
-                            projectsMap[id].lastUpdated = lastMod ? formatDateTime(new Date(lastMod)) : formatDateTime(new Date());
-                            return res.text();
-                        })
+                        .then(res => res.text())
                         .then(csv => {
                             const wb = XLSX.read(csv, { type: 'string', raw: true });
                             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-                            projectsMap[id].data = processData(rows);
+                            const newData = processData(rows);
+                            
+                            // LOGIK SAMPAI DI BUTANG REFRESH SYNC
+                            const dataString = JSON.stringify(newData);
+                            let currentMeta = JSON.parse(localStorage.getItem("pnet_master_meta") || "{}");
+                            
+                            if (!currentMeta[id]) {
+                                currentMeta[id] = { lastUpdated: formatDateTime(new Date()), dataHash: dataString };
+                            } else if (currentMeta[id].dataHash !== dataString) {
+                                currentMeta[id].lastUpdated = formatDateTime(new Date());
+                                currentMeta[id].dataHash = dataString;
+                            }
+                            
+                            localStorage.setItem("pnet_master_meta", JSON.stringify(currentMeta));
+                            projectsMap[id].lastUpdated = currentMeta[id].lastUpdated;
+                            projectsMap[id].data = newData;
                         })
                         .catch(e => console.warn("Google Sheets terhalang untuk:", projectsMap[id].name))
                 );
@@ -847,7 +875,7 @@
 
     document.getElementById('syncBtn').onclick = forceSyncAll;
 
-    // UPDATE REDESIGN: Fungsi showHome dengan layout baharu premium, licin dan moden (MASA ASING)
+    // FUNGSI showHome dengan layout baharu premium, licin dan moden (MASA ASING PER TAB)
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
@@ -865,7 +893,7 @@
             const projectPic = p.pic || "Tidak Ditetapkan";
             const projectTajuk = p.tajuk || "Tidak Ditetapkan";
             
-            // TARIK MASA SPESIFIK UNTUK PROJEK INI (ATAU GUNA FALLBACK JIKA TIADA)
+            // Mengambil masa spesifik kandungan tab diubah, jika tiada ambil default
             const projectLastUpdated = p.lastUpdated || localStorage.getItem("pnet_last_update") || "-";
 
             grid.innerHTML += `
@@ -1264,8 +1292,7 @@
         try {
             const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
             const res = await fetch(bypassUrl); 
-            const lastMod = res.headers.get('Last-Modified');
-            const lUpd = lastMod ? formatDateTime(new Date(lastMod)) : formatDateTime(new Date());
+            const lUpd = formatDateTime(new Date());
             
             const csv = await res.text();
             const wb = XLSX.read(csv, { type: 'string', raw: true });
@@ -1285,6 +1312,7 @@
         projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate));
         activeId = "master_1";
         localStorage.removeItem("pnet_projects"); 
+        localStorage.removeItem("pnet_master_meta"); 
         closeModal('clear-all-modal'); 
         showHome(); 
         showToast("Projek muat naik dipadam.");
