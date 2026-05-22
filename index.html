@@ -680,13 +680,14 @@
         renderResources();
     }
 
+    // UPDATE PENTING: TAMBAH "pic" DALAM TEMPLATE INI
     const masterProjectsTemplate = {
-        "master_1": { name: "NPA Infra Fasa 1", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
-        "master_2": { name: "Sewa Milik Infra Rangkaian", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1832222206&single=true&output=csv", isCloud: true, data: [] },
-        "master_3": { name: "Penyelenggaraan Switch", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1371097133&single=true&output=csv", isCloud: true, data: [] },
-        "master_4": { name: "Sebut Harga Wifi Awam (Retender)", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1284339032&single=true&output=csv", isCloud: true, data: [] },
-        "master_5": { name: "Agihan Perkakasan Rangkaian", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1513926112&single=true&output=csv", isCloud: true, data: [] },
-        "master_6": { name: "Penilaian Rangkaian BPM bersama HUAWEI", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=2132529711&single=true&output=csv", isCloud: true, data: [] },
+        "master_1": { name: "NPA Infra Fasa 1", pic: "Encik Muhammad Muzammil", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
+        "master_2": { name: "Sewa Milik Infra Rangkaian", pic: "Encik Muhammad Muzammil", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1832222206&single=true&output=csv", isCloud: true, data: [] },
+        "master_3": { name: "Penyelenggaraan Switch", pic: "Encik Muhammad Muzammil", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1371097133&single=true&output=csv", isCloud: true, data: [] },
+        "master_4": { name: "Sebut Harga Wifi Awam (Retender)", pic: "Encik Muhammad Muzammil", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1284339032&single=true&output=csv", isCloud: true, data: [] },
+        "master_5": { name: "Agihan Perkakasan Rangkaian", pic: "Puan Azlina", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1513926112&single=true&output=csv", isCloud: true, data: [] },
+        "master_6": { name: "Penilaian Rangkaian BPM bersama HUAWEI", pic: "Encik Khairil Ashraf", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=2132529711&single=true&output=csv", isCloud: true, data: [] },
     };
 
     let projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate)); 
@@ -695,7 +696,7 @@
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // Fungsi format tarikh masa kemaskini
+    // Fungsi format tarikh masa kemaskini (Sudah include masa 10:10:19 AM)
     function updateTimestamp() {
         const now = new Date();
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -837,6 +838,7 @@
 
     document.getElementById('syncBtn').onclick = forceSyncAll;
 
+    // UPDATE: FUNGSI showHome() UNTUK PIC MANUAL DAN TARIKH+MASA
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
@@ -851,19 +853,49 @@
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
             const iconName = p.isCloud ? 'cloud' : 'file-spreadsheet';
 
+            // Ambil PIC Manual dari backend, jika tiada tunjuk 'Tidak Ditetapkan'
+            const projectPic = p.pic || "Tidak Ditetapkan";
+            
+            // Ambil tarikh & masa terkini dari local storage
+            const lastUpdated = localStorage.getItem("pnet_last_update") || "-";
+
             grid.innerHTML += `
-            <div class="home-card" onclick="openProjectFromHome('${id}')">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
-                    <div class="liquid-glass-icon-box" style="color:var(--accent);">
-                        <i data-lucide="${iconName}" style="width:18px;"></i>
+            <div class="home-card" onclick="openProjectFromHome('${id}')" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 240px;">
+                
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+                        <div class="liquid-glass-icon-box" style="color:var(--accent);">
+                            <i data-lucide="${iconName}" style="width:18px;"></i>
+                        </div>
+                        <span style="font-size:10px; font-weight:800; background:var(--hover-bg); padding:4px 8px; border-radius:6px; color:var(--text-muted);">${tasks.length} ${i18n[currentLang].home_task}</span>
                     </div>
-                    <span style="font-size:10px; font-weight:800; background:var(--hover-bg); padding:4px 8px; border-radius:6px; color:var(--text-muted);">${tasks.length} ${i18n[currentLang].home_task}</span>
+                    
+                    <h3 style="margin:0 0 15px; font-size:16px; color:var(--text-main); line-height:1.5; word-break: break-word;">${p.name}</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);">
+                            <i data-lucide="user" style="width:14px; color:var(--accent);"></i>
+                            <span style="font-weight:600;">PIC:</span> 
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${projectPic}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);">
+                            <i data-lucide="clock" style="width:14px; color:var(--warning);"></i>
+                            <span style="font-weight:600;">Kemaskini:</span> 
+                            <span>${lastUpdated}</span>
+                        </div>
+                    </div>
                 </div>
-                <h3 style="margin:0 0 15px; font-size:16px; color:var(--text-main); line-height:1.4;">${p.name}</h3>
-                <div style="width:100%; background:var(--hover-bg); border-radius:4px; height:6px; margin-bottom:10px; overflow:hidden;">
-                    <div style="width:${perc}%; background:var(--accent); height:100%; border-radius:4px; transition: width 1s ease-in-out;"></div>
+
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:700; margin-bottom:6px;">
+                        <span>${i18n[currentLang].home_progress}</span>
+                        <span style="color:var(--accent);">${perc}%</span>
+                    </div>
+                    <div style="width:100%; background:var(--hover-bg); border-radius:4px; height:6px; overflow:hidden;">
+                        <div style="width:${perc}%; background:var(--accent); height:100%; border-radius:4px; transition: width 1s ease-in-out;"></div>
+                    </div>
                 </div>
-                <div style="font-size:12px; color:var(--text-muted); font-weight:600;">${i18n[currentLang].home_progress} <span style="color:var(--accent);">${perc}%</span></div>
+                
             </div>`;
         });
         lucide.createIcons();
@@ -965,8 +997,6 @@
                 res.push({ isSec: true, title: cs });
                 return;
             }
-
-            // --- FUNGSI ANJAKAN LAMA TELAH DIPADAM DI SINI ---
 
             // SIMPAN MEMORI AKTIVITI JIKA CELL MERGE (KOSONG)
             if (colB !== "" && colB !== "-") memAktiviti = colB;
@@ -1205,7 +1235,8 @@
                 const wb = XLSX.read(evt.target.result, { type: 'binary' });
                 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                 const id = 'local_' + Date.now();
-                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), data: processData(rows), isCloud: false };
+                // Jika muat naik secara manual, letakkan pic sebagai "Upload Manual" secara lalai
+                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), pic: "Upload Manual", data: processData(rows), isCloud: false };
                 activeId = id; saveToLocalStorage(); openProjectFromHome(id);
             } catch(error) { showToast("Ralat membaca fail."); }
         };
@@ -1223,7 +1254,7 @@
             const wb = XLSX.read(csv, { type: 'string', raw: true });
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
-            projectsMap[id] = { name: "Manual Cloud Sync", data: processData(rows), isCloud: true, url: url };
+            projectsMap[id] = { name: "Manual Cloud Sync", pic: "Cloud Sync", data: processData(rows), isCloud: true, url: url };
             activeId = id; saveToLocalStorage(); openProjectFromHome(id); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
         } catch(e) { showToast("Gagal menarik pautan awan."); }
     }
