@@ -129,7 +129,7 @@
 
         /* TAB FASA FILTER */
         .fasa-filter-container { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
-        .fasa-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 22px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .fasa-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 12px 24px; border-radius: 24px; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text-muted); transition: 0.3s; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; }
         .fasa-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .fasa-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 6px 20px var(--glow-color); }
 
@@ -334,11 +334,11 @@
         </div>
 
         <div class="fasa-filter-container no-print" id="fasa-buttons">
-            <button class="fasa-btn active" onclick="filterFasa('all', this)"><i data-lucide="layers" style="width:16px;"></i> Semua Projek</button>
-            <button class="fasa-btn" onclick="filterFasa(1, this)"><i data-lucide="shopping-cart" style="width:16px;"></i> Fasa 1</button>
-            <button class="fasa-btn" onclick="filterFasa(2, this)"><i data-lucide="tool" style="width:16px;"></i> Fasa 2</button>
-            <button class="fasa-btn" onclick="filterFasa(3, this)"><i data-lucide="banknote" style="width:16px;"></i> Fasa 3</button>
-            <button class="fasa-btn" onclick="filterFasa('lain', this)"><i data-lucide="more-horizontal" style="width:16px;"></i> Lain-lain</button>
+            <button class="fasa-btn" onclick="filterFasa(1, this)">FASA 1 - PEROLEHAN</button>
+            <button class="fasa-btn" onclick="filterFasa(2, this)">FASA 2 - PEMASANGAN</button>
+            <button class="fasa-btn" onclick="filterFasa(3, this)">FASA 3 - PEMBAYARAN</button>
+            <button class="fasa-btn" onclick="filterFasa('lain', this)">LAIN-LAIN</button>
+            <button class="fasa-btn active" onclick="filterFasa('all', this)">SEMUA PROJEK</button>
         </div>
 
         <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; max-width: 1150px; margin: 0 auto; width: 100%;">
@@ -490,10 +490,10 @@
         <div style="text-align: left; margin-bottom: 25px;">
             <label style="font-size: 13px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 8px;" data-i18n="modal_upload_label">Pilih Kategori / Fasa Projek:</label>
             <select id="upload-fasa-select" class="input-cloud">
-                <option value="1">Fasa 1</option>
-                <option value="2">Fasa 2</option>
-                <option value="3">Fasa 3</option>
-                <option value="lain" selected>Lain-lain</option>
+                <option value="1">FASA 1 - PEROLEHAN</option>
+                <option value="2">FASA 2 - PEMASANGAN</option>
+                <option value="3">FASA 3 - PEMBAYARAN</option>
+                <option value="lain" selected>LAIN-LAIN</option>
             </select>
         </div>
 
