@@ -298,11 +298,10 @@
                 <i data-lucide="moon" style="width:18px;"></i>
             </button>
             
-            <label class="btn btn-upload" id="headerUploadBtn">
+            <button class="btn btn-upload" onclick="openModal('upload-excel-modal')" id="headerUploadBtn">
                 <i data-lucide="file-up" style="width:16px;"></i> 
                 <span data-i18n="btn_upload">Muat Naik Excel</span> 
-                <input type="file" id="fileInputHeader" hidden accept=".xlsx, .xls">
-            </label>
+            </button>
         </div>
     </header>
 
@@ -506,9 +505,30 @@
     </div>
 </div>
 
+<div class="modal-overlay-custom" id="upload-excel-modal">
+    <div class="modal-card-custom">
+        <div style="background:rgba(59, 130, 246, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+            <i data-lucide="file-up" style="color:var(--accent);"></i>
+        </div>
+        <h3>Muat Naik Ke Cloud</h3>
+        <p style="font-size:13px; color:var(--text-muted);">Data akan diproses tab demi tab dan dikongsi bersama semua pengguna PNET secara automatik.</p>
+        
+        <input type="text" id="picInput" class="input-cloud" placeholder="Nama Pengurus Projek" style="margin-bottom: 10px;">
+        <input type="file" id="excelFileInput" class="input-cloud" accept=".xlsx, .xls">
+        
+        <div class="modal-card-footer">
+            <button class="btn btn-outline" onclick="closeModal('upload-excel-modal')">Batal</button>
+            <button class="btn btn-upload" onclick="processUploadForm()">Muat Naik</button>
+        </div>
+    </div>
+</div>
+
 <script>
     lucide.createIcons();
     Chart.register(ChartDataLabels);
+
+    // PAUTAN GOOGLE APPS SCRIPT AWAK
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyByaOYwGFYGpusmwrI5PFywpRBVhk4bC2fVSxBh99G5IvT50y0TjQHDF0sZ96vZ7Hoyg/exec";
 
     const i18n = {
         "ms": {
@@ -800,6 +820,20 @@
             }
         }
         
+        // TARIK DATA DARI APPS SCRIPT DATABASE
+        if (GAS_WEBAPP_URL) {
+            fetchPromises.push(
+                fetch(GAS_WEBAPP_URL + "?t=" + new Date().getTime())
+                .then(res => res.json())
+                .then(data => {
+                    for (let cloudId in data) {
+                        projectsMap[cloudId] = data[cloudId];
+                    }
+                })
+                .catch(e => console.warn("Tiada sambungan ke database GAS."))
+            );
+        }
+        
         await Promise.all(fetchPromises);
         
         if (!localStorage.getItem("pnet_last_update")) {
@@ -856,6 +890,20 @@
             }
         }
         
+        // TARIK DATA DARI APPS SCRIPT DATABASE SEMULA
+        if (GAS_WEBAPP_URL) {
+            fetchPromises.push(
+                fetch(GAS_WEBAPP_URL + "?force=" + new Date().getTime())
+                .then(res => res.json())
+                .then(data => {
+                    for (let cloudId in data) {
+                        projectsMap[cloudId] = data[cloudId];
+                    }
+                })
+                .catch(e => console.warn("Tiada sambungan ke database GAS."))
+            );
+        }
+        
         Promise.all(fetchPromises).then(() => {
             updateTimestamp();
             
@@ -874,6 +922,78 @@
     }
 
     document.getElementById('syncBtn').onclick = forceSyncAll;
+
+    // FUNGSI MUAT NAIK KE CLOUD TAB-BY-TAB
+    function processUploadForm() {
+        const picName = document.getElementById('picInput').value.trim();
+        const fileInput = document.getElementById('excelFileInput');
+        
+        if (!picName) { showToast("Sila masukkan nama pengurus projek."); return; }
+        if (fileInput.files.length === 0) { showToast("Sila pilih fail Excel."); return; }
+        
+        const file = fileInput.files[0];
+        document.getElementById('main-loader').style.display = 'flex';
+        document.querySelector('#main-loader h2').innerText = "Memproses Excel...";
+        
+        const r = new FileReader();
+        r.onload = function(evt) {
+            try {
+                const wb = XLSX.read(evt.target.result, { type: 'binary' });
+                let tempUploadedData = {};
+                
+                // Loop membaca Tab-by-Tab
+                wb.SheetNames.forEach((sheetName, index) => {
+                    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1 });
+                    const processedData = processData(rows);
+                    
+                    if (processedData.length > 0) {
+                        tempUploadedData = { 
+                            name: `${file.name.replace(/\.[^/.]+$/, "")} [${sheetName}]`,
+                            pic: picName, 
+                            tajuk: `Muat Naik Awam (Tab: ${sheetName})`, 
+                            data: processedData, 
+                            isCloud: true, 
+                            lastUpdated: formatDateTime(new Date()) 
+                        };
+                        // Hantar data setiap tab ke Google Apps Script
+                        sendToCloudBackend(tempUploadedData);
+                    }
+                });
+                
+                closeModal('upload-excel-modal');
+                document.getElementById('picInput').value = "";
+                fileInput.value = "";
+                
+            } catch(error) { 
+                document.getElementById('main-loader').style.display = 'none';
+                showToast("Ralat membaca fail."); 
+            }
+        };
+        r.readAsBinaryString(file);
+    }
+
+    function sendToCloudBackend(projectObject) {
+        if(!GAS_WEBAPP_URL) {
+            showToast("Sila letak URL GAS terlebih dahulu!");
+            return;
+        }
+        
+        fetch(GAS_WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Penting untuk elak isu sekatan keselamatan browser
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(projectObject)
+        })
+        .then(() => {
+            showToast("Fail berjaya dimuat naik ke Cloud!");
+            // Selepas muat naik, kita panggil fungsi tarik balik data terkini dari Cloud
+            setTimeout(() => { forceSyncAll(); }, 2000); 
+        })
+        .catch(err => {
+            document.getElementById('main-loader').style.display = 'none';
+            showToast("Gagal menyambung ke server.");
+        });
+    }
 
     // FUNGSI showHome dengan layout baharu premium, licin dan moden (MASA ASING PER TAB)
     function showHome() {
@@ -1266,7 +1386,7 @@
         }
     }
 
-    const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputCenter'];
+    const fileInputs = ['fileInputSidebar'];
     fileInputs.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('change', handleFileUpload); });
 
     function handleFileUpload(e) {
