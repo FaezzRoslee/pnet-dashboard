@@ -127,6 +127,12 @@
         .home-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
         .home-card:hover::before { opacity: 1; }
 
+        /* TAB FASA FILTER */
+        .fasa-filter-container { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+        .fasa-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 22px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .fasa-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .fasa-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 6px 20px var(--glow-color); }
+
         /* DASHBOARD LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: clamp(240px, 20vw, 300px) minmax(0, 1fr); gap: 20px; flex-grow: 1;}
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; border: 1px solid var(--border); transition: 0.3s; }
@@ -246,7 +252,7 @@
         .modal-card-custom { background: var(--card-bg); width: 90%; max-width: 420px; border-radius: 24px; padding: 35px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); transform: scale(0.9); transition: 0.3s; }
         .modal-overlay-custom.show .modal-card-custom, .modal-overlay.show .modal-container { transform: scale(1); }
         .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
-        .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; text-align: left;}
+        .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; text-align: left; cursor: pointer;}
         
         /* FOOTER */
         .premium-footer {
@@ -311,6 +317,14 @@
             <div class="hero-icon-glow" style="top:-30px; left:50%; transform:translateX(-50%);"></div>
             <h1 class="gradient-text" data-i18n="hero_title">Unit Pengurusan Rangkaian</h1>
             <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;" data-i18n="hero_desc">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.</p>
+        </div>
+
+        <div class="fasa-filter-container" id="fasa-buttons">
+            <button class="fasa-btn active" onclick="filterFasa('all', this)"><i data-lucide="layers" style="width:16px;"></i> Semua Projek</button>
+            <button class="fasa-btn" onclick="filterFasa(1, this)"><i data-lucide="shopping-cart" style="width:16px;"></i> Fasa 1</button>
+            <button class="fasa-btn" onclick="filterFasa(2, this)"><i data-lucide="tool" style="width:16px;"></i> Fasa 2</button>
+            <button class="fasa-btn" onclick="filterFasa(3, this)"><i data-lucide="banknote" style="width:16px;"></i> Fasa 3</button>
+            <button class="fasa-btn" onclick="filterFasa('lain', this)"><i data-lucide="more-horizontal" style="width:16px;"></i> Lain-lain</button>
         </div>
 
         <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; max-width: 1150px; margin: 0 auto; width: 100%;">
@@ -438,6 +452,37 @@
     </div>
 </footer>
 
+<div class="modal-overlay-custom" id="upload-fasa-modal">
+    <div class="modal-card-custom">
+        <div style="background:rgba(59, 130, 246, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+            <i data-lucide="file-up" style="color:var(--accent);"></i>
+        </div>
+        <h3 data-i18n="modal_upload_title">Tetapan Muat Naik</h3>
+        
+        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
+            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                <i data-lucide="info" style="color: var(--warning); width: 22px; flex-shrink: 0; margin-top: 2px;"></i>
+                <span style="font-size: 12px; color: var(--text-main); line-height: 1.5;" data-i18n="modal_upload_desc">Nota: Fail yang dimuat naik secara manual <b>TIDAK</b> disimpan di dalam Cloud (Awan). Ia hanya untuk simpanan dan paparan lokal anda sahaja.</span>
+            </div>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 25px;">
+            <label style="font-size: 13px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 8px;" data-i18n="modal_upload_label">Pilih Kategori / Fasa Projek:</label>
+            <select id="upload-fasa-select" class="input-cloud">
+                <option value="1">Fasa 1</option>
+                <option value="2">Fasa 2</option>
+                <option value="3">Fasa 3</option>
+                <option value="lain" selected>Lain-lain</option>
+            </select>
+        </div>
+
+        <div class="modal-card-footer">
+            <button class="btn btn-outline" onclick="cancelUpload()" data-i18n="btn_cancel">Batal</button>
+            <button class="btn btn-primary" onclick="confirmUpload()" data-i18n="btn_continue">Teruskan</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay-custom" id="cloud-modal">
     <div class="modal-card-custom">
         <div style="background:rgba(16, 185, 129, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
@@ -558,7 +603,11 @@
             "modal_clear_title": "Hapus Fail Muat Naik?",
             "modal_clear_desc": "Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b>",
             "modal_list_title": "Senarai Aktiviti",
+            "modal_upload_title": "Tetapan Muat Naik",
+            "modal_upload_desc": "Nota: Fail yang dimuat naik secara manual <b>TIDAK</b> disimpan di dalam Cloud (Awan). Ia hanya untuk simpanan dan paparan lokal anda sahaja.",
+            "modal_upload_label": "Pilih Kategori / Fasa Projek:",
             "btn_cancel": "Batal",
+            "btn_continue": "Teruskan",
             "btn_connect": "Sambung",
             "btn_save": "Simpan",
             "btn_yes_delete": "Ya, Padam",
@@ -624,7 +673,11 @@
             "modal_clear_title": "Clear Uploaded Files?",
             "modal_clear_desc": "All manually uploaded files will be removed. <br><b>Master Cloud Files will not be affected.</b>",
             "modal_list_title": "Activity List",
+            "modal_upload_title": "Upload Settings",
+            "modal_upload_desc": "Note: Manually uploaded files are <b>NOT</b> saved to the Cloud. They are only saved and visible locally on your device.",
+            "modal_upload_label": "Select Project Phase / Category:",
             "btn_cancel": "Cancel",
+            "btn_continue": "Continue",
             "btn_connect": "Connect",
             "btn_save": "Save",
             "btn_yes_delete": "Yes, Delete",
@@ -681,12 +734,12 @@
     }
 
     const masterProjectsTemplate = {
-        "master_1": { name: "NPA Infra Fasa 1", pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan \"Network Performance Analysis\" Infrastruktur Rangkaian Fasa 1 Di Fasiliti Kementerian Kesihatan Malaysia Bagi Tempoh 6 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
-        "master_2": { name: "Sewa Milik Infra Rangkaian", pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan Sewa Milik Bagi Membekal, Menghantar, Memasang, Menguji Serta Mentauliah Guna Infrastruktur Rangkaian Di Fasiliti Kesihatan KKM Bagi Tempoh Kontrak 44 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1832222206&single=true&output=csv", isCloud: true, data: [] },
-        "master_3": { name: "Penyelenggaraan Switch", pic: "Puan Azlina", tajuk: "Perkhidmatan Penyelenggaraan Switch Rangkaian Di Kementerian Kesihatan Malaysia Bagi Tempoh 36 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1371097133&single=true&output=csv", isCloud: true, data: [] },
-        "master_4": { name: "Sebut Harga Wifi Awam (Retender)", pic: "Encik Muhammad Muzammil", tajuk: "Jadual pelaksanaan sebut harga perkhidmatan sewa milik peralatan wireless access point untuk penggunaan WiFi awam di fasiliti KKM bagi tempoh kontrak 40 bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1284339032&single=true&output=csv", isCloud: true, data: [] },
-        "master_5": { name: "Agihan Perkakasan Rangkaian Fasa 2", pic: "Puan Azlina", tajuk: "Jadual Agihan Perkakasan Rangkaian di Fasiliti Kesihatan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1513926112&single=true&output=csv", isCloud: true, data: [] },
-        "master_6": { name: "Penilaian Rangkaian BPM bersama HUAWEI", pic: "Encik Khairil Ashraf", tajuk: "Lawatan penilaian rangkaian BPM bagi projek rintis managed services infrastruktur rangkaian ICT Kementerian Kesihatan Malaysia di hospital-hospital negeri Pahang", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=2132529711&single=true&output=csv", isCloud: true, data: [] },
+        "master_1": { name: "NPA Infra Fasa 1", fasa: 1, pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan \"Network Performance Analysis\" Infrastruktur Rangkaian Fasa 1 Di Fasiliti Kementerian Kesihatan Malaysia Bagi Tempoh 6 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1382227264&single=true&output=csv", isCloud: true, data: [] },
+        "master_2": { name: "Sewa Milik Infra Rangkaian", fasa: 2, pic: "Encik Muhammad Muzammil", tajuk: "Perkhidmatan Sewa Milik Bagi Membekal, Menghantar, Memasang, Menguji Serta Mentauliah Guna Infrastruktur Rangkaian Di Fasiliti Kesihatan KKM Bagi Tempoh Kontrak 44 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1832222206&single=true&output=csv", isCloud: true, data: [] },
+        "master_3": { name: "Penyelenggaraan Switch", fasa: 3, pic: "Puan Azlina", tajuk: "Perkhidmatan Penyelenggaraan Switch Rangkaian Di Kementerian Kesihatan Malaysia Bagi Tempoh 36 Bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1371097133&single=true&output=csv", isCloud: true, data: [] },
+        "master_4": { name: "Sebut Harga Wifi Awam (Retender)", fasa: 1, pic: "Encik Muhammad Muzammil", tajuk: "Jadual pelaksanaan sebut harga perkhidmatan sewa milik peralatan wireless access point untuk penggunaan WiFi awam di fasiliti KKM bagi tempoh kontrak 40 bulan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1284339032&single=true&output=csv", isCloud: true, data: [] },
+        "master_5": { name: "Agihan Perkakasan Rangkaian Fasa 2", fasa: 2, pic: "Puan Azlina", tajuk: "Jadual Agihan Perkakasan Rangkaian di Fasiliti Kesihatan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=1513926112&single=true&output=csv", isCloud: true, data: [] },
+        "master_6": { name: "Penilaian Rangkaian BPM bersama HUAWEI", fasa: "lain", pic: "Encik Khairil Ashraf", tajuk: "Lawatan penilaian rangkaian BPM bagi projek rintis managed services infrastruktur rangkaian ICT Kementerian Kesihatan Malaysia di hospital-hospital negeri Pahang", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3f_wq1DanTnAj7v2Yn6MjMoFAACbP77Z8gAgTvSIhU4MSwJV_c25ByUX8D0HvNA8yms5tEWZOEwpN/pub?gid=2132529711&single=true&output=csv", isCloud: true, data: [] },
     };
 
     let projectsMap = JSON.parse(JSON.stringify(masterProjectsTemplate)); 
@@ -875,16 +928,41 @@
 
     document.getElementById('syncBtn').onclick = forceSyncAll;
 
-    // FUNGSI showHome dengan layout baharu premium, licin dan moden (MASA ASING PER TAB)
+    // VARIABEL STATE UNTUK FASA SEMASA
+    let currentFasa = 'all';
+
+    // FUNGSI TAPISAN FASA KETIKA BUTANG DITEKAN
+    function filterFasa(fasa, btnElement) {
+        currentFasa = fasa;
+        // Tukar style butang active
+        document.querySelectorAll('.fasa-btn').forEach(btn => btn.classList.remove('active'));
+        if (btnElement) btnElement.classList.add('active');
+        
+        renderHomeGrid(); // Lukis semula kotak projek
+    }
+
+    // FUNGSI UTAMA PAPARAN HOME
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
+        renderHomeGrid();
+    }
 
+    // FUNGSI LUKIS KOTAK PROJEK DI HOME
+    function renderHomeGrid() {
         const grid = document.getElementById('home-project-grid');
         grid.innerHTML = '';
 
         Object.keys(projectsMap).forEach(id => {
             const p = projectsMap[id];
+
+            // LOGIK TAPISAN (FILTER) FASA
+            const projectFasa = p.fasa || 'lain'; 
+            
+            if (currentFasa !== 'all' && projectFasa !== currentFasa) {
+                return; // Jangan papar jika tak sama dengan tab yang dipilih
+            }
+
             const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
             const done = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
@@ -892,8 +970,6 @@
 
             const projectPic = p.pic || "Tidak Ditetapkan";
             const projectTajuk = p.tajuk || "Tidak Ditetapkan";
-            
-            // Mengambil masa spesifik kandungan tab diubah, jika tiada ambil default
             const projectLastUpdated = p.lastUpdated || localStorage.getItem("pnet_last_update") || "-";
 
             grid.innerHTML += `
@@ -1266,23 +1342,72 @@
         }
     }
 
-    const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputCenter'];
+    // VARIABEL UNTUK SIMPAN FAIL SEMENTARA SEBELUM UPLOAD
+    let tempUploadFile = null;
+
+    const fileInputs = ['fileInputHeader', 'fileInputSidebar'];
     fileInputs.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('change', handleFileUpload); });
 
     function handleFileUpload(e) {
         const file = e.target.files[0];
-        if (!file || !file.name.match(/\.xlsx$|\.xls$/)) { showToast("Sila muat naik Excel"); return; }
+        if (!file || !file.name.match(/\.xlsx$|\.xls$/)) { 
+            showToast("Sila muat naik format Excel sahaja."); 
+            e.target.value = ''; 
+            return; 
+        }
+        
+        // Simpan fail ke variable sementara & buka pop-up tetapan
+        tempUploadFile = file;
+        openModal('upload-fasa-modal');
+        
+        // Reset input supaya fail yang sama boleh dipilih lagi nanti
+        e.target.value = ''; 
+    }
+
+    function cancelUpload() {
+        tempUploadFile = null;
+        closeModal('upload-fasa-modal');
+    }
+
+    function confirmUpload() {
+        if (!tempUploadFile) return;
+
+        const selectedFasaStr = document.getElementById('upload-fasa-select').value;
+        const finalFasa = selectedFasaStr === 'lain' ? 'lain' : parseInt(selectedFasaStr);
+
         const r = new FileReader();
         r.onload = function(evt) {
             try {
                 const wb = XLSX.read(evt.target.result, { type: 'binary' });
                 const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
                 const id = 'local_' + Date.now();
-                projectsMap[id] = { name: file.name.replace(/\.[^/.]+$/, ""), pic: "Upload Manual", tajuk: "Muat Naik Manual", data: processData(rows), isCloud: false, lastUpdated: formatDateTime(new Date()) };
-                activeId = id; saveToLocalStorage(); openProjectFromHome(id);
-            } catch(error) { showToast("Ralat membaca fail."); }
+                
+                projectsMap[id] = { 
+                    name: tempUploadFile.name.replace(/\.[^/.]+$/, ""), 
+                    fasa: finalFasa, 
+                    pic: "Upload Manual", 
+                    tajuk: "Muat Naik Lokal", 
+                    data: processData(rows), 
+                    isCloud: false, 
+                    lastUpdated: formatDateTime(new Date()) 
+                };
+                
+                activeId = id; 
+                saveToLocalStorage(); 
+                
+                // Navigate ke Home untuk lihat fail yg diupload dalam grid jika perlu
+                showHome();
+                
+                // Reset dan tutup
+                tempUploadFile = null;
+                closeModal('upload-fasa-modal');
+                showToast("Fail berjaya dimuat naik (Lokal)!");
+                
+            } catch(error) { 
+                showToast("Ralat membaca fail."); 
+            }
         };
-        r.readAsBinaryString(file); e.target.value = ''; 
+        r.readAsBinaryString(tempUploadFile);
     }
 
     async function processCloudLink() {
@@ -1298,7 +1423,7 @@
             const wb = XLSX.read(csv, { type: 'string', raw: true });
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
             const id = 'cloud_manual_' + Date.now();
-            projectsMap[id] = { name: "Manual Cloud Sync", pic: "Cloud Sync", tajuk: "Pautan Awan Manual", data: processData(rows), isCloud: true, url: url, lastUpdated: lUpd };
+            projectsMap[id] = { name: "Manual Cloud Sync", fasa: 'lain', pic: "Cloud Sync", tajuk: "Pautan Awan Manual", data: processData(rows), isCloud: true, url: url, lastUpdated: lUpd };
             activeId = id; saveToLocalStorage(); openProjectFromHome(id); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
         } catch(e) { showToast("Gagal menarik pautan awan."); }
     }
