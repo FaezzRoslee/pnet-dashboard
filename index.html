@@ -264,6 +264,20 @@
         .footer-left { max-width: 600px; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
         
+        /* PRINT SETTINGS (Jana Laporan) */
+        @media print {
+            @page { size: landscape; margin: 15mm; }
+            body { background: white !important; color: black !important; }
+            .sidebar, .header-main, .fasa-filter-container, .no-print, #toast-container, .premium-footer, #main-loader, .modal-overlay, .modal-overlay-custom { display: none !important; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            .dashboard-layout { display: block !important; }
+            .card, .chart-box, .table-container { box-shadow: none !important; border: 1px solid #ddd !important; margin-bottom: 20px !important; break-inside: avoid; page-break-inside: avoid; }
+            .charts-grid { display: flex !important; flex-direction: row !important; gap: 20px !important; }
+            .chart-box { width: 50% !important; min-height: 300px !important; }
+            h3#active-title { font-size: 20px !important; color: black !important; }
+            .glass-badge, .badge { border: 1px solid #ccc !important; background: transparent !important; color: black !important; }
+        }
+
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } .sidebar .card { padding: 20px; } }
         @media (max-width: 768px) { .header-main { justify-content: center; } .header-actions { width: 100%; justify-content: center; flex-wrap: wrap;} .charts-grid { grid-template-columns: 1fr; } }
     </style>
@@ -319,7 +333,7 @@
             <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 25px; line-height: 1.6; font-size: 15px;" data-i18n="hero_desc">Sistem pemantauan jadual dan prestasi projek infrastruktur secara masa nyata yang inovatif dan efisien.</p>
         </div>
 
-        <div class="fasa-filter-container" id="fasa-buttons">
+        <div class="fasa-filter-container no-print" id="fasa-buttons">
             <button class="fasa-btn active" onclick="filterFasa('all', this)"><i data-lucide="layers" style="width:16px;"></i> Semua Projek</button>
             <button class="fasa-btn" onclick="filterFasa(1, this)"><i data-lucide="shopping-cart" style="width:16px;"></i> Fasa 1</button>
             <button class="fasa-btn" onclick="filterFasa(2, this)"><i data-lucide="tool" style="width:16px;"></i> Fasa 2</button>
@@ -394,7 +408,14 @@
                             <h3 id="active-title" style="margin:0; font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" data-i18n="table_title">Memuatkan...</h3>
                             <span style="font-size: 13px; color: var(--text-muted);" id="sub-active-title" data-i18n="table_desc">Semua tugasan bagi projek semasa</span>
                         </div>
-                        <div class="search-box no-print"><i data-lucide="search" style="width:16px; color:var(--text-muted);"></i><input type="text" id="searchInput" data-i18n-placeholder="table_search" placeholder="Cari aktiviti atau unit..."></div>
+                        
+                        <div style="display:flex; align-items:center; gap:10px;" class="no-print">
+                            <button class="btn btn-primary" onclick="window.print()" style="padding: 10px 15px; font-size:12px;">
+                                <i data-lucide="printer" style="width:14px;"></i> <span data-i18n="btn_report">Jana Laporan</span>
+                            </button>
+                            <div class="search-box"><i data-lucide="search" style="width:16px; color:var(--text-muted);"></i><input type="text" id="searchInput" data-i18n-placeholder="table_search" placeholder="Cari aktiviti atau unit..."></div>
+                        </div>
+                        
                     </div>
                     <div class="table-wrapper">
                         <table id="activityTable">
@@ -624,7 +645,8 @@
             "no_link": "Tiada pautan disimpan.",
             "expected": "Jangkaan",
             "actual": "Sebenar",
-            "btn_upload": "Muat Naik Excel"
+            "btn_upload": "Muat Naik Excel",
+            "btn_report": "Jana Laporan"
         },
         "en": {
             "header_title": "PNET Project Timeline",
@@ -694,7 +716,8 @@
             "no_link": "No links saved.",
             "expected": "Expected",
             "actual": "Actual",
-            "btn_upload": "Upload Excel"
+            "btn_upload": "Upload Excel",
+            "btn_report": "Generate Report"
         }
     };
 
@@ -966,7 +989,9 @@
             const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
             const done = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
-            const iconName = p.isCloud ? 'cloud' : 'file-spreadsheet';
+            
+            // LOGIK IKON BAHARU (BRIEFCASE & FOLDER)
+            const iconName = p.isCloud ? 'briefcase' : 'folder-open';
 
             const projectPic = p.pic || "Tidak Ditetapkan";
             const projectTajuk = p.tajuk || "Tidak Ditetapkan";
@@ -1221,9 +1246,13 @@
         Object.keys(projectsMap).forEach(id => {
             const active = id === activeId ? 'active' : '';
             const cloudIcon = projectsMap[id].isCloud ? '<span class="cloud-badge" style="margin-left:auto;">SYNC</span>' : '';
+            
+            // LOGIK IKON BAHARU
+            const sideIcon = projectsMap[id].isCloud ? 'briefcase' : 'folder-open';
+            
             c.innerHTML += `<div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();">
                 <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
-                    <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${projectsMap[id].isCloud ? 'cloud' : 'file-spreadsheet'}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
+                    <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${sideIcon}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
                     <span class="proj-name">${projectsMap[id].name}</span>
                 </div>
                 ${cloudIcon}
