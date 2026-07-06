@@ -677,7 +677,6 @@
             "home_task": "TUGASAN",
             "home_progress": "Kemajuan:",
             
-            // TRANSLATION BARU UNTUK HOME & FASA
             "fasa_1": "FASA 1 - PEROLEHAN",
             "fasa_2": "FASA 2 - PEMASANGAN",
             "fasa_3": "FASA 3 - PEMBAYARAN",
@@ -759,7 +758,6 @@
             "home_task": "TASKS",
             "home_progress": "Progress:",
             
-            // TRANSLATION BARU UNTUK HOME & FASA
             "fasa_1": "PHASE 1 - PROCUREMENT",
             "fasa_2": "PHASE 2 - INSTALLATION",
             "fasa_3": "PHASE 3 - PAYMENT",
@@ -1061,7 +1059,8 @@
             const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
             totalTask += tasks.length;
 
-            const done = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT' || t.isCustomNote).length;
+            // PEMBETULAN PERATUSAN DI HOME
+            const done = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
             totalDone += done;
 
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
@@ -1344,9 +1343,11 @@
         const tasks = p.data.filter(d => !d.isSec);
         
         animateNum('kpi-total', tasks.length);
-        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT' || t.isCustomNote).length;
+        
+        // PEMBETULAN PERATUSAN DI DASHBOARD CARTA
+        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
         animateNum('kpi-done', doneCount);
-        animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU').length);
+        animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.isCustomNote).length);
         animateNum('kpi-delay', tasks.filter(t => t.status === 'LEWAT').length);
         
         const perc = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
@@ -1629,8 +1630,9 @@
         let filt = [], hBg = '', title = '', icon = '';
         
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = i18n[currentLang].kpi_task; icon = 'clipboard-list'; } 
-        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT' || t.isCustomNote); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
-        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU'); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
+        // PEMBETULAN PERATUSAN DI MODAL (BUANG isCustomNote DARI SELESAI, MASUK KE DALAM PROSES)
+        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
+        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.isCustomNote); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
         else if(type === 'LEWAT') { filt = tasks.filter(t => t.status === 'LEWAT'); hBg = 'var(--danger)'; title = i18n[currentLang].kpi_delay; icon = 'alert-triangle'; }
         
         document.getElementById('modal-header').style.background = hBg;
@@ -1683,9 +1685,10 @@
         
         if (tasks.length === 0) { showToast("Tiada data tugasan dalam projek ini untuk dijana."); return; }
 
-        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT' || t.isCustomNote).length;
+        // PEMBETULAN PERATUSAN DI JANAAN LAPORAN (BUANG isCustomNote DARI Selesai, MASUK DALAM Proses)
+        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
         const delayCount = tasks.filter(t => t.status === 'LEWAT').length;
-        const processCount = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT').length;
+        const processCount = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.isCustomNote).length;
         const perc = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
 
         let summaryText = `Projek <b>${p.name}</b> yang dikawal selia oleh <b>${p.pic || "PIC tidak ditetapkan"}</b> kini mencatatkan tahap kemajuan sebanyak <b>${perc}%</b> (Selesai: ${doneCount}/${tasks.length} tugasan). `;
