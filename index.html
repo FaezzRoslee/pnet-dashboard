@@ -414,7 +414,7 @@
                         <div style="flex-grow: 1; position: relative;"><canvas id="unitChart"></canvas></div>
                     </div>
 
-                   <div class="chart-box">
+                    <div class="chart-box">
                         <h4 class="chart-header-title" style="flex-shrink: 0;">
                             <i data-lucide="folder-open" style="width:18px; color:var(--accent);"></i> <span data-i18n="proj_title">Fail Projek</span>
                             <button class="btn-clear-all" style="margin-left:auto;" onclick="openModal('clear-all-modal')" title="Hapus Data Upload"><i data-lucide="trash-2" style="width:12px;"></i> <span data-i18n="btn_clear">Padam Lokal</span></button>
@@ -1290,9 +1290,6 @@
         renderCharts(tasks); renderTable(p.data);
     }
 
-    // =========================================================================
-    // FUNGSI UPDATESIDEBAR (Diubahsuai jadikan FASA sebagai Sub-Tajuk luar)
-    // =========================================================================
     function updateSidebar() {
         const c = document.getElementById('project-list-sidebar'); 
         c.innerHTML = "";
@@ -1311,7 +1308,6 @@
             });
 
             if (groupProjects.length > 0) {
-                // Bina Sub-Tajuk Fasa yang lebih minimalis (Display Luar)
                 let groupHTML = `
                 <div style="margin-bottom: 18px;">
                     
@@ -1328,7 +1324,6 @@
                     const cloudIcon = projectsMap[id].isCloud ? '<span class="cloud-badge" style="margin-left:auto;">SYNC</span>' : '';
                     const sideIcon = projectsMap[id].isCloud ? 'briefcase' : 'folder-open';
                     
-                    // Latar belakang asal untuk item projek dipulihkan
                     groupHTML += `<div class="project-item-sidebar ${active}" style="margin-bottom: 0;" onclick="activeId='${id}';updateUI();">
                         <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
                             <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${sideIcon}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
@@ -1339,7 +1334,7 @@
                     </div>`;
                 });
 
-                groupHTML += `</div></div>`; // Tutup div senarai dan div kumpulan
+                groupHTML += `</div></div>`; 
                 c.innerHTML += groupHTML;
             }
         });
