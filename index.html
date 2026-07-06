@@ -1291,7 +1291,7 @@
     }
 
     // =========================================================================
-    // FUNGSI UPDATESIDEBAR (Diubahsuai dengan rekaan Kotak Pembalut FASA)
+    // FUNGSI UPDATESIDEBAR (Diubahsuai jadikan FASA sebagai Sub-Tajuk luar)
     // =========================================================================
     function updateSidebar() {
         const c = document.getElementById('project-list-sidebar'); 
@@ -1311,16 +1311,16 @@
             });
 
             if (groupProjects.length > 0) {
-                // Bina KOTAK utama untuk setiap Fasa (Ada border & background lembut)
+                // Bina Sub-Tajuk Fasa yang lebih minimalis (Display Luar)
                 let groupHTML = `
-                <div style="background: rgba(148, 163, 184, 0.05); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 18px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="margin-bottom: 18px;">
                     
-                    <div style="font-size: 10px; font-weight: 800; background: var(--accent); color: white; padding: 6px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-                        <i data-lucide="layers" style="width:14px; height:14px;"></i>
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="folder-tree" style="width:14px; height:14px; color:var(--accent);"></i>
                         ${group.label}
                     </div>
                     
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
                 `;
                 
                 groupProjects.forEach(id => {
@@ -1328,9 +1328,10 @@
                     const cloudIcon = projectsMap[id].isCloud ? '<span class="cloud-badge" style="margin-left:auto;">SYNC</span>' : '';
                     const sideIcon = projectsMap[id].isCloud ? 'briefcase' : 'folder-open';
                     
+                    // Latar belakang asal untuk item projek dipulihkan
                     groupHTML += `<div class="project-item-sidebar ${active}" style="margin-bottom: 0;" onclick="activeId='${id}';updateUI();">
                         <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
-                            <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--card-bg)'}"><i data-lucide="${sideIcon}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
+                            <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${sideIcon}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
                             <span class="proj-name">${projectsMap[id].name}</span>
                         </div>
                         ${cloudIcon}
@@ -1338,13 +1339,13 @@
                     </div>`;
                 });
 
-                groupHTML += `</div></div>`; // Tutup div senarai dan div kotak
+                groupHTML += `</div></div>`; // Tutup div senarai dan div kumpulan
                 c.innerHTML += groupHTML;
             }
         });
         lucide.createIcons();
     }
-
+    
     function renderCharts(tasks) {
         const isDark = document.documentElement.getAttribute("data-theme") === "dark";
         const txt = isDark ? "#f8fafc" : "#0f172a";
