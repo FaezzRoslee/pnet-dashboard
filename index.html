@@ -209,14 +209,13 @@
         th { text-align: left; padding: 12px 10px; background: var(--hover-bg); font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
         td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-main); line-height: 1.4; vertical-align: middle; word-wrap: break-word; } 
         
-        /* Lebar Lajur Jadual Yang Diubah Suai */
         th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; } 
-        th:nth-child(2), td:nth-child(2) { width: auto; min-width: 250px; } /* Aktiviti dilebarkan */
+        th:nth-child(2), td:nth-child(2) { width: auto; min-width: 250px; } 
         th:nth-child(3), td:nth-child(3) { width: 150px; } 
         th:nth-child(4), td:nth-child(4) { width: 80px; text-align: center; } 
         th:nth-child(5), td:nth-child(5) { width: 100px; text-align: center; } 
         th:nth-child(6), td:nth-child(6) { width: 100px; text-align: center; } 
-        th:nth-child(7), td:nth-child(7) { width: 25%; min-width: 250px; text-align: center; } /* Status sangat lebar! */
+        th:nth-child(7), td:nth-child(7) { width: 25%; min-width: 250px; text-align: center; } 
 
         .main-sec-row td { background: var(--primary); color: var(--card-bg); font-weight: 800; font-size: 13px; padding: 16px 20px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--accent); white-space: normal; }
         [data-theme="dark"] .main-sec-row td { background: var(--accent); color: #ffffff; }
@@ -243,7 +242,7 @@
             border: 1px dashed rgba(59, 130, 246, 0.4); 
             white-space: normal;
             font-size: 10.5px;
-            text-align: left; /* Teks dibiarkan ke kiri supaya senang dibaca */
+            text-align: left;
             padding: 10px 12px;
             line-height: 1.5;
             font-weight: 600;
@@ -421,7 +420,7 @@
                             <button class="btn-clear-all" style="margin-left:auto;" onclick="openModal('clear-all-modal')" title="Hapus Data Upload"><i data-lucide="trash-2" style="width:12px;"></i> <span data-i18n="btn_clear">Padam Lokal</span></button>
                         </h4>
                         
-                        <div id="project-list-sidebar" style="flex-grow: 1; overflow-y: auto; padding-right: 5px; max-height: 250px; display: flex; flex-direction: column; gap: 8px;"></div>
+                        <div id="project-list-sidebar" style="flex-grow: 1; overflow-y: auto; padding-right: 5px; max-height: 250px; display: flex; flex-direction: column; gap: 4px;"></div>
                         
                         <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 15px; border-style: dashed; padding: 12px;"><i data-lucide="plus" style="width:16px;"></i> <span data-i18n="btn_add_proj">Tambah Projek</span> <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls"></label>
                     </div>
@@ -768,30 +767,25 @@
         currentLang = lang;
         localStorage.setItem('pnet_lang', lang);
         
-        // Active Button styling
         document.getElementById('btn-lang-ms').classList.remove('active');
         document.getElementById('btn-lang-en').classList.remove('active');
         document.getElementById('btn-lang-' + lang).classList.add('active');
 
-        // Translate inner HTML
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if(i18n[lang][key]) { el.innerHTML = i18n[lang][key]; }
         });
 
-        // Translate Placeholders
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
             const key = el.getAttribute('data-i18n-placeholder');
             if(i18n[lang][key]) { el.placeholder = i18n[lang][key]; }
         });
 
-        // Update Waktu Terkini
         const savedTime = localStorage.getItem("pnet_last_update");
         if(savedTime) {
             document.getElementById('last-update-time').innerText = savedTime;
         }
 
-        // Re-render UI components if active
         if(document.getElementById('home-page').style.display !== 'none') { showHome(); } 
         else { updateUI(); }
         renderResources();
@@ -813,13 +807,11 @@
     let topicChart, unitChart;
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
-    // Helper Fungsi Format Masa
     function formatDateTime(d) {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
         return d.toLocaleDateString(currentLang === 'ms' ? 'ms-MY' : 'en-GB', options);
     }
 
-    // Fungsi format tarikh masa kemaskini GLOBAL (Footer)
     function updateTimestamp() {
         const timeStr = formatDateTime(new Date());
         localStorage.setItem("pnet_last_update", timeStr);
@@ -1121,7 +1113,6 @@
             }
             
             let cols = [];
-            // BACA EXCEL SEHINGGA LAJUR G (7)
             for(let i=0; i<7; i++) cols.push(String(row[i] || "").trim());
             let [colA, colB, colC, colD, colE, colF, colG] = cols;
 
@@ -1184,16 +1175,13 @@
             const final_j = isValidDate(j) ? j : "-";
             const final_s = isValidDate(s) ? s : "-";
             
-            // KIRAAN DEFAULT SISTEM
             const autoStatus = getStatus(final_j, final_s);
 
             let finalLabel = "";
             let isCustomNote = false;
             
-            // === LOGIK UTAMA BACA STATUS DARI EXCEL ===
             if (colG !== undefined && colG !== "") {
                 finalLabel = colG;
-                
                 let checkStr = colG.toLowerCase().replace(/\s+/g, '');
                 if (checkStr.includes('selesai') || checkStr === 'done' || checkStr === 'completed') {
                     finalLabel = 'SELESAI';
@@ -1302,22 +1290,51 @@
         renderCharts(tasks); renderTable(p.data);
     }
 
+    // =========================================================================
+    // FUNGSI UPDATESIDEBAR (Diubahsuai untuk group ikut FASA)
+    // =========================================================================
     function updateSidebar() {
-        const c = document.getElementById('project-list-sidebar'); c.innerHTML = "";
-        Object.keys(projectsMap).forEach(id => {
-            const active = id === activeId ? 'active' : '';
-            const cloudIcon = projectsMap[id].isCloud ? '<span class="cloud-badge" style="margin-left:auto;">SYNC</span>' : '';
-            
-            const sideIcon = projectsMap[id].isCloud ? 'briefcase' : 'folder-open';
-            
-            c.innerHTML += `<div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();">
-                <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
-                    <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${sideIcon}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
-                    <span class="proj-name">${projectsMap[id].name}</span>
-                </div>
-                ${cloudIcon}
-                ${!id.startsWith('master_') ? `<button class="btn-delete-proj" onclick="showDeleteModal('${id}', event)"><i data-lucide="trash-2" style="width:14px;"></i></button>` : ''}
-            </div>`;
+        const c = document.getElementById('project-list-sidebar'); 
+        c.innerHTML = "";
+        
+        const groups = [
+            { key: 1, label: "FASA 1 - PEROLEHAN" },
+            { key: 2, label: "FASA 2 - PEMASANGAN" },
+            { key: 3, label: "FASA 3 - PEMBAYARAN" },
+            { key: 'lain', label: "LAIN-LAIN" }
+        ];
+
+        groups.forEach(group => {
+            const groupProjects = Object.keys(projectsMap).filter(id => {
+                const fasa = projectsMap[id].fasa || 'lain';
+                return fasa == group.key; 
+            });
+
+            if (groupProjects.length > 0) {
+                // Header Kumpulan Fasa
+                c.innerHTML += `
+                    <div style="font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 15px 0 5px 5px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent);"></div>
+                        ${group.label}
+                    </div>
+                `;
+                
+                // Senarai Projek di bawah kumpulan tersebut
+                groupProjects.forEach(id => {
+                    const active = id === activeId ? 'active' : '';
+                    const cloudIcon = projectsMap[id].isCloud ? '<span class="cloud-badge" style="margin-left:auto;">SYNC</span>' : '';
+                    const sideIcon = projectsMap[id].isCloud ? 'briefcase' : 'folder-open';
+                    
+                    c.innerHTML += `<div class="project-item-sidebar ${active}" onclick="activeId='${id}';updateUI();">
+                        <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                            <div style="padding:6px; border-radius:8px; background:${active ? 'rgba(59,130,246,0.1)' : 'var(--hover-bg)'}"><i data-lucide="${sideIcon}" style="width:16px; color:${active ? 'var(--accent)' : 'var(--text-muted)'};"></i></div>
+                            <span class="proj-name">${projectsMap[id].name}</span>
+                        </div>
+                        ${cloudIcon}
+                        ${!id.startsWith('master_') ? `<button class="btn-delete-proj" onclick="showDeleteModal('${id}', event)"><i data-lucide="trash-2" style="width:14px;"></i></button>` : ''}
+                    </div>`;
+                });
+            }
         });
         lucide.createIcons();
     }
@@ -1376,11 +1393,9 @@
                 let translatedStatus = item.status;
                 
                 if (item.isCustomNote) {
-                    // KOTAK NOTA CUSTOM BILA BACA DARI EXCEL
                     badgeClass = 'nota-custom';
                     translatedStatus = item.status; 
                 } else {
-                    // LENCANA WARNA (BADGE) AUTOMATIK / STANDARD STATUS
                     const s = String(item.status).toLowerCase().replace(/\s/g, '');
                     
                     if (s === 'siapawal') badgeClass = 'siapawal';
