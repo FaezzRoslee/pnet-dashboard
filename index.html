@@ -414,15 +414,15 @@
                         <div style="flex-grow: 1; position: relative;"><canvas id="unitChart"></canvas></div>
                     </div>
 
-                    <div class="chart-box">
-                        <h4 class="chart-header-title">
+                   <div class="chart-box">
+                        <h4 class="chart-header-title" style="flex-shrink: 0;">
                             <i data-lucide="folder-open" style="width:18px; color:var(--accent);"></i> <span data-i18n="proj_title">Fail Projek</span>
                             <button class="btn-clear-all" style="margin-left:auto;" onclick="openModal('clear-all-modal')" title="Hapus Data Upload"><i data-lucide="trash-2" style="width:12px;"></i> <span data-i18n="btn_clear">Padam Lokal</span></button>
                         </h4>
                         
-                        <div id="project-list-sidebar" style="flex-grow: 1; overflow-y: auto; padding-right: 5px; max-height: 250px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px;"></div>
+                        <div id="project-list-sidebar" style="flex-grow: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; min-height: 0;"></div>
                         
-                        <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: auto; border-style: dashed; padding: 12px;"><i data-lucide="plus" style="width:16px;"></i> <span data-i18n="btn_add_proj">Tambah Projek</span> <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls"></label>
+                        <label class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: auto; border-style: dashed; padding: 12px; flex-shrink: 0;"><i data-lucide="plus" style="width:16px;"></i> <span data-i18n="btn_add_proj">Tambah Projek</span> <input type="file" id="fileInputSidebar" hidden accept=".xlsx, .xls"></label>
                     </div>
 
                 </div>
