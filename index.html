@@ -1063,8 +1063,8 @@
             const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
             totalTask += tasks.length;
 
-            // PEMBETULAN PERATUSAN DI HOME
-            const done = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
+            // KIRAAN PERATUSAN BARU BERDASARKAN KPI STATUS SEBENAR
+            const done = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT').length;
             totalDone += done;
 
             const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
@@ -1253,6 +1253,7 @@
 
             let finalLabel = "";
             let isCustomNote = false;
+            let kpiStatus = autoStatus.label; // SIMPAN STATUS MATEMATIK ASAL BERDASARKAN TARIKH
             
             if (colG !== undefined && colG !== "") {
                 finalLabel = colG;
@@ -1264,7 +1265,7 @@
                 } else if (checkStr.includes('siapawal')) {
                     finalLabel = 'SIAP AWAL';
                     isCustomNote = false;
-                } else if (checkStr.includes('siaplewat')) { // PENAMBAHAN BARU
+                } else if (checkStr.includes('siaplewat')) { 
                     finalLabel = 'SIAP LEWAT';
                     isCustomNote = false;
                 } else if (checkStr.includes('dalamproses') || checkStr === 'pending' || checkStr === 'inprogress') {
@@ -1290,7 +1291,8 @@
                 tempoh: colD || "-", 
                 j: final_j, 
                 s: final_s, 
-                status: finalLabel, 
+                status: finalLabel, // Untuk paparan
+                kpiStatus: kpiStatus, // Untuk pengiraan matematik
                 rawDays: autoStatus.days, 
                 isCustomNote: isCustomNote 
             });
@@ -1355,11 +1357,11 @@
         
         animateNum('kpi-total', tasks.length);
         
-        // PEMBETULAN PERATUSAN DI DASHBOARD CARTA
-        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
+        // PENGIRAAN KPI BARU (GUNA kpiStatus BERBANDING status)
+        const doneCount = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT').length;
         animateNum('kpi-done', doneCount);
-        animateNum('kpi-track', tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.isCustomNote).length);
-        animateNum('kpi-delay', tasks.filter(t => t.status === 'LEWAT').length);
+        animateNum('kpi-track', tasks.filter(t => t.kpiStatus === 'DALAM PROSES' || t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'MENUNGGU').length);
+        animateNum('kpi-delay', tasks.filter(t => t.kpiStatus === 'LEWAT').length);
         
         const perc = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
         animateNum('global-percent', perc, '%');
@@ -1439,10 +1441,10 @@
         labels.forEach((l, i) => { const c = chartColors[i % chartColors.length]; leg += `<div class="legend-item" title="${l}"><div class="legend-left"><span class="legend-color" style="background:${c}"></span><span class="legend-text">${l}</span></div><span class="legend-val">${data[i]}</span></div>`; });
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
         
-        // PENGIRAAN BARU CARTA BAR KELEWATAN UNIT
         const units = {}; 
         tasks.forEach(t => { 
-            if (t.rawDays > 0 && t.status === 'LEWAT') {
+            // CARTA GUNA kpiStatus UNTUK KENALPASTI KELEWATAN
+            if (t.rawDays > 0 && t.kpiStatus === 'LEWAT') {
                 units[t.unit] = (units[t.unit] || 0) + t.rawDays; 
             }
         });
@@ -1644,10 +1646,10 @@
         let filt = [], hBg = '', title = '', icon = '';
         
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = i18n[currentLang].kpi_task; icon = 'clipboard-list'; } 
-        // PEMBETULAN PERATUSAN DI MODAL (BUANG isCustomNote DARI SELESAI, MASUK KE DALAM PROSES)
-        else if(type === 'SELESAI') { filt = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
-        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.status === 'MENUNGGU' || t.isCustomNote); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
-        else if(type === 'LEWAT') { filt = tasks.filter(t => t.status === 'LEWAT'); hBg = 'var(--danger)'; title = i18n[currentLang].kpi_delay; icon = 'alert-triangle'; }
+        // MODAL GUNA kpiStatus JUGA SEKARANG
+        else if(type === 'SELESAI') { filt = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
+        else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.kpiStatus === 'DALAM PROSES' || t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'MENUNGGU'); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
+        else if(type === 'LEWAT') { filt = tasks.filter(t => t.kpiStatus === 'LEWAT'); hBg = 'var(--danger)'; title = i18n[currentLang].kpi_delay; icon = 'alert-triangle'; }
         
         document.getElementById('modal-header').style.background = hBg;
         document.getElementById('modal-title').innerHTML = `<i data-lucide="${icon}"></i> ${p.name} - ${title}`;
@@ -1657,7 +1659,7 @@
         else {
             filt.forEach(t => {
                 let bt = '0', bb = 'var(--hover-bg)', bc = 'var(--text-muted)';
-                if((t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT') && t.j && t.s && t.j !== "-" && t.s !== "-") { 
+                if((t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT') && t.j && t.s && t.j !== "-" && t.s !== "-") { 
                     const dj = parseDateHelper(t.j); const ds = parseDateHelper(t.s); 
                     if(dj && ds) { 
                         const d = Math.ceil((ds - dj)/(1000*3600*24)); 
@@ -1666,7 +1668,7 @@
                         bc = d > 0 ? 'var(--danger)' : 'var(--success)'; 
                     } 
                 }
-                else if(t.status === 'LEWAT') { bt = `+${t.rawDays}H`; bb = 'rgba(239,68,68,0.1)'; bc = 'var(--danger)'; }
+                else if(t.kpiStatus === 'LEWAT') { bt = `+${t.rawDays}H`; bb = 'rgba(239,68,68,0.1)'; bc = 'var(--danger)'; }
                 
                 b.innerHTML += `<div class="modal-task-card" style="background:var(--card-bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:${bb}; color:${bc}; padding:10px; border-radius:8px; font-weight:bold; min-width:50px; text-align:center;">${bt}</div><div><h4 style="margin:0 0 5px; line-height: 1.4;">${t.aktiviti}</h4><span style="font-size:11px; color:var(--text-muted);">${i18n[currentLang].expected}: ${t.j} | ${i18n[currentLang].actual}: ${t.s}</span></div></div>`;
             });
@@ -1699,10 +1701,10 @@
         
         if (tasks.length === 0) { showToast("Tiada data tugasan dalam projek ini untuk dijana."); return; }
 
-        // PEMBETULAN PERATUSAN DI JANAAN LAPORAN (BUANG isCustomNote DARI Selesai, MASUK DALAM Proses)
-        const doneCount = tasks.filter(t => t.status === 'SELESAI' || t.status === 'SIAP AWAL' || t.status === 'SIAP LEWAT').length;
-        const delayCount = tasks.filter(t => t.status === 'LEWAT').length;
-        const processCount = tasks.filter(t => t.status === 'DALAM PROSES' || t.status === 'HAMPIR TAMAT' || t.isCustomNote).length;
+        // GUNA kpiStatus DI JANAAN LAPORAN JUGA
+        const doneCount = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT').length;
+        const delayCount = tasks.filter(t => t.kpiStatus === 'LEWAT').length;
+        const processCount = tasks.filter(t => t.kpiStatus === 'DALAM PROSES' || t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'MENUNGGU').length;
         const perc = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
 
         let summaryText = `Projek <b>${p.name}</b> yang dikawal selia oleh <b>${p.pic || "PIC tidak ditetapkan"}</b> kini mencatatkan tahap kemajuan sebanyak <b>${perc}%</b> (Selesai: ${doneCount}/${tasks.length} tugasan). `;
