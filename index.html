@@ -1257,8 +1257,15 @@
             if (colG !== undefined && colG !== "") {
                 finalLabel = colG;
                 let checkStr = colG.toLowerCase().replace(/\s+/g, '');
+                
                 if (checkStr.includes('selesai') || checkStr === 'done' || checkStr === 'completed') {
                     finalLabel = 'SELESAI';
+                    isCustomNote = false;
+                } else if (checkStr.includes('siapawal')) {
+                    finalLabel = 'SIAP AWAL';
+                    isCustomNote = false;
+                } else if (checkStr.includes('siaplewat')) { // PENAMBAHAN BARU
+                    finalLabel = 'SIAP LEWAT';
                     isCustomNote = false;
                 } else if (checkStr.includes('dalamproses') || checkStr === 'pending' || checkStr === 'inprogress') {
                     finalLabel = 'DALAM PROSES';
@@ -1432,15 +1439,18 @@
         labels.forEach((l, i) => { const c = chartColors[i % chartColors.length]; leg += `<div class="legend-item" title="${l}"><div class="legend-left"><span class="legend-color" style="background:${c}"></span><span class="legend-text">${l}</span></div><span class="legend-val">${data[i]}</span></div>`; });
         document.getElementById('customLegendArea').innerHTML = leg + '</div>';
         
-        const units = {}; tasks.forEach(t => { if(t.rawDays > 0) units[t.unit] = (units[t.unit] || 0) + t.rawDays; });
-        const rawUnitLabels = Object.keys(units);
+        // PENGIRAAN BARU CARTA BAR KELEWATAN UNIT
+        const units = {}; 
+        tasks.forEach(t => { 
+            if (t.rawDays > 0 && t.status === 'LEWAT') {
+                units[t.unit] = (units[t.unit] || 0) + t.rawDays; 
+            }
+        });
         
+        const rawUnitLabels = Object.keys(units);
         const wrappedLabels = rawUnitLabels.map(label => {
-            if (label.length <= 20) return label;
-            const words = label.split(' ');
-            if (words.length <= 1) return label;
-            const half = Math.ceil(words.length / 2);
-            return [words.slice(0, half).join(' '), words.slice(half).join(' ')];
+            if (label.length <= 15) return label;
+            return label.substring(0, 15) + '...';
         });
 
         if (unitChart) unitChart.destroy();
