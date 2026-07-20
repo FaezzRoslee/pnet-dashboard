@@ -129,6 +129,16 @@
         .home-stat-box h2 { margin: 0 0 4px; font-size: 28px; font-weight: 800; color: var(--text-main); line-height: 1; }
         .home-stat-box span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* KAD PROJEK GRID UNTUK WEB / DESKTOP */
+        #home-project-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 25px; 
+            max-width: 1150px; 
+            margin: 0 auto; 
+            width: 100%;
+        }
+
         .home-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; box-shadow: var(--card-shadow); }
         .home-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 40px -10px var(--glow-color); border-color: var(--accent); }
         .home-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
@@ -279,6 +289,27 @@
         .icon-big { width: 60px; height: 60px; stroke-width: 1.5; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px; display: inline-block; }
         .input-cloud { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover-bg); color: var(--text-main); margin-bottom: 20px; outline: none; font-size: 13px; text-align: left; cursor: pointer;}
         
+        /* CHANGELOG (APA YANG TERBARU) MODAL STYLES */
+        .changelog-item {
+            text-align: left;
+            padding: 16px;
+            background: var(--hover-bg);
+            border-left: 4px solid var(--accent);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            transition: 0.3s;
+        }
+        .changelog-item:hover { transform: translateX(4px); border-color: var(--success); }
+        .changelog-version { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .changelog-date { font-size: 10px; color: var(--text-muted); font-weight: 600; background: var(--card-bg); padding: 3px 8px; border-radius: 12px; border: 1px solid var(--border); }
+        .changelog-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin: 0; font-weight: 500; }
+        
+        #app-version-badge {
+            font-size: 10px; color: var(--accent); font-weight: bold; margin-top: 5px; display: inline-block; 
+            padding: 3px 8px; border-radius: 6px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); transition: 0.3s;
+        }
+
         /* FOOTER */
         .premium-footer {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('1560128.jpg');
@@ -289,6 +320,22 @@
         .footer-left { max-width: 600px; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
         
+        /* BASE STYLES FOR MOBILE NAVBAR (Hidden by default on Desktop) */
+        .bottom-nav-bar {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--card-bg); box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+            border-top: 1px solid var(--border); z-index: 999;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 12px 0; color: var(--text-muted); background: transparent; border: none; cursor: pointer;
+            transition: 0.2s; gap: 4px;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { width: 22px; height: 22px; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+
         /* PRINT SETTINGS (Jana Laporan) */
         @media print {
             @page { size: landscape; margin: 15mm; }
@@ -305,11 +352,249 @@
             #print-only-report { display: block !important; margin-bottom: 20px; page-break-after: avoid; }
         }
 
+        @media (min-width: 1025px) {
+            /* Matikan fungsi klik pada Desktop untuk Version Badge */
+            #app-version-badge { cursor: default; pointer-events: none; }
+            #splash-screen { display: none !important; }
+            /* Sembunyikan pop-up kemaskini di Desktop sepenuhnya */
+            #app-update-prompt { display: none !important; }
+        }
+
         @media (max-width: 1024px) { .top-panel { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .header-main { justify-content: center; } .header-actions { width: 100%; justify-content: center; flex-wrap: wrap;} .charts-grid { grid-template-columns: 1fr; } }
+        
+        /* ========================================================================= */
+        /* MEDIA QUERIES UNTUK MOBILE SAHAJA (Tidak ganggu Desktop / Web)           */
+        /* ========================================================================= */
+        @media (max-width: 1024px) { 
+            #app-version-badge { cursor: pointer; }
+            #app-version-badge:hover { background: rgba(59, 130, 246, 0.2); }
+
+            /* Sembunyikan butang yang berulang dengan bottom nav */
+            .header-main .btn-upload, .header-main #homeBtn, .header-main #syncBtn, .header-main [onclick="openModal('add-resource-modal')"] { display: none; }
+            .header-main { 
+                position: sticky; top: 0; z-index: 900;
+                justify-content: space-between !important; padding: 12px 20px !important; margin: 0 0 15px 0 !important;
+                border-radius: 0 0 20px 20px !important;
+                background: rgba(255, 255, 255, 0.9) !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+            }
+            [data-theme="dark"] .header-main { background: rgba(30, 41, 59, 0.9) !important; }
+            .header-actions { width: 100%; justify-content: space-between !important; flex-wrap: nowrap !important; }
+            .container { padding: 0 15px !important; width: 100% !important; overflow-x: hidden !important;}
+            
+            /* Tunjukkan Navigasi Bawah dan jarakkan body */
+            .bottom-nav-bar { display: flex !important; }
+            body { padding-bottom: 80px !important; } 
+
+            /* HERO SECTION (LEBIH COMPACT) */
+            #home-page { padding: 10px 0 80px 0 !important; width: 100% !important; overflow-x: hidden !important;}
+            .gradient-text { font-size: 24px !important; margin-bottom: 5px !important; }
+            #home-page > div > p { font-size: 12px !important; margin-bottom: 15px !important; line-height: 1.4 !important; padding: 0 15px !important;}
+
+            /* STATISTIK (SWIPE KIRI KANAN) */
+            .home-stats-row { 
+                flex-wrap: nowrap !important; overflow-x: auto !important; 
+                justify-content: flex-start !important; 
+                padding: 5px 15px 15px 15px !important; margin-bottom: 15px !important;
+                gap: 12px !important;
+                -ms-overflow-style: none !important; scrollbar-width: none !important;
+            }
+            .home-stats-row::-webkit-scrollbar { display: none !important; }
+            .home-stat-box { 
+                min-width: 140px !important; padding: 15px !important;
+                flex-direction: column !important; align-items: flex-start !important; gap: 8px !important;
+            }
+            .home-stat-box i { width: 32px !important; height: 32px !important; padding: 7px !important; }
+            .home-stat-box h2 { font-size: 22px !important; }
+            .home-stat-box span { font-size: 10px !important; }
+
+            /* FASA PILIHAN (SWIPE KIRI KANAN) */
+            .fasa-filter-container {
+                flex-wrap: nowrap !important; overflow-x: auto !important; 
+                justify-content: flex-start !important; 
+                padding: 0 15px 15px 15px !important; margin-bottom: 10px !important;
+                gap: 8px !important;
+                -ms-overflow-style: none !important; scrollbar-width: none !important;
+            }
+            .fasa-filter-container::-webkit-scrollbar { display: none !important; }
+            .fasa-btn { white-space: nowrap !important; padding: 8px 16px !important; font-size: 11px !important; }
+
+            /* KAD PROJEK (SWIPE KIRI KANAN) - OVERRIDE GRID WEB KE FLEX SWIPE */
+            #home-project-grid { 
+                display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important;
+                gap: 15px !important; padding: 5px 15px 20px 15px !important; margin: 0 -15px !important;
+                scroll-snap-type: x mandatory !important; 
+                -ms-overflow-style: none !important; scrollbar-width: none !important;
+            }
+            #home-project-grid::-webkit-scrollbar { display: none !important; }
+            .home-card { 
+                width: 85vw !important; 
+                max-width: 320px !important; 
+                flex-shrink: 0 !important;
+                scroll-snap-align: center !important; 
+                padding: 20px !important; min-height: auto !important; 
+                white-space: normal !important;
+            }
+            .home-card h3 { font-size: 16px !important; margin-bottom: 15px !important; white-space: normal !important; word-wrap: break-word !important;}
+
+            /* DASHBOARD MOBILE APP VIEW */
+            #dashboard-content { width: 100% !important; overflow-x: hidden !important; padding-bottom: 20px !important;}
+            .top-panel { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 15px !important;}
+            .charts-grid { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 15px !important;}
+            .chart-box { width: 100% !important; min-height: 280px !important; padding: 20px !important; }
+            
+            /* JADUAL WEB KEKAL UNTUK MOBILE (Auto Adjust & Fit Screen) */
+            .table-container { 
+                width: 100% !important; 
+                padding: 10px 5px !important; 
+                background: var(--card-bg) !important; 
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: none !important;
+            }
+            .table-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+            .search-box { width: 100% !important; max-width: none !important; }
+            
+            .table-wrapper { 
+                width: 100% !important; 
+                overflow-x: hidden !important; /* Tutup fungsi scroll kiri kanan */
+            }
+
+            .table-wrapper table {
+                table-layout: auto !important; /* Jadual auto-adjust ikut skrin */
+                width: 100% !important;
+            }
+
+            /* Baiki isu teks seketul-seketul menegak ke bawah */
+            .table-wrapper th, .table-wrapper td {
+                min-width: 0 !important; 
+                word-break: normal !important; 
+                overflow-wrap: break-word !important;
+                white-space: normal !important;
+                font-size: 9.5px !important; /* Kecilkan font supaya muat 7 lajur */
+                padding: 8px 3px !important; /* Rapatkan ruang kosong */
+                line-height: 1.3 !important;
+            }
+
+            .table-wrapper th { 
+                font-size: 8.5px !important; 
+                letter-spacing: -0.3px; 
+            }
+
+            /* Nisbah kelebaran lajur (Custom untuk Phone sahaja) */
+            th:nth-child(1), td:nth-child(1) { width: 4% !important; padding: 8px 1px !important;} /* Bil */
+            th:nth-child(2), td:nth-child(2) { width: 28% !important; } /* Aktiviti */
+            th:nth-child(3), td:nth-child(3) { width: 14% !important; } /* Tindakan */
+            th:nth-child(4), td:nth-child(4) { width: 8% !important; }  /* Tempoh */
+            th:nth-child(5), td:nth-child(5) { width: 15% !important; } /* Jangkaan */
+            th:nth-child(6), td:nth-child(6) { width: 15% !important; } /* Sebenar */
+            th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Status */
+
+            .main-sec-row td { font-size: 11px !important; padding: 10px 5px !important; }
+            .sec-row td { font-size: 10px !important; padding: 8px 5px !important; }
+            .badge, .glass-badge { font-size: 7.5px !important; padding: 4px !important; letter-spacing: 0; width: 100%;}
+        }
+
+        /* ========================================= */
+        /* SPLASH SCREEN ANIMATION (MOBILE APP)      */
+        /* ========================================= */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            background-image: radial-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 0);
+            background-size: 30px 30px;
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .splash-content {
+            text-align: center;
+            animation: splashFadeInUp 1s ease-out forwards;
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 10px 25px rgba(59, 130, 246, 0.4));
+            animation: splashPulse 2s infinite ease-in-out;
+        }
+
+        .splash-title {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            letter-spacing: 1px;
+        }
+
+        .splash-subtitle {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 700;
+            margin: 0 0 40px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .splash-loading-bar {
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .splash-loading-bar::after {
+            content: '';
+            position: absolute;
+            left: -50%;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 4px;
+            animation: splashLoadingAnim 1.2s infinite ease-in-out;
+        }
+
+        @keyframes splashFadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes splashPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes splashLoadingAnim {
+            0% { left: -50%; }
+            100% { left: 100%; }
+        }
     </style>
 </head>
 <body>
+
+<!-- KOD SPLASH SCREEN MULA DI SINI -->
+<div id="splash-screen">
+    <div class="splash-content">
+        <img src="./uprlogo.png" alt="Logo UPR" class="splash-logo">
+        <h1 class="splash-title">PNET MOBILE</h1>
+        <p class="splash-subtitle">Unit Pengurusan Rangkaian</p>
+        <div class="splash-loading-bar"></div>
+    </div>
+</div>
+<!-- KOD SPLASH SCREEN TAMAT DI SINI -->
 
 <div id="toast-container"></div>
 
@@ -383,7 +668,7 @@
             <button class="fasa-btn active" onclick="filterFasa('all', this)" data-i18n="fasa_all">SEMUA PROJEK</button>
         </div>
 
-        <div id="home-project-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; max-width: 1150px; margin: 0 auto; width: 100%;">
+        <div id="home-project-grid">
         </div>
     </div>
 
@@ -488,6 +773,27 @@
     </div>
 </div>
 
+<nav class="bottom-nav-bar no-print">
+    <button class="nav-item active" onclick="showHome()" title="Home">
+        <i data-lucide="home"></i>
+        <span>HOME</span>
+    </button>
+    <button class="nav-item" onclick="openModal('cloud-modal')" title="Google Sheets">
+        <i data-lucide="file-spreadsheet"></i>
+        <span>SHEETS</span>
+    </button>
+    <label class="nav-item" title="Upload">
+        <i data-lucide="file-up"></i>
+        <span>UPLOAD</span>
+        <input type="file" id="fileInputBottom" hidden accept=".xlsx, .xls">
+    </label>
+    <button class="nav-item" style="position: relative;" onclick="openNotificationModal()" title="Notification">
+        <i data-lucide="bell"></i>
+        <span>NOTI</span>
+        <span id="noti-badge" style="display:none; position: absolute; top: 4px; right: 15px; background: var(--danger); color: white; border-radius: 50%; padding: 2px 6px; font-size: 9px; font-weight: bold;">0</span>
+    </button>
+</nav>
+
 <footer class="premium-footer no-print">
     <div class="footer-content">
         <div class="footer-left">
@@ -515,6 +821,8 @@
         <div class="footer-modified">
             <span style="font-size: 12px; font-weight: 800; color: #fff;" data-i18n="footer_modified">PORTAL LAST MODIFIED :</span><br>
             <span id="last-update-time" style="color:#94a3b8; font-size: 12px; font-family: monospace;" data-i18n="footer_date">-</span>
+            <!-- TEKS VERSI DI SINI -->
+            <br><span id="app-version-badge" onclick="openChangelog()">v1.1.0</span>
         </div>
         <div style="font-size: 12px; color:#94a3b8; text-align: center; flex-grow: 1;" data-i18n="footer_copyright">
             © 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
@@ -532,6 +840,41 @@
     <div style="background: #f8fafc; padding: 20px; border-left: 5px solid #3b82f6; border-radius: 8px; margin-bottom: 30px;">
         <h3 style="margin: 0 0 10px; color: #0f172a; font-size: 16px;">Rumusan Eksekutif Automatik</h3>
         <p id="print-ai-summary" style="margin: 0; font-size: 14px; line-height: 1.6; color: #334155;"></p>
+    </div>
+</div>
+
+<!-- MODAL APA YANG TERBARU (CHANGELOG) -->
+<div class="modal-overlay-custom" id="changelog-modal">
+    <div class="modal-card-custom" style="max-height: 85vh; display: flex; flex-direction: column; padding: 25px 20px;">
+        <div style="background:rgba(59, 130, 246, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 15px; flex-shrink: 0;">
+            <i data-lucide="sparkles" style="color:var(--accent); width:28px; height:28px;"></i>
+        </div>
+        <h3 style="margin-bottom: 5px;" data-i18n="modal_changelog_title">Apa Yang Terbaru?</h3>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px;">Sejarah kemas kini dan penambahbaikan aplikasi.</p>
+        
+        <div style="overflow-y: auto; flex-grow: 1; padding-right: 5px; margin-bottom: 15px;">
+            <!-- Item v1.0.0 -->
+            <div class="changelog-item">
+                <div class="changelog-version">v1.0.0 <span class="changelog-date">16 Julai 2026</span></div>
+                <p class="changelog-desc">
+                    ✨ Pelancaran versi rasmi PWA PNET Mobile.<br>
+                </p>
+            </div>
+        
+            <!-- Item v1.1.0 -->
+            <div class="changelog-item">
+                <div class="changelog-version">v1.1.0 <span class="changelog-date">17 Julai 2026</span></div>
+                <p class="changelog-desc">
+                    🐞 <i>Add bugs to fix later ;)</i>
+                </p>
+            </div>
+            
+            <!-- Anda boleh tambah item versi baharu di sini pada masa akan datang -->
+        </div>
+
+        <div class="modal-card-footer" style="margin-top: auto;">
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="closeModal('changelog-modal')">Tutup</button>
+        </div>
     </div>
 </div>
 
@@ -571,12 +914,58 @@
         <div style="background:rgba(16, 185, 129, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
             <i data-lucide="cloud-upload" style="color:#10b981;"></i>
         </div>
-        <h3 data-i18n="modal_cloud_title">Sambung Google Sheets</h3>
-        <p style="font-size:13px; color:var(--text-muted);" data-i18n="modal_cloud_desc">Masukkan pautan CSV (Publish to Web) bagi tab projek anda.</p>
-        <input type="text" id="cloudUrlInput" class="input-cloud" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv">
+        <h3 data-i18n="modal_cloud_title">Buka Google Sheets</h3>
+        <p style="font-size:13px; color:var(--text-muted);" data-i18n="modal_cloud_desc">Pilih fail projek untuk dibuka terus di aplikasi luaran.</p>
+        
+        <select id="cloudSelectFile" class="input-cloud" onchange="toggleCloudInput()" style="margin-bottom: 10px;">
+            <option value="">-- Pilih Fail Projek --</option>
+            <option value="master_1">NPA Infra Fasa 1</option>
+            <option value="master_2">Sewa Milik Infra Rangkaian</option>
+            <option value="master_3">Penyelenggaraan Switch</option>
+            <option value="master_4">Sebut Harga Wifi Awam</option>
+            <option value="master_5">Agihan Perkakasan Rangkaian Fasa 2</option>
+            <option value="master_6">Penilaian Rangkaian BPM</option>
+            <option value="master_7">Jadual Bayaran SW PDSA</option>
+            <option value="master_8">Tender Switch Fasa 1</option>
+            <option value="master_9">Tender Switch Fasa 2</option>
+            <option value="master_10">Timeline (BPM)</option>
+            <option value="custom">-- Masukkan Pautan Baru --</option>
+        </select>
+
+        <input type="text" id="cloudUrlInput" class="input-cloud" style="display:none;" placeholder="Pautan Google Sheets (Pilihan)">
+        
         <div class="modal-card-footer">
             <button class="btn btn-outline" onclick="closeModal('cloud-modal')" data-i18n="btn_cancel">Batal</button>
-            <button class="btn btn-sync" style="background:#10b981; color:white; border:none;" onclick="processCloudLink()" data-i18n="btn_connect">Sambung</button>
+            <button class="btn btn-sync" style="background:#10b981; color:white; border:none;" onclick="processCloudLink()" data-i18n="btn_open">Buka</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay-custom" id="external-confirm-modal">
+    <div class="modal-card-custom">
+        <div style="background:rgba(59, 130, 246, 0.1); width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+            <i data-lucide="external-link" style="width:35px; height:35px; color:var(--accent);"></i>
+        </div>
+        <h3 data-i18n="modal_ext_title">Buka Aplikasi Luar?</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom: 20px;" data-i18n="modal_ext_desc">Anda akan dibawa keluar dari PNET ke aplikasi Google Sheets atau pelayar web telefon anda untuk melihat fail tersebut.</p>
+        <div class="modal-card-footer">
+            <button class="btn btn-outline" onclick="closeModal('external-confirm-modal')" data-i18n="btn_cancel">Batal</button>
+            <button class="btn btn-primary" onclick="confirmExternalRedirect()" data-i18n="btn_open_app">Ya, Buka</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay-custom" id="notification-modal">
+    <div class="modal-card-custom" style="max-height: 80vh; display: flex; flex-direction: column;">
+        <div style="background:rgba(245, 158, 11, 0.1); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px; flex-shrink: 0;">
+            <i data-lucide="bell-ring" style="color:var(--warning);"></i>
+        </div>
+        <h3>Notifikasi Projek</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom: 15px;">Senarai aktiviti yang lewat atau hampir tamat.</p>
+        <div id="noti-list" style="overflow-y: auto; text-align: left; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; padding-right: 5px;">
+            </div>
+        <div class="modal-card-footer" style="margin-top: 20px;">
+            <button class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="closeModal('notification-modal')">Tutup</button>
         </div>
     </div>
 </div>
@@ -634,6 +1023,12 @@
     </div>
 </div>
 
+<!-- POP-UP NOTIFIKASI KEMASKINI APLIKASI -->
+<div id="app-update-prompt" style="display:none; position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--accent); color:white; padding:12px 20px; border-radius:30px; z-index:10000; box-shadow:0 10px 25px rgba(59,130,246,0.5); align-items:center; gap:12px; font-size:12px; font-weight:bold; white-space:nowrap; border: 2px solid rgba(255,255,255,0.2);">
+    🚀 Versi baharu tersedia! 
+    <button onclick="applyAppUpdate()" style="background:white; color:var(--accent); border:none; padding:6px 14px; border-radius:15px; cursor:pointer; font-weight:bold; font-size:11px; transition:0.2s;">Kemaskini</button>
+</div>
+
 <script>
     lucide.createIcons();
     Chart.register(ChartDataLabels);
@@ -686,8 +1081,8 @@
             "home_stat_task": "Jumlah Tugasan",
             "home_stat_prog": "Purata Kemajuan",
 
-            "modal_cloud_title": "Sambung Google Sheets",
-            "modal_cloud_desc": "Masukkan pautan CSV (Publish to Web) bagi tab projek anda.",
+            "modal_cloud_title": "Buka Google Sheets",
+            "modal_cloud_desc": "Pilih fail projek untuk dibuka terus di aplikasi luaran.",
             "modal_ref_title": "Tambah Rujukan Awan",
             "modal_ref_desc": "Simpan pautan Google Drive atau Google Docs untuk rujukan pantas.",
             "modal_ref_p1": "Nama (cth: Folder Tender Rasmi)",
@@ -695,13 +1090,17 @@
             "modal_del_desc": "Adakah anda pasti mahu memadam rekod untuk",
             "modal_clear_title": "Hapus Fail Muat Naik?",
             "modal_clear_desc": "Semua fail yang di-upload secara manual akan dibuang. <br><b>Tetapi Fail Master Cloud tidak akan terjejas.</b>",
+            "modal_ext_title": "Buka Aplikasi Luar?",
+            "modal_ext_desc": "Anda akan dibawa keluar dari PNET ke aplikasi Google Sheets atau pelayar web telefon anda.",
             "modal_list_title": "Senarai Aktiviti",
             "modal_upload_title": "Tetapan Muat Naik",
             "modal_upload_desc": "Nota: Fail yang dimuat naik secara manual <b>TIDAK</b> disimpan di dalam Cloud (Awan). Ia hanya untuk simpanan dan paparan lokal anda sahaja.",
             "modal_upload_label": "Pilih Kategori / Fasa Projek:",
+            "modal_changelog_title": "Apa Yang Terbaru?",
             "btn_cancel": "Batal",
             "btn_continue": "Teruskan",
-            "btn_connect": "Sambung",
+            "btn_open": "Buka",
+            "btn_open_app": "Ya, Buka",
             "btn_save": "Simpan",
             "btn_yes_delete": "Ya, Padam",
             "btn_clear_local": "Kosongkan Lokal",
@@ -767,8 +1166,8 @@
             "home_stat_task": "Total Tasks",
             "home_stat_prog": "Avg Progress",
 
-            "modal_cloud_title": "Connect Google Sheets",
-            "modal_cloud_desc": "Enter the CSV link (Publish to Web) for your project tab.",
+            "modal_cloud_title": "Open Google Sheets",
+            "modal_cloud_desc": "Select a project to open directly in the external app.",
             "modal_ref_title": "Add Cloud Resource",
             "modal_ref_desc": "Save Google Drive or Google Docs link for quick access.",
             "modal_ref_p1": "Name (e.g., Official Tender Folder)",
@@ -776,13 +1175,17 @@
             "modal_del_desc": "Are you sure you want to delete the record for",
             "modal_clear_title": "Clear Uploaded Files?",
             "modal_clear_desc": "All manually uploaded files will be removed. <br><b>Master Cloud Files will not be affected.</b>",
+            "modal_ext_title": "Open External App?",
+            "modal_ext_desc": "You will be redirected outside PNET to the Google Sheets app or your phone's web browser.",
             "modal_list_title": "Activity List",
             "modal_upload_title": "Upload Settings",
             "modal_upload_desc": "Note: Manually uploaded files are <b>NOT</b> saved to the Cloud. They are only saved and visible locally on your device.",
             "modal_upload_label": "Select Project Phase / Category:",
+            "modal_changelog_title": "What's New?",
             "btn_cancel": "Cancel",
             "btn_continue": "Continue",
-            "btn_connect": "Connect",
+            "btn_open": "Open",
+            "btn_open_app": "Yes, Open",
             "btn_save": "Save",
             "btn_yes_delete": "Yes, Delete",
             "btn_clear_local": "Clear Local",
@@ -851,6 +1254,8 @@
     let activeId = "master_1"; 
     let resourcesList = [];
     let topicChart, unitChart;
+    let pendingExternalUrl = ""; 
+
     const chartColors = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#818cf8', '#0ea5e9', '#38bdf8', '#0284c7'];
 
     function formatDateTime(d) {
@@ -867,13 +1272,26 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
 
+    /* FUNGSI BARU UNTUK BUKA MODAL CHANGELOG DI MOBILE SAHAJA */
+    function openChangelog() {
+        if (window.innerWidth <= 768) {
+            openModal('changelog-modal');
+        }
+    }
+
     function toggleTheme() {
         const curr = document.documentElement.getAttribute("data-theme");
         const next = curr === "dark" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", next);
         localStorage.setItem("pnet_theme", next);
-        document.querySelector('#themeBtn i').setAttribute('data-lucide', next === 'dark' ? 'sun' : 'moon');
+        
+        const themeIcon = document.querySelector('#themeBtn i');
+        if(themeIcon) {
+            themeIcon.setAttribute('data-lucide', next === 'dark' ? 'sun' : 'moon');
+        }
+        
         lucide.createIcons();
+        
         if(document.getElementById('dashboard-content').style.display !== 'none' && projectsMap[activeId] && projectsMap[activeId].data.length > 0) {
             renderCharts(projectsMap[activeId].data.filter(d => !d.isSec));
         }
@@ -886,12 +1304,17 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
     }
 
-    async function loadData() {
+   async function loadData() {
         document.getElementById('main-loader').style.display = 'flex';
 
         const st = localStorage.getItem("pnet_theme") || "light";
         document.documentElement.setAttribute("data-theme", st);
-        if(st === 'dark') document.querySelector('#themeBtn i').setAttribute('data-lucide', 'sun');
+        
+        const themeIconLoad = document.querySelector('#themeBtn i');
+        if(themeIconLoad && st === 'dark') {
+            themeIconLoad.setAttribute('data-lucide', 'sun');
+        }
+        
         lucide.createIcons();
 
         const savedTime = localStorage.getItem("pnet_last_update");
@@ -1039,6 +1462,12 @@
     function showHome() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('home-page').style.display = 'flex';
+        
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+        if(document.querySelectorAll('.nav-item').length > 0) {
+            document.querySelectorAll('.nav-item')[0].classList.add('active');
+        }
+
         renderHomeGrid();
     }
 
@@ -1063,7 +1492,6 @@
             const tasks = p.data ? p.data.filter(d => !d.isSec) : [];
             totalTask += tasks.length;
 
-            // KIRAAN PERATUSAN BARU BERDASARKAN KPI STATUS SEBENAR
             const done = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT').length;
             totalDone += done;
 
@@ -1136,12 +1564,16 @@
         document.getElementById('hs-prog').innerText = avgProg + '%';
 
         lucide.createIcons();
+        checkNotifications(); 
     }
 
     function openProjectFromHome(id) {
         activeId = id;
         document.getElementById('home-page').style.display = 'none';
         document.getElementById('dashboard-content').style.display = 'block';
+        
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
         updateUI();
     }
 
@@ -1253,7 +1685,7 @@
 
             let finalLabel = "";
             let isCustomNote = false;
-            let kpiStatus = autoStatus.label; // SIMPAN STATUS MATEMATIK ASAL BERDASARKAN TARIKH
+            let kpiStatus = autoStatus.label; 
             
             if (colG !== undefined && colG !== "") {
                 finalLabel = colG;
@@ -1291,8 +1723,8 @@
                 tempoh: colD || "-", 
                 j: final_j, 
                 s: final_s, 
-                status: finalLabel, // Untuk paparan
-                kpiStatus: kpiStatus, // Untuk pengiraan matematik
+                status: finalLabel, 
+                kpiStatus: kpiStatus, 
                 rawDays: autoStatus.days, 
                 isCustomNote: isCustomNote 
             });
@@ -1357,7 +1789,6 @@
         
         animateNum('kpi-total', tasks.length);
         
-        // PENGIRAAN KPI BARU (GUNA kpiStatus BERBANDING status)
         const doneCount = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT').length;
         animateNum('kpi-done', doneCount);
         animateNum('kpi-track', tasks.filter(t => t.kpiStatus === 'DALAM PROSES' || t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'MENUNGGU').length);
@@ -1443,7 +1874,6 @@
         
         const units = {}; 
         tasks.forEach(t => { 
-            // CARTA GUNA kpiStatus UNTUK KENALPASTI KELEWATAN
             if (t.rawDays > 0 && t.kpiStatus === 'LEWAT') {
                 units[t.unit] = (units[t.unit] || 0) + t.rawDays; 
             }
@@ -1549,7 +1979,7 @@
 
     let tempUploadFile = null;
 
-    const fileInputs = ['fileInputHeader', 'fileInputSidebar'];
+    const fileInputs = ['fileInputHeader', 'fileInputSidebar', 'fileInputBottom'];
     fileInputs.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('change', handleFileUpload); });
 
     function handleFileUpload(e) {
@@ -1608,22 +2038,40 @@
         r.readAsBinaryString(tempUploadFile);
     }
 
-    async function processCloudLink() {
-        const url = document.getElementById('cloudUrlInput').value.trim();
-        if(!url.toLowerCase().includes('csv')) { showToast("Sila guna pautan CSV"); return; }
-        showToast("Menarik data...");
-        try {
-            const bypassUrl = url + (url.includes('?') ? '&' : '?') + "t=" + new Date().getTime();
-            const res = await fetch(bypassUrl); 
-            const lUpd = formatDateTime(new Date());
+    function toggleCloudInput() {
+        const val = document.getElementById('cloudSelectFile').value;
+        document.getElementById('cloudUrlInput').style.display = (val === 'custom') ? 'block' : 'none';
+    }
+
+    function processCloudLink() {
+        const selectVal = document.getElementById('cloudSelectFile').value;
+        let url = "";
+
+        if (selectVal === 'custom') {
+            url = document.getElementById('cloudUrlInput').value.trim();
+            if(!url) { showToast("Sila masukkan pautan."); return; }
+        } else if (selectVal && masterProjectsTemplate[selectVal]) {
+            url = masterProjectsTemplate[selectVal].url;
+            url = url.replace('&output=csv', '').replace('?output=csv', '');
+        } else {
+            showToast("Sila pilih fail atau masukkan pautan."); return;
+        }
+
+        pendingExternalUrl = url;
+        closeModal('cloud-modal');
+        openModal('external-confirm-modal');
+    }
+
+    function confirmExternalRedirect() {
+        if(pendingExternalUrl) {
+            window.open(pendingExternalUrl, '_blank');
+            closeModal('external-confirm-modal');
             
-            const csv = await res.text();
-            const wb = XLSX.read(csv, { type: 'string', raw: true });
-            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-            const id = 'cloud_manual_' + Date.now();
-            projectsMap[id] = { name: "Manual Cloud Sync", fasa: 'lain', pic: "Cloud Sync", tajuk: "Pautan Awan Manual", data: processData(rows), isCloud: true, url: url, lastUpdated: lUpd };
-            activeId = id; saveToLocalStorage(); openProjectFromHome(id); closeModal('cloud-modal'); document.getElementById('cloudUrlInput').value = '';
-        } catch(e) { showToast("Gagal menarik pautan awan."); }
+            document.getElementById('cloudUrlInput').value = '';
+            document.getElementById('cloudSelectFile').value = '';
+            document.getElementById('cloudUrlInput').style.display = 'none';
+            pendingExternalUrl = "";
+        }
     }
 
     let pToDelete = null;
@@ -1646,7 +2094,6 @@
         let filt = [], hBg = '', title = '', icon = '';
         
         if(type === 'TUGASAN') { filt = tasks; hBg = 'var(--accent)'; title = i18n[currentLang].kpi_task; icon = 'clipboard-list'; } 
-        // MODAL GUNA kpiStatus JUGA SEKARANG
         else if(type === 'SELESAI') { filt = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT'); hBg = 'var(--success)'; title = i18n[currentLang].kpi_done; icon = 'check-circle-2'; } 
         else if(type === 'DALAM PROSES') { filt = tasks.filter(t => t.kpiStatus === 'DALAM PROSES' || t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'MENUNGGU'); hBg = 'var(--accent)'; title = i18n[currentLang].kpi_process; icon = 'activity'; } 
         else if(type === 'LEWAT') { filt = tasks.filter(t => t.kpiStatus === 'LEWAT'); hBg = 'var(--danger)'; title = i18n[currentLang].kpi_delay; icon = 'alert-triangle'; }
@@ -1701,7 +2148,6 @@
         
         if (tasks.length === 0) { showToast("Tiada data tugasan dalam projek ini untuk dijana."); return; }
 
-        // GUNA kpiStatus DI JANAAN LAPORAN JUGA
         const doneCount = tasks.filter(t => t.kpiStatus === 'SELESAI' || t.kpiStatus === 'SIAP AWAL' || t.kpiStatus === 'SIAP LEWAT').length;
         const delayCount = tasks.filter(t => t.kpiStatus === 'LEWAT').length;
         const processCount = tasks.filter(t => t.kpiStatus === 'DALAM PROSES' || t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'MENUNGGU').length;
@@ -1727,6 +2173,101 @@
         document.getElementById('print-only-report').style.display = 'block';
         window.print();
         setTimeout(() => { document.getElementById('print-only-report').style.display = 'none'; }, 500);
+    }
+
+    function checkNotifications() {
+        let alertCount = 0;
+        const notiList = document.getElementById('noti-list');
+        if(!notiList) return;
+        notiList.innerHTML = '';
+
+        Object.keys(projectsMap).forEach(id => {
+            const p = projectsMap[id];
+            if(p.data) {
+                p.data.forEach(t => {
+                    if(!t.isSec && (t.kpiStatus === 'HAMPIR TAMAT' || t.kpiStatus === 'LEWAT')) {
+                        alertCount++;
+                        let icon = t.kpiStatus === 'LEWAT' ? '<i data-lucide="alert-circle" style="color:var(--danger); width:16px;"></i>' : '<i data-lucide="clock" style="color:var(--warning); width:16px;"></i>';
+                        let color = t.kpiStatus === 'LEWAT' ? 'var(--danger)' : 'var(--warning)';
+
+                        notiList.innerHTML += `
+                            <div style="background: var(--card-bg); border: 1px solid var(--border); border-left: 4px solid ${color}; padding: 12px; border-radius: 8px;">
+                                <div style="font-size: 10px; font-weight: bold; color: var(--text-muted); margin-bottom: 4px;">${p.name}</div>
+                                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                                    <div style="flex-shrink:0; margin-top:2px;">${icon}</div>
+                                    <div>
+                                        <div style="font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; line-height: 1.3;">${t.aktiviti}</div>
+                                        <div style="font-size: 10px; color: ${color}; font-weight: bold;">Status: ${t.kpiStatus} (Jangkaan: ${t.j})</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+        });
+
+        if (alertCount === 0) {
+            notiList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Semua projek berada dalam keadaan baik.</div>`;
+        }
+
+        const badge = document.getElementById('noti-badge');
+        if(badge) {
+            if(alertCount > 0) {
+                badge.style.display = 'block';
+                badge.innerText = alertCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        lucide.createIcons();
+    }
+
+    function openNotificationModal() {
+        checkNotifications();
+        openModal('notification-modal');
+    }
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            if(splash) {
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                setTimeout(() => splash.remove(), 500); 
+            }
+        }, 2500); 
+    });
+
+    let newWorker;
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log('Service worker berjaya didaftarkan');
+                
+                reg.addEventListener('updatefound', () => {
+                    newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            document.getElementById('app-update-prompt').style.display = 'flex';
+                        }
+                    });
+                });
+            }).catch(err => console.log('Service worker gagal didaftarkan', err));
+
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
+            });
+        });
+    }
+
+    function applyAppUpdate() {
+        if (newWorker) {
+            newWorker.postMessage({ action: 'skipWaiting' });
+        }
     }
 </script>
 
