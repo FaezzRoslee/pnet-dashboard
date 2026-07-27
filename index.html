@@ -274,6 +274,20 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeInUp 0.4s ease-out forwards; }
 
+        /* SCROLL INDICATOR STYLES */
+        .hide-on-desktop { display: none !important; }
+        
+        .indicator-text {
+            font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center; gap: 6px; opacity: 0.8;
+            margin: -5px auto 20px auto; background: rgba(59, 130, 246, 0.08); 
+            padding: 6px 14px; border-radius: 12px; width: max-content;
+        }
+        .anim-x { animation: slideX 1.2s infinite alternate ease-in-out; }
+        .anim-y { animation: slideY 1.2s infinite alternate ease-in-out; }
+        @keyframes slideX { 0% { transform: translateX(-4px); } 100% { transform: translateX(4px); } }
+        @keyframes slideY { 0% { transform: translateY(-3px); } 100% { transform: translateY(3px); } }
+
         /* MODALS */
         .modal-overlay, .modal-overlay-custom { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: 0.3s ease; }
         .modal-overlay.show, .modal-overlay-custom.show { display: flex; opacity: 1; }
@@ -369,6 +383,7 @@
         @media (max-width: 1024px) { 
             #app-version-badge { cursor: pointer; }
             #app-version-badge:hover { background: rgba(59, 130, 246, 0.2); }
+            .hide-on-desktop { display: flex !important; }
 
             /* Sembunyikan butang yang berulang dengan bottom nav */
             .header-main .btn-upload, .header-main #homeBtn, .header-main #syncBtn, .header-main [onclick="openModal('add-resource-modal')"] { display: none; }
@@ -392,7 +407,7 @@
             .gradient-text { font-size: 24px !important; margin-bottom: 5px !important; }
             #home-page > div > p { font-size: 12px !important; margin-bottom: 15px !important; line-height: 1.4 !important; padding: 0 15px !important;}
 
-            /* STATISTIK (SWIPE KIRI KANAN) */
+            /* STATISTIK (SWIPE KIRI KANAN KEKAL) */
             .home-stats-row { 
                 flex-wrap: nowrap !important; overflow-x: auto !important; 
                 justify-content: flex-start !important; 
@@ -409,7 +424,7 @@
             .home-stat-box h2 { font-size: 22px !important; }
             .home-stat-box span { font-size: 10px !important; }
 
-            /* FASA PILIHAN (SWIPE KIRI KANAN) */
+            /* FASA PILIHAN (SWIPE KIRI KANAN KEKAL) */
             .fasa-filter-container {
                 flex-wrap: nowrap !important; overflow-x: auto !important; 
                 justify-content: flex-start !important; 
@@ -420,19 +435,14 @@
             .fasa-filter-container::-webkit-scrollbar { display: none !important; }
             .fasa-btn { white-space: nowrap !important; padding: 8px 16px !important; font-size: 11px !important; }
 
-            /* KAD PROJEK (SWIPE KIRI KANAN) - OVERRIDE GRID WEB KE FLEX SWIPE */
+            /* KAD PROJEK (DITUKAR KEPADA SCROLL ATAS KE BAWAH SEPERTI BIASA) */
             #home-project-grid { 
-                display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important;
-                gap: 15px !important; padding: 5px 15px 20px 15px !important; margin: 0 -15px !important;
-                scroll-snap-type: x mandatory !important; 
-                -ms-overflow-style: none !important; scrollbar-width: none !important;
+                display: flex !important; flex-direction: column !important;
+                gap: 15px !important; padding: 5px 0 20px 0 !important; margin: 0 !important;
             }
-            #home-project-grid::-webkit-scrollbar { display: none !important; }
             .home-card { 
-                width: 85vw !important; 
-                max-width: 320px !important; 
-                flex-shrink: 0 !important;
-                scroll-snap-align: center !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
                 padding: 20px !important; min-height: auto !important; 
                 white-space: normal !important;
             }
@@ -660,6 +670,11 @@
                 <div><h2 id="hs-prog">0%</h2><span data-i18n="home_stat_prog">Purata Kemajuan</span></div>
             </div>
         </div>
+        
+        <!-- INDICATOR KIRI/KANAN UNTUK STATISTIK -->
+        <div class="indicator-text hide-on-desktop no-print">
+            <i data-lucide="move-horizontal" class="anim-x" style="width:14px;"></i> <span data-i18n="scroll_x">TATAL KIRI / KANAN</span>
+        </div>
 
         <div class="fasa-filter-container no-print" id="fasa-buttons">
             <button class="fasa-btn" onclick="filterFasa(1, this)" data-i18n="fasa_1">FASA 1 - PEROLEHAN</button>
@@ -668,7 +683,17 @@
             <button class="fasa-btn" onclick="filterFasa('lain', this)" data-i18n="fasa_lain">LAIN-LAIN</button>
             <button class="fasa-btn active" onclick="filterFasa('all', this)" data-i18n="fasa_all">SEMUA PROJEK</button>
         </div>
+        
+        <!-- INDICATOR KIRI/KANAN UNTUK BUTANG FASA -->
+        <div class="indicator-text hide-on-desktop no-print">
+            <i data-lucide="move-horizontal" class="anim-x" style="width:14px;"></i> <span data-i18n="scroll_x_fasa">TATAL KIRI / KANAN</span>
+        </div>
 
+        <!-- INDICATOR ATAS/BAWAH UNTUK KAD PROJEK -->
+        <div class="indicator-text hide-on-desktop no-print" style="margin-top: 15px;">
+            <i data-lucide="chevrons-down" class="anim-y" style="width:14px;"></i> <span data-i18n="scroll_y">TATAL KE BAWAH UNTUK PROJEK</span>
+        </div>
+        
         <div id="home-project-grid">
         </div>
     </div>
@@ -823,7 +848,7 @@
             <span style="font-size: 12px; font-weight: 800; color: #fff;" data-i18n="footer_modified">PORTAL LAST MODIFIED :</span><br>
             <span id="last-update-time" style="color:#94a3b8; font-size: 12px; font-family: monospace;" data-i18n="footer_date">-</span>
             <!-- TEKS VERSI DI SINI -->
-            <br><span id="app-version-badge" onclick="openChangelog()">v1.2.0</span>
+            <br><span id="app-version-badge" onclick="openChangelog()">v1.3.1</span>
         </div>
         <div style="font-size: 12px; color:#94a3b8; text-align: center; flex-grow: 1;" data-i18n="footer_copyright">
             © 2026 PNET Kementerian Kesihatan Malaysia. Hak Cipta Terpelihara.
@@ -854,7 +879,6 @@
         <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px;">Sejarah kemas kini dan penambahbaikan aplikasi.</p>
         
         <div style="overflow-y: auto; flex-grow: 1; padding-right: 5px; margin-bottom: 15px;">
-            <!-- Item v1.0.0 -->
             <div class="changelog-item">
                 <div class="changelog-version">v1.0.0 <span class="changelog-date">16 Julai 2026</span></div>
                 <p class="changelog-desc">
@@ -862,7 +886,6 @@
                 </p>
             </div>
         
-            <!-- Item v1.1.0 -->
             <div class="changelog-item">
                 <div class="changelog-version">v1.1.0 <span class="changelog-date">17 Julai 2026</span></div>
                 <p class="changelog-desc">
@@ -870,15 +893,21 @@
                 </p>
             </div>
             
-            <!-- Item v1.2.0 -->
             <div class="changelog-item">
                 <div class="changelog-version">v1.2.0 <span class="changelog-date">27 Julai 2026</span></div>
                 <p class="changelog-desc">
                      <i>Fix a certain error on projects title</i>
                 </p>
             </div>
+
+            <div class="changelog-item">
+                <div class="changelog-version">v1.3.1 <span class="changelog-date">28 Julai 2026</span></div>
+                <p class="changelog-desc">
+                     <i>Fix some UI issues</i>
+                </p>
+            </div>
+
             
-            <!-- Anda boleh tambah item versi baharu di sini pada masa akan datang -->
         </div>
 
         <div class="modal-card-footer" style="margin-top: auto;">
@@ -1126,7 +1155,11 @@
             "expected": "Jangkaan",
             "actual": "Sebenar",
             "btn_upload": "Muat Naik Excel",
-            "btn_report": "Jana Laporan"
+            "btn_report": "Jana Laporan",
+            
+            "scroll_x": "TATAL KIRI / KANAN",
+            "scroll_x_fasa": "TATAL FASA PROJEK",
+            "scroll_y": "TATAL KE BAWAH UNTUK PROJEK"
         },
         "en": {
             "header_title": "PNET Project Timeline",
@@ -1211,7 +1244,11 @@
             "expected": "Expected",
             "actual": "Actual",
             "btn_upload": "Upload Excel",
-            "btn_report": "Generate Report"
+            "btn_report": "Generate Report",
+            
+            "scroll_x": "SWIPE LEFT / RIGHT",
+            "scroll_x_fasa": "SWIPE PROJECT PHASES",
+            "scroll_y": "SCROLL DOWN FOR PROJECTS"
         }
     };
 
