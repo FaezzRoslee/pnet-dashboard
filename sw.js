@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pnet-dashboard-v21'; // Anda boleh ubah ke v19, v20 untuk kemas kini seterusnya
+const CACHE_NAME = 'pnet-dashboard-v22'; // Anda boleh ubah ke v19, v20 untuk kemas kini seterusnya
 
 // Senarai fail yang akan disimpan di dalam telefon pengguna (Cache)
 const assets = [
